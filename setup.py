@@ -30,6 +30,7 @@ setup(
 		'patrol_bot = patrol_sim.patrol_bot:main',
         'nav_goal = patrol_sim.nav_goal:main',
         'set_initial_pose = patrol_sim.set_initial_pose:main',
+        'multi_patrol_nav2 = patrol_sim.multi_patrol_nav2:main',
         ],
     },
 )
