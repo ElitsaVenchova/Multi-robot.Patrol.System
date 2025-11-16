@@ -58,11 +58,7 @@ def generate_launch_description():
             name='amcl',
             namespace=ns,
             output='screen',
-            parameters=[nav2_yaml],
-            remappings=[
-                ('/map', 'map'),
-                ('/map_updates', 'map_updates')
-            ]
+            parameters=[nav2_yaml]
         )
 
         nodes += [init_pose, nav2_amcl]
