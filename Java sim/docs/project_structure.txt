@@ -1,0 +1,127 @@
+Java sim/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── bg/uni/sofia/fmi/simulator
+│   │   │
+│   │   │       ├── Main.java
+│   │   │
+│   │   │       ├── config/              # YAML parsing & validation
+│   │   │       │   ├── ConfigLoader.java
+│   │   │       │   ├── SimulationConfig.java
+│	│	│		│	├── RobotConfig.java
+│	│	│		│	├── AttackConfig.java
+│   │   │       │   └── SchemaValidator.java
+│   │   │
+│   │   │       ├── domain/              # metamodel (UML classes)
+│   │   │       │   ├── World.java
+│   │   │       │   ├── Bot.java
+│   │   │       │   ├── Battery.java
+│   │   │       │   ├── Lidar.java
+│   │   │       │   ├── Attack.java
+│   │   │       │   ├── ChargeStation.java
+│	│	│		│	├── Position.java
+│	│	│		│	└── enums/
+│	│	│		│		└── AttackStatus.java
+│	│	│		└── factory/
+│	│	│			├── StrategyFactory.java
+│	│	│			└── DomainFactory.java
+│   │   │
+│   │   │       ├── strategy/            # Strategy pattern
+│   │   │       │   ├── patrol/
+│   │   │       │   │   ├── PatrolModel.java
+│   │   │       │   │   ├── RingPatrol.java
+│   │   │       │   │   ├── CounterPhasePatrol.java
+│   │   │       │   │   └── AsyncPatrol.java
+│   │   │       │   │
+│   │   │       │   ├── attack/
+│   │   │       │   │   ├── LoadModel.java
+│   │   │       │   │   ├── PoissonAttack.java
+│   │   │       │   │   ├── UniformAttack.java
+│   │   │       │   │   └── VulnerabilityAttack.java
+│   │   │
+│   │   │       ├── engine/              # simulation engine
+│   │   │       │   ├── Simulator.java
+│   │   │       │   ├── SimulationRunner.java
+│   │   │       │   ├── TickEngine.java
+│   │   │       │   └── EventManager.java
+│   │   │
+│   │   │       ├── concurrency/         # (future parallel execution)
+│   │   │       │   ├── TaskScheduler.java
+│   │   │       │   └── ParallelExecutor.java
+│   │   │
+│   │   │       ├── results/             # metrics & output
+│   │   │       │   ├── SimulationResult.java
+│   │   │       │   ├── MetricsCalculator.java
+│   │   │       │   └── ResultExporter.java
+│   │   │
+│   │   │       ├── util/                # helpers
+│   │   │       │   ├── LoggerUtil.java
+│   │   │       │   └── Constants.java
+│   │   │
+│   │   │       └── exception/           # error handling
+│   │   │           ├── ConfigException.java
+│   │   │           └── SimulationException.java
+│   │   │
+│   │   └── resources/
+│   │       ├── configs/                # YAML DSL files
+│   │       │   ├── scenarios/
+│   │       │   ├── robots/
+│   │       │   └── templates/
+│   │       │
+│   │       └── logback.xml             # logging config
+│
+│   └── test/
+│       └── java/
+│           └── com/yourname/simulator/
+│               ├── config/
+│               ├── domain/
+│               └── engine/
+│
+├── outputs/                            # generated (NOT in git)
+│   ├── logs/
+│   ├── results/                        # CSV / JSON
+│   └── plots/                          # diagrams
+│
+├── experiments/                        # batch runs
+│   └── ExperimentRunner.java
+│
+├── docs/                               # UML, figures for paper
+│
+├── pom.xml                             # Maven config
+├── README.md
+└── .gitignore
+
+Notes:
+The domain/ folder reflects the metamodel.
+strategies/ pattern is cleanly separated. It easy to add new patrol strategies or new attacker models.
+/engine is isolated. DSL stays independent; execution logic is separate
+/outputs are separated
+/experiments folder is where it is easy to run batch simulations, or compare strategies, or generate results for papers.
+outputs/plots/ for result diagrams
+src/config/schema - for YAML validation which avoids bugs.
+
+Perfect match with the DSL architecture (1:1 with your Section 3)
+resources/configs/   → DSL (YAML)
+config/              → parser
+domain/              → metamodel
+engine/              → interpreter
+results/             → outputs
+
+
+Patrol and attack behaviors are implemented using the Strategy design pattern, allowing interchangeable and extensible behavior definitions.
+
+The simulation engine interprets the DSL configuration and executes the simulation through a discrete-time loop, where patrol strategies and attack models interact within the defined environment.
+
+"interpretation of DSL constructs into executable simulation components"
+
+The simulation engine interprets the DSL configuration and executes the simulation through a discrete-time loop, where patrol strategies and attack models interact within the defined environment.
+
+The results module computes performance metrics such as interception rate and detection efficiency, enabling systematic evaluation and comparison of patrol strategies.
+
+Simulation results are exported in a structured format (CSV), enabling further statistical analysis and visualization of performance metrics.
+
+In addition to interception rate, we evaluate the temporal efficiency of patrol strategies by measuring the average detection time, defined as the delay between attack occurrence and interception.
+
+Each configuration was executed multiple times, and the results are reported as mean values with standard deviation to account for stochastic variability.

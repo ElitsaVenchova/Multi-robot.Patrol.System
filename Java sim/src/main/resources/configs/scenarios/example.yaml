@@ -1,0 +1,14 @@
+simulation:
+  duration: 3600
+  perimeterSize: 100
+  seed: 42
+
+robots:
+  - model: turtlebot_pi
+    count: 5
+
+patrolModel: RingPatrol
+
+attackModel:
+  type: PoissonAttack
+  lambda: 0.3
