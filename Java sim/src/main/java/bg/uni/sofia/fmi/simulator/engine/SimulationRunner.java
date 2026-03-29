@@ -14,6 +14,7 @@ import bg.uni.sofia.fmi.simulator.results.ResultExporter;
 import bg.uni.sofia.fmi.simulator.results.SimulationMetrics;
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
+import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 /**
  * Main class responsible for running the simulation.
@@ -25,7 +26,6 @@ import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
 public class SimulationRunner {
 
     public void run(String configPath) {
-
         // 1️⃣ Load config
         ConfigLoader loader = new ConfigLoader();
         SimulationConfig config = loader.load(configPath);
@@ -55,7 +55,18 @@ public class SimulationRunner {
             patrolModel.execute(world.getBots(), world);
 
             // Update world (movement + detection)
-           world.tick(t); // ✅
+            world.tick(t); // ✅
+
+            //Parallerization (optional)
+            // SimulationMode mode = SimulationMode.PARALLEL;
+            // ParallelExecutor executor = new ParallelExecutor(Runtime.getRuntime().availableProcessors());
+            // ParallelPatrolExecutor patrolExecutor = new ParallelPatrolExecutor(executor.getExecutor());
+            // ParallelDetectionEngine detectionEngine = new ParallelDetectionEngine(executor.getExecutor());
+            // // Movement
+            // patrolExecutor.execute(world.getBots());
+            // // Detection
+            // detectionEngine.detect(world.getBots(), world.getAttacks(), t);
+            // executor.shutdown();
         }
 
         // 6️⃣ Results
@@ -87,6 +98,7 @@ public class SimulationRunner {
     }
 
     public SimulationMetrics runWithResult(SimulationConfig config) {
+        RandomProvider.setSeed(config.getSimulation().getSeed());
 
         World world = DomainFactory.createWorld(config);
 

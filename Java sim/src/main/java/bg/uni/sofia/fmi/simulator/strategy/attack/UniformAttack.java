@@ -7,10 +7,11 @@ import java.util.Random;
 import bg.uni.sofia.fmi.simulator.domain.Attack;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
+import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 public class UniformAttack implements LoadModel {
 
-    private Random random = new Random();
+    private Random random = RandomProvider.getRandom();
 
     @Override
     public List<Attack> generateAttacks(World world, int currentTime) {

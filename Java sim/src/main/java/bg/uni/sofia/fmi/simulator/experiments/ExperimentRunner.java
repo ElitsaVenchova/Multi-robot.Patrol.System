@@ -40,8 +40,9 @@ public class ExperimentRunner {
                 for (int run = 0; run < runsPerConfig; run++) {
 
                     SimulationConfig config = loader.load(BASE_CONFIG);
-
-                    config.setPatrolModel(strategy);
+   
+                    config.getPatrolModel().setType(strategy);
+                    config.getPatrolModel().setRobotsPerSection(1);
                     config.getAttackModel().setType("PoissonAttack");
                     config.getAttackModel().setLambda(lambda);
                     config.getSimulation().setSeed(System.currentTimeMillis() + run);

@@ -9,6 +9,7 @@ import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.Lidar;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
+import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 /**
  * Factory class responsible for creating domain objects based on the simulation configuration.
@@ -51,7 +52,7 @@ public class DomainFactory {
         // TODO: later load real robot models from YAML
         // For now: default values
 
-        Position position = new Position(random.nextDouble() * world.getPerimeterSize());
+        Position position = new Position(RandomProvider.nextDouble() * world.getPerimeterSize());
 
         Battery battery = new Battery(
                 100.0,   // capacity

@@ -1,6 +1,7 @@
 package bg.uni.sofia.fmi.simulator.factory;
 
 import bg.uni.sofia.fmi.simulator.config.AttackConfig;
+import bg.uni.sofia.fmi.simulator.config.PatrolConfig;
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 import bg.uni.sofia.fmi.simulator.strategy.attack.PoissonAttack;
 import bg.uni.sofia.fmi.simulator.strategy.attack.UniformAttack;
@@ -17,24 +18,26 @@ import bg.uni.sofia.fmi.simulator.strategy.patrol.RingPatrol;
 public class StrategyFactory {
 
     // ===== PATROL =====
-    public static PatrolModel createPatrol(String patrolModel) {
+    public static PatrolModel createPatrol(PatrolConfig config) {
 
-        if (patrolModel == null) {
-            throw new IllegalArgumentException("Patrol model is null");
+        if (config == null || config.getType() == null) {
+            throw new IllegalArgumentException("Patrol config is invalid");
         }
 
-        switch (patrolModel) {
+        switch (config.getType()) {
+
             case "RingPatrol":
-                return new RingPatrol();
+                return new RingPatrol(config);
 
             case "CounterPhasePatrol":
-                return new CounterPhasePatrol();
+                return new CounterPhasePatrol(config);
 
             case "AsyncPatrol":
-                return new AsyncPatrol();
+                return new AsyncPatrol(config);
 
             default:
-                throw new IllegalArgumentException("Unknown patrol model: " + patrolModel);
+                throw new IllegalArgumentException(
+                        "Unknown patrol model: " + config.getType());
         }
     }
 

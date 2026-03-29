@@ -2,18 +2,19 @@ package bg.uni.sofia.fmi.simulator.config;
 
 import java.util.List;
 
-//This represents the main YAML structure. It will be used by SnakeYAML to map the YAML file to Java objects.
+//This represents the main YAML structure. 
+// It will be used by SnakeYAML to map the YAML file to Java objects.
 public class SimulationConfig {
 
     private SimulationParameters simulation;
     private List<RobotConfig> robots;
-    private String patrolModel;
+    private PatrolConfig patrolModel;
     private AttackConfig attackModel;
 
     public void setSimulation(SimulationParameters simulation) {
         this.simulation = simulation;
     }
-    
+
     public SimulationParameters getSimulation() {
         return simulation;
     }
@@ -26,11 +27,11 @@ public class SimulationConfig {
         this.robots = robots;
     }
 
-    public String getPatrolModel() {
+    public PatrolConfig getPatrolModel() {
         return patrolModel;
     }
 
-    public void setPatrolModel(String patrolModel) {
+    public void setPatrol(PatrolConfig patrolModel) {
         this.patrolModel = patrolModel;
     }
 

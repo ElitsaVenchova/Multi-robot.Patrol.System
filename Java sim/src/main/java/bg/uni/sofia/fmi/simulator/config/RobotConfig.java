@@ -1,13 +1,15 @@
 package bg.uni.sofia.fmi.simulator.config;
 
+// configuration for an robot, e.g. model and count
+
+//Example configuration for robots in the simulation, e.g. model and count
 // robots:
 //   - model: turtlebot_pi
 //     count: 5
-    // public double speed;
-    // public double sensingRange;
-    // public List<Double> initialPositions;
-public class RobotConfig {
 
+//  - speed - missing?
+//  - sensingRange - missing?
+public class RobotConfig {
     private String model;
     private int count;
 

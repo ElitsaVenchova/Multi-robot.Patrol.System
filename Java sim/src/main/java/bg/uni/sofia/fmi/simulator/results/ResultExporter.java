@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import bg.uni.sofia.fmi.simulator.config.SimulationConfig;
+import bg.uni.sofia.fmi.simulator.util.FileUtils;
 
 // This class will handle exporting the results to a CSV file
 // It will create a file "simulation_results.csv" in the "outputs/results" directory
@@ -14,7 +15,7 @@ public class ResultExporter {
     private static final String FILE_NAME = "simulation_results.csv";
 
     public void export(SimulationMetrics metrics) {
-        ensureDirectoryExists();
+        FileUtils.ensureDirectoryExists(OUTPUT_DIR);
 
         File file = new File(OUTPUT_DIR + FILE_NAME);
         boolean fileExists = file.exists();
@@ -40,7 +41,7 @@ public class ResultExporter {
 
     public void exportWithContext(SimulationMetrics metrics, SimulationConfig config) {
 
-        ensureDirectoryExists();
+        FileUtils.ensureDirectoryExists(OUTPUT_DIR);
 
         File file = new File(OUTPUT_DIR + FILE_NAME);
         boolean fileExists = file.exists();
@@ -51,7 +52,7 @@ public class ResultExporter {
                 writer.append("total_attacks,intercepted,missed,success_rate,avg_detection_time,avg_response_time\n");
             }
 
-            writer.append(config.getPatrolModel()).append(",");
+            writer.append(String.valueOf(config.getPatrolModel().getRobotsPerSection())).append(",");
             writer.append(String.valueOf(config.getAttackModel().getLambda())).append(",");
             writer.append(String.valueOf(metrics.getTotalAttacks())).append(",");
             writer.append(String.valueOf(metrics.getInterceptedAttacks())).append(",");
@@ -69,7 +70,7 @@ public class ResultExporter {
             String strategy,
             double lambda) {
 
-        ensureDirectoryExists();
+        FileUtils.ensureDirectoryExists(OUTPUT_DIR);
 
         File file = new File(OUTPUT_DIR + "aggregated_results.csv");
         boolean fileExists = file.exists();
@@ -90,13 +91,6 @@ public class ResultExporter {
 
         } catch (IOException e) {
             throw new RuntimeException("Error writing aggregated results", e);
-        }
-    }
-
-    private void ensureDirectoryExists() {
-        File directory = new File(OUTPUT_DIR);
-        if (!directory.exists()) {
-            directory.mkdirs();
         }
     }
 }
