@@ -1,7 +1,8 @@
 package bg.uni.sofia.fmi.simulator.domain;
 
+//[TODO] Да се добави секция, която се охранява
 public class Bot {
-private Position position;
+    private Position position;
     private Battery battery;
     private Lidar lidar;
     private double speed;

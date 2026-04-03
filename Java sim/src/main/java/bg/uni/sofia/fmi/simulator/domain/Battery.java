@@ -7,16 +7,18 @@ public class Battery {
 
     public Battery(double capacity, double consumptionRate) {
         this.capacity = capacity;
-        this.currentLevel = capacity;
+        this.currentLevel = capacity; // [TODO] може да се направи с random стойност
         this.consumptionRate = consumptionRate;
     }
 
+    //[TODO] В описанието на UML диаграмата май имаше по-реалистична консумация, която зависи от разстоянието и скоростта
     public void consume() {
         currentLevel -= consumptionRate;
         if (currentLevel < 0)
             currentLevel = 0;
     }
 
+    //[TODO] В описанието на UML диаграмата май имаше по-реалистично зареждане, който зависи от времето и зарядното устройство
     public void recharge(double amount) {
         currentLevel += amount;
         if (currentLevel > capacity)

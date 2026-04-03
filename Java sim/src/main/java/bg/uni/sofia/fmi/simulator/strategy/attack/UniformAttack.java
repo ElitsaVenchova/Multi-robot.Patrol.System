@@ -18,7 +18,7 @@ public class UniformAttack implements LoadModel {
         List<Attack> attacks = new ArrayList<>();
 
         double position = random.nextDouble() * world.getPerimeterSize();
-        attacks.add(new Attack(new Position(position), currentTime)); // ✅ FIX
+        attacks.add(new Attack(new Position(position), currentTime));
 
         return attacks;
     }

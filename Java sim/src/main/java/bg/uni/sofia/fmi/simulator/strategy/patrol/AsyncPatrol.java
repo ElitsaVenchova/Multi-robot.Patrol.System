@@ -26,6 +26,8 @@ public class AsyncPatrol implements PatrolModel {
     public void execute(List<Bot> bots, World world) {
         for (Bot bot : bots) {
             double variation = 0.5 + random.nextDouble();
+            // [TODO] Да има посока и цел, но все пак да има леко произвилно джижение
+            // Произволността поможе би да е конфигурация
             bot.getPosition().move(variation);
         }
     }

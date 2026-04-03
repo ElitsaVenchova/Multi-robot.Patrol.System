@@ -43,7 +43,7 @@ public class MetricsCalculator {
         // Success rate
         if (total > 0) {
             metrics.setSuccessRate((double) intercepted / total);
-            metrics.setDetectionRate((double) intercepted / total); // same for now
+            metrics.setDetectionRate((double) intercepted / total); // [TODO] same for now
         } else {
             metrics.setSuccessRate(0.0);
             metrics.setDetectionRate(0.0);
@@ -53,7 +53,7 @@ public class MetricsCalculator {
         if (detectedCount > 0) {
             double avgDetection = totalDetectionTime / detectedCount;
             metrics.setAverageDetectionTime(avgDetection);
-            metrics.setAverageResponseTime(avgDetection); // same for now
+            metrics.setAverageResponseTime(avgDetection); // [TODO] same for now  
         } else {
             metrics.setAverageDetectionTime(0.0);
             metrics.setAverageResponseTime(0.0);

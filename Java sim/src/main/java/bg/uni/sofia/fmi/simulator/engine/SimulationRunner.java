@@ -117,7 +117,7 @@ public class SimulationRunner {
             }
 
             patrolModel.execute(world.getBots(), world);
-            world.tick(t); // ✅
+            world.tick(t);
         }
 
         MetricsCalculator calculator = new MetricsCalculator();

@@ -1,7 +1,5 @@
 package bg.uni.sofia.fmi.simulator.factory;
 
-import java.util.Random;
-
 import bg.uni.sofia.fmi.simulator.config.RobotConfig;
 import bg.uni.sofia.fmi.simulator.config.SimulationConfig;
 import bg.uni.sofia.fmi.simulator.domain.Battery;
@@ -29,29 +27,23 @@ public class DomainFactory {
     }
 
     private static void createBots(World world, SimulationConfig config) {
-
-        Random random = new Random(
-                config.getSimulation().getSeed() != null
-                        ? config.getSimulation().getSeed()
-                        : System.currentTimeMillis()
-        );
-
         for (RobotConfig robotConfig : config.getRobots()) {
 
             for (int i = 0; i < robotConfig.getCount(); i++) {
 
-                Bot bot = createBot(robotConfig, random, world);
+                Bot bot = createBot(robotConfig, world);
 
                 world.addBot(bot);
             }
         }
     }
 
-    private static Bot createBot(RobotConfig config, Random random, World world) {
+    private static Bot createBot(RobotConfig config, World world) {
 
-        // TODO: later load real robot models from YAML
-        // For now: default values
-
+        // [TODO]: later load real robot models from YAML
+        // [TODO] Позицията може да се задава в конфигурацията или да се генерира 
+        // на базата на броя ботове и размера на периметъра, за да се избегне струпване  
+        
         Position position = new Position(RandomProvider.nextDouble() * world.getPerimeterSize());
 
         Battery battery = new Battery(

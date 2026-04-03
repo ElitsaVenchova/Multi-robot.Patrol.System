@@ -1,5 +1,6 @@
 package bg.uni.sofia.fmi.simulator.domain;
 
+//[TODO] Да се добави 2D и 3D позиция
 public class Position {
     private double value;
 

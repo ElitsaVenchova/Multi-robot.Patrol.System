@@ -36,11 +36,11 @@ public class Attack {
         this.status = AttackStatus.MISSED;
     }
 
-public int getCreationTime() {
-    return creationTime;
-}
+    public int getCreationTime() {
+        return creationTime;
+    }
 
-public int getDetectionTime() {
-    return detectionTime;
-}
+    public int getDetectionTime() {
+        return detectionTime;
+    }
 }

@@ -43,7 +43,7 @@ public class ExperimentRunner {
    
                     config.getPatrolModel().setType(strategy);
                     config.getPatrolModel().setRobotsPerSection(1);
-                    config.getAttackModel().setType("PoissonAttack");
+                    config.getAttackModel().setType("PoissonAttack"); // [TODO] should be in config file
                     config.getAttackModel().setLambda(lambda);
                     config.getSimulation().setSeed(System.currentTimeMillis() + run);
 

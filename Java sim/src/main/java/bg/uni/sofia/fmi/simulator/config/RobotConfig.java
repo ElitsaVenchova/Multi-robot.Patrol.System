@@ -7,8 +7,8 @@ package bg.uni.sofia.fmi.simulator.config;
 //   - model: turtlebot_pi
 //     count: 5
 
-//  - speed - missing?
-//  - sensingRange - missing?
+// [TODO] - speed - missing?
+// [TODO] - sensingRange - missing?
 public class RobotConfig {
     private String model;
     private int count;
