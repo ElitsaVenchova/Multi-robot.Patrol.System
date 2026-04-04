@@ -12,13 +12,18 @@ import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 public class UniformAttack implements LoadModel {
 
     private Random random = RandomProvider.getRandom();
+    private Integer duration;
+
+    public UniformAttack(Integer duration) {
+        this.duration = duration;
+    }
 
     @Override
     public List<Attack> generateAttacks(World world, int currentTime) {
         List<Attack> attacks = new ArrayList<>();
 
         double position = random.nextDouble() * world.getPerimeterSize();
-        attacks.add(new Attack(new Position(position), currentTime));
+        attacks.add(new Attack(new Position(position), currentTime, duration));
 
         return attacks;
     }

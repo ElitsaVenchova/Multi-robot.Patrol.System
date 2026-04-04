@@ -6,6 +6,7 @@ package bg.uni.sofia.fmi.simulator.config;
 public class AttackConfig {
     private String type;
     private Double lambda; // optional depending on type
+    private Integer duration; // optional
 
     public String getType() {
         return type;
@@ -21,5 +22,13 @@ public class AttackConfig {
 
     public void setLambda(Double lambda) {
         this.lambda = lambda;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 }

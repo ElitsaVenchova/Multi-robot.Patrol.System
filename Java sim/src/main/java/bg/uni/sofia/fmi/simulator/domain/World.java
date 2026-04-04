@@ -29,7 +29,8 @@ public class World {
             bot.move();
         }
 
-        // [TODO] Detection да се гледа по периметъра спрямо обхвата, а не развнение всеки със всеки
+        // [TODO] Detection да се гледа по периметъра спрямо обхвата, а не сравнение
+        // всеки със всеки
         for (Bot bot : bots) {
             for (Attack attack : attacks) {
                 if (attack.getStatus() == AttackStatus.ACTIVE
@@ -39,17 +40,14 @@ public class World {
             }
         }
 
-        // [TODO] Два вида "пропуснати" атаки:
         // 1. Отчитане на пропуснати след определено време
         // 2. Отчитане на време за засичане
         for (Attack attack : attacks) {
             if (attack.getStatus() == AttackStatus.ACTIVE) {
-
-                // example rule: if not detected after X time → missed
-                int lifetime = currentTime - attack.getCreationTime();
-
-                if (lifetime > 50) { // [TODO] threshold (configurable later)
+                // Expiration
+                if (attack.isExpired(currentTime)) {
                     attack.miss();
+                    continue;
                 }
             }
         }

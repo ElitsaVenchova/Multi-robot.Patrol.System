@@ -53,13 +53,14 @@ public class StrategyFactory {
                 if (config.getLambda() == null) {
                     throw new IllegalArgumentException("PoissonAttack requires lambda");
                 }
-                return new PoissonAttack(config.getLambda());
+                return new PoissonAttack(config.getLambda(),
+                        config.getDuration());
 
             case "UniformAttack":
-                return new UniformAttack();
+                return new UniformAttack(config.getDuration());
 
             case "VulnerabilityAttack":
-                return new VulnerabilityAttack();
+                return new VulnerabilityAttack(config.getDuration());
 
             default:
                 throw new IllegalArgumentException("Unknown attack model: " + config.getType());

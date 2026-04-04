@@ -11,9 +11,11 @@ import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 public class PoissonAttack implements LoadModel {
 
     private double lambda;
+    private Integer duration;
 
-    public PoissonAttack(double lambda) {
+    public PoissonAttack(double lambda, Integer duration) {
         this.lambda = lambda;
+        this.duration = duration;
     }
 
     @Override
@@ -22,7 +24,10 @@ public class PoissonAttack implements LoadModel {
 
         if (RandomProvider.nextDouble() < lambda) {
             double position = RandomProvider.nextDouble() * world.getPerimeterSize();
-            attacks.add(new Attack(new Position(position), currentTime));
+            attacks.add(new Attack(
+                    new Position(position),
+                    currentTime,
+                    duration));
         }
 
         return attacks;

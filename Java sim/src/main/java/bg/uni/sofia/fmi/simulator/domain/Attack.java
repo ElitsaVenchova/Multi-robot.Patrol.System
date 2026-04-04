@@ -8,11 +8,20 @@ public class Attack {
     private AttackStatus status;
     private int creationTime;
     private int detectionTime = -1;
+    private Integer duration; // null = infinite
 
-    public Attack(Position position, int creationTime) {
+    public Attack(Position position, int creationTime, Integer duration) {
         this.position = position;
         this.creationTime = creationTime;
+        this.duration = duration;
         this.status = AttackStatus.ACTIVE;
+    }
+
+    public boolean isExpired(int currentTime) {
+        if (duration == null)
+            return false;
+
+        return (currentTime - creationTime) > duration;
     }
 
     public void intercept(int time) {

@@ -1,6 +1,8 @@
 package bg.uni.sofia.fmi.simulator.factory;
 
 import bg.uni.sofia.fmi.simulator.config.RobotConfig;
+import bg.uni.sofia.fmi.simulator.config.RobotModelConfig;
+import bg.uni.sofia.fmi.simulator.config.RobotModelLoader;
 import bg.uni.sofia.fmi.simulator.config.SimulationConfig;
 import bg.uni.sofia.fmi.simulator.domain.Battery;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
@@ -10,7 +12,8 @@ import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 /**
- * Factory class responsible for creating domain objects based on the simulation configuration.
+ * Factory class responsible for creating domain objects based on the simulation
+ * configuration.
  * - building World
  * - creating Bots based on RobotConfig
  */
@@ -40,23 +43,20 @@ public class DomainFactory {
 
     private static Bot createBot(RobotConfig config, World world) {
 
-        // [TODO]: later load real robot models from YAML
+        RobotModelLoader loader = new RobotModelLoader();
+        RobotModelConfig model = loader.load(config.getModel());
+
         // [TODO] Позицията може да се задава в конфигурацията или да се генерира 
         // на базата на броя ботове и размера на периметъра, за да се избегне струпване  
-        
-        Position position = new Position(RandomProvider.nextDouble() * world.getPerimeterSize());
+        Position position = new Position(
+                RandomProvider.nextDouble() * world.getPerimeterSize());
 
         Battery battery = new Battery(
-                100.0,   // capacity
-                0.1      // consumption rate
-        );
+                model.getBatteryCapacity(),
+                model.getBatteryConsumption());
 
-        Lidar lidar = new Lidar(
-                5.0      // detection range
-        );
+        Lidar lidar = new Lidar(model.getLidarRange());
 
-        double speed = 1.0;
-
-        return new Bot(position, battery, lidar, speed);
+        return new Bot(position, battery, lidar, model.getSpeed());
     }
 }

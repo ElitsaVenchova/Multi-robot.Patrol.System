@@ -67,11 +67,14 @@ Java sim/
 │   │   └── resources/
 │   │       ├── configs/                # YAML DSL files
 │   │       │   ├── scenarios/
+│	│		│	│   └── example.yaml
 │   │       │   ├── robots/
+│	│		│	│	├── turtlebot_pi.yaml
+│	│		│	│	└── drone.yaml
 │   │       │   └── templates/
 │   │       │
 │   │       └── logback.xml             # logging config
-│
+│	│
 │   └── test/
 │       └── java/
 │           └── com/yourname/simulator/
@@ -133,3 +136,7 @@ As the attack rate increases, the success rate decreases while detection time in
 A parallel execution model was explored to evaluate the scalability of the simulation, where robot behaviors and detection processes are executed concurrently using a thread pool.
 
 To ensure reproducibility, all stochastic components of the simulation are controlled through a centralized random number provider initialized with a configurable seed.
+
+Robot characteristics are defined in separate configuration files, enabling reuse and reducing coupling between simulation scenarios and platform-specific parameters.
+
+The attack model supports both persistent and time-constrained threats, allowing the evaluation of patrol strategies under different temporal conditions.
