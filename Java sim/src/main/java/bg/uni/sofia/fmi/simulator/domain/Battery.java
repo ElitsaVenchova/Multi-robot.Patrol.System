@@ -7,7 +7,7 @@ public class Battery {
 
     public Battery(double capacity, double consumptionRate) {
         this.capacity = capacity;
-        this.currentLevel = capacity; // [TODO] може да се направи с random стойност
+        this.currentLevel = capacity;
         this.consumptionRate = consumptionRate;
     }
 

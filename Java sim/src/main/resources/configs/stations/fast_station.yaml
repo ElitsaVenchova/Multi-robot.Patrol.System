@@ -1,0 +1,5 @@
+name: Fast Charger
+price: 10000
+slots: 4
+power: 5.0
+failureProbability: 0.01

@@ -8,6 +8,7 @@ public class SimulationConfig {
 
     private SimulationParameters simulation;
     private List<RobotConfig> robots;
+    private List<ChargingStationConfig> chargingStations;
     private PatrolConfig patrolModel;
     private AttackConfig attackModel;
 
@@ -41,6 +42,14 @@ public class SimulationConfig {
 
     public void setAttackModel(AttackConfig attackModel) {
         this.attackModel = attackModel;
+    }
+
+    public List<ChargingStationConfig> getChargingStations() {
+        return chargingStations;
+    }
+
+    public void setChargingStations(List<ChargingStationConfig> chargingStations) {
+        this.chargingStations = chargingStations;
     }
 
     // Nested class for simulation parameters

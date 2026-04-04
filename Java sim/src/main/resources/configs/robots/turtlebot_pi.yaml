@@ -1,0 +1,6 @@
+name: TurtleBot Pi
+batteryCapacity: 100.0
+batteryConsumption: 0.1
+lidarRange: 5.0
+speed: 1.0
+type: ground

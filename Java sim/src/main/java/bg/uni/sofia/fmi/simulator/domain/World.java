@@ -9,18 +9,23 @@ public class World {
 
     private List<Bot> bots = new ArrayList<>();
     private List<Attack> attacks = new ArrayList<>();
+    private List<ChargingStation> chargingStations;
     private double perimeterSize;
 
     public World(double perimeterSize) {
         this.perimeterSize = perimeterSize;
     }
 
-    public void addBot(Bot bot) {
-        bots.add(bot);
+    public void addBots(List<Bot> bots) {
+        this.bots.addAll(bots);
     }
 
     public void addAttack(Attack attack) {
         attacks.add(attack);
+    }
+    
+    public void addChargingStations(List<ChargingStation> chargingStations) {
+        this.chargingStations = chargingStations;
     }
 
     public void tick(int currentTime) {
@@ -63,5 +68,9 @@ public class World {
 
     public List<Bot> getBots() {
         return bots;
+    }
+
+    public List<ChargingStation> getChargingStations() {
+        return chargingStations;
     }
 }

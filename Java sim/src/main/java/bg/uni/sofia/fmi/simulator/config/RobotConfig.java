@@ -6,12 +6,10 @@ package bg.uni.sofia.fmi.simulator.config;
 // robots:
 //   - model: turtlebot_pi
 //     count: 5
-
-// [TODO] - speed - missing?
-// [TODO] - sensingRange - missing?
 public class RobotConfig {
     private String model;
     private int count;
+    private String type;
 
     public String getModel() {
         return model;
@@ -27,5 +25,13 @@ public class RobotConfig {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

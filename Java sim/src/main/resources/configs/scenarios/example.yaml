@@ -3,9 +3,19 @@ simulation:
   perimeterSize: 100
   seed: 42
 
-robots:
+robots:robots:
   - model: turtlebot_pi
-    count: 5
+    count: 3
+
+  - model: drone
+    count: 2
+    
+chargingStations:
+  - model: fast_station
+    count: 2
+
+  - model: cheap_station
+    count: 3
 
 patrol:
   type: RingPatrol

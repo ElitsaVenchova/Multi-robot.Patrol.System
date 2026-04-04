@@ -1,0 +1,5 @@
+name: Single Charger
+price: 1000
+slots: 1
+power: 1.0
+failureProbability: 0.1

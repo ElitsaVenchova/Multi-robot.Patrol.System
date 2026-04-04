@@ -2,6 +2,9 @@ package bg.uni.sofia.fmi.simulator.config;
 
 public class RobotModelConfig {
 
+    private String name;
+    private String type;
+
     private double batteryCapacity;
     private double batteryConsumption;
 
@@ -41,5 +44,21 @@ public class RobotModelConfig {
 
     public void setSpeed(double speed) {
         this.speed = speed;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

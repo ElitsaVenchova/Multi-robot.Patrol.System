@@ -140,3 +140,27 @@ To ensure reproducibility, all stochastic components of the simulation are contr
 Robot characteristics are defined in separate configuration files, enabling reuse and reducing coupling between simulation scenarios and platform-specific parameters.
 
 The attack model supports both persistent and time-constrained threats, allowing the evaluation of patrol strategies under different temporal conditions.
+
+The simulation environment is extended with infrastructure entities such as charging stations, modeled as configurable resources with capacity, cost, and reliability constraints.
+
+
+----------------------------------------------------------------------------------------
+//[TODO] В описанието на UML диаграмата май имаше по-реалистична консумация, която зависи от разстоянието и скоростта
+//[TODO] В описанието на UML диаграмата май имаше по-реалистично зареждане, който зависи от времето и зарядното устройство
+//[TODO] Да се добави секция, която се охранява
+//[TODO] Да се добави различни видове зарядни станции, които имат различна скорост на зареждане и 
+// и могат да зареждат няколко бота едновременно
+//[TODO] Може би ще е по-добре да проверява "петиметъра" по обхвата,
+// а не само разстоянието между бота и всяка атака
+//[TODO] Да се добави 2D и 3D позиция
+// [TODO] Detection да се гледа по периметъра спрямо обхвата, а не сравнение
+// всеки със всеки
+// [TODO] Позицията може да се задава в конфигурацията или да се генерира
+        // на базата на броя ботове и размера на периметъра, за да се избегне струпване
+// TODO: attack weakest defended area
+// [TODO] Да има посока и цел, но все пак да има леко произвилно джижение
+            // Произволността поможе би да е конфигурация
+// [TODO] Да се оправи във всяка реализация Patrol.execute
+
+👉 robot charging behavior (VERY strong)
+👉 or add station failure dynamics (stochastic)

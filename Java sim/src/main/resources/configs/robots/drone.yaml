@@ -1,0 +1,6 @@
+name: Drone
+batteryCapacity: 60.0
+batteryConsumption: 0.3
+lidarRange: 10.0
+speed: 2.5
+type: air
