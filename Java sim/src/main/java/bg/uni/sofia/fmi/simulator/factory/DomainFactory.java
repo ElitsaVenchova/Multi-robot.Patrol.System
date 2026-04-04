@@ -16,6 +16,7 @@ import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
 import bg.uni.sofia.fmi.simulator.domain.Lidar;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
+import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 /**
@@ -64,15 +65,20 @@ public class DomainFactory {
         // [TODO] Позицията може да се задава в конфигурацията или да се генерира
         // на базата на броя ботове и размера на периметъра, за да се избегне струпване
         Position position = new Position(
-                RandomProvider.nextDouble() * world.getPerimeterSize());
+                RandomProvider.nextDouble() * world.getPerimeter().getSize());
 
-        Battery battery = new Battery(
-                model.getBatteryCapacity(),
-                model.getBatteryConsumption());
+        Battery battery = new Battery(model.getBatteryCapacity());
 
-        Lidar lidar = new Lidar(model.getLidarRange());
+        Lidar lidar = new Lidar(model.getLidarRange(), model.getBatteryConsumptionRate());
+        RobotType type;
 
-        return new Bot(position, battery, lidar, model.getSpeed(), model.getType(), model.getName());
+        try {
+            type = RobotType.valueOf(model.getType().toUpperCase());
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid robot type: " + model.getType());
+        }
+        return new Bot(position, battery, lidar, model.getMaxSpeed(), type, model.getName(), model.getFailureProbability(),
+                model.getPrice(), model.getBatteryConsumptionRate());
     }
 
     public static List<ChargingStation> createStations(
@@ -86,19 +92,24 @@ public class DomainFactory {
 
             ChargingStationModelConfig model = loader.load(config.getModel());
 
-            for (int i = 0; i < config.getCount(); i++) {
-
-                Position position = new Position(
-                        RandomProvider.nextDouble() * world.getPerimeterSize());
-
-                stations.add(new ChargingStation(
-                        model.getName(),
-                        model.getPrice(),
-                        model.getSlots(),
-                        model.getPower(),
-                        model.getFailureProbability(),
-                        position));
+            if (config.getX() < 0 || config.getX() > world.getPerimeter().getSize()) {
+                throw new RuntimeException(
+                        "Station X out of bounds. x=" + config.getX() + ", perimeter=" + world.getPerimeter());
             }
+
+            Position position = new Position(
+                    config.getX(),
+                    config.getY(),
+                    0.0 // stations are on ground
+            );
+
+            stations.add(new ChargingStation(
+                    model.getName(),
+                    model.getPrice(),
+                    model.getSlots(),
+                    model.getPower(),
+                    model.getFailureProbability(),
+                    position));
         }
 
         return stations;

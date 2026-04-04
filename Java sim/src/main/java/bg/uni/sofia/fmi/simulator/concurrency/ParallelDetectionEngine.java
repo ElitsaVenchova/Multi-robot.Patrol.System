@@ -28,7 +28,7 @@ public class ParallelDetectionEngine {
                 for (Attack attack : attacks) {
 
                     if (attack.getStatus() == AttackStatus.ACTIVE &&
-                            bot.detect(attack)) {
+                            bot.getLidar().detect(bot.getPosition(), attack)) {
 
                         synchronized (attack) {
                             if (attack.getStatus() == AttackStatus.ACTIVE) {

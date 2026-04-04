@@ -22,7 +22,7 @@ public class UniformAttack implements LoadModel {
     public List<Attack> generateAttacks(World world, int currentTime) {
         List<Attack> attacks = new ArrayList<>();
 
-        double position = random.nextDouble() * world.getPerimeterSize();
+        double position = random.nextDouble() * world.getPerimeter().getSize();
         attacks.add(new Attack(new Position(position), currentTime, duration));
 
         return attacks;

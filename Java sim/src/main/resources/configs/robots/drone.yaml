@@ -3,4 +3,8 @@ batteryCapacity: 60.0
 batteryConsumption: 0.3
 lidarRange: 10.0
 speed: 2.5
-type: air
+price: 1000
+failureProbability: 0.1
+type: DRONE
+batteryConsumptionRate: 0.3
+lidarBatteryConsumptionRate: 0.3

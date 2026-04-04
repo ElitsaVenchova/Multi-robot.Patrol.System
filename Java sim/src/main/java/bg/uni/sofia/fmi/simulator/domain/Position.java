@@ -1,18 +1,29 @@
 package bg.uni.sofia.fmi.simulator.domain;
 
-//[TODO] Да се добави 2D и 3D позиция
 public class Position {
-    private double value;
+    private double x;
+    private double y;
+    private double z;
 
-    public Position(double value) {
-        this.value = value;
+    public Position(double x) {
+        this(x, 0.0, 0.0);
     }
 
-    public double getValue() {
-        return value;
+    public Position(double x, double y) {
+        this(x, y, 0.0);
     }
 
-    public void move(double distance) {
-        this.value += distance;
+    public Position(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
+
+    public double getX() { return x; }
+    public double getY() { return y; }
+    public double getZ() { return z; }
+
+    public void setX(double x) { this.x = x; }
+    public void setY(double y) { this.y = y; }
+    public void setZ(double z) { this.z = z; }
 }

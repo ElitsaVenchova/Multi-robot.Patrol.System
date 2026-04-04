@@ -1,17 +1,14 @@
 package bg.uni.sofia.fmi.simulator.strategy.patrol;
 
 import java.util.List;
-import java.util.Random;
 
 import bg.uni.sofia.fmi.simulator.config.PatrolConfig;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.World;
-import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 public class AsyncPatrol implements PatrolModel {
 
     private Integer robotsPerSection;
-    private Random random = RandomProvider.getRandom();
 
     public AsyncPatrol(PatrolConfig config) {
         this.robotsPerSection = config.getRobotsPerSection();
@@ -25,10 +22,7 @@ public class AsyncPatrol implements PatrolModel {
     @Override
     public void execute(List<Bot> bots, World world) {
         for (Bot bot : bots) {
-            double variation = 0.5 + random.nextDouble();
-            // [TODO] Да има посока и цел, но все пак да има леко произвилно джижение
-            // Произволността поможе би да е конфигурация
-            bot.getPosition().move(variation);
+            bot.move();
         }
     }
 

@@ -29,6 +29,7 @@ public class SimulationRunner {
         // 1️⃣ Load config
         ConfigLoader loader = new ConfigLoader();
         SimulationConfig config = loader.load(configPath);
+        RandomProvider.setSeed(config.getSimulation().getSeed());
 
         // 2️⃣ Create world
         World world = DomainFactory.createWorld(config);

@@ -45,6 +45,10 @@ public class Attack {
         this.status = AttackStatus.MISSED;
     }
 
+    public boolean isActive() {
+        return status == AttackStatus.ACTIVE;
+    }
+
     public int getCreationTime() {
         return creationTime;
     }

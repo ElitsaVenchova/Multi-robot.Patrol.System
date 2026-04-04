@@ -143,16 +143,15 @@ The attack model supports both persistent and time-constrained threats, allowing
 
 The simulation environment is extended with infrastructure entities such as charging stations, modeled as configurable resources with capacity, cost, and reliability constraints.
 
+Charging stations are explicitly positioned in a two-dimensional space, allowing controlled experiments on spatial resource allocation, while robot detection remains constrained to a one-dimensional perimeter projection.
+
 
 ----------------------------------------------------------------------------------------
-//[TODO] В описанието на UML диаграмата май имаше по-реалистична консумация, която зависи от разстоянието и скоростта
-//[TODO] В описанието на UML диаграмата май имаше по-реалистично зареждане, който зависи от времето и зарядното устройство
+//[TODO] Да се направи по-реалистично зареждане
+//[TODO] Да се направи по-реалистична консумация
 //[TODO] Да се добави секция, която се охранява
-//[TODO] Да се добави различни видове зарядни станции, които имат различна скорост на зареждане и 
-// и могат да зареждат няколко бота едновременно
 //[TODO] Може би ще е по-добре да проверява "петиметъра" по обхвата,
 // а не само разстоянието между бота и всяка атака
-//[TODO] Да се добави 2D и 3D позиция
 // [TODO] Detection да се гледа по периметъра спрямо обхвата, а не сравнение
 // всеки със всеки
 // [TODO] Позицията може да се задава в конфигурацията или да се генерира
@@ -164,3 +163,6 @@ The simulation environment is extended with infrastructure entities such as char
 
 👉 robot charging behavior (VERY strong)
 👉 or add station failure dynamics (stochastic)
+
+// Дали е по-добре лидара и батерията да са отделни конфигурации в YAML и как да се задават, за да може да има различни ботове с различни лидари (мощност и цена)
+// Да се добави Цел на робота и статус: Патрулиране, Зареждане, Грешка и други подходящи като Отиване към зарядна станция, ако е приложимо

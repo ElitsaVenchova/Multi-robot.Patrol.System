@@ -23,7 +23,7 @@ public class PoissonAttack implements LoadModel {
         List<Attack> attacks = new ArrayList<>();
 
         if (RandomProvider.nextDouble() < lambda) {
-            double position = RandomProvider.nextDouble() * world.getPerimeterSize();
+            double position = RandomProvider.nextDouble() * world.getPerimeter().getSize();
             attacks.add(new Attack(
                     new Position(position),
                     currentTime,

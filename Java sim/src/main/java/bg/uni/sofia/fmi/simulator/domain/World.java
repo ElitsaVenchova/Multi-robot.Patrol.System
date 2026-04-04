@@ -10,10 +10,10 @@ public class World {
     private List<Bot> bots = new ArrayList<>();
     private List<Attack> attacks = new ArrayList<>();
     private List<ChargingStation> chargingStations;
-    private double perimeterSize;
+    private Perimeter perimeter;
 
-    public World(double perimeterSize) {
-        this.perimeterSize = perimeterSize;
+    public World(double perimeter) {
+        this.perimeter = new Perimeter((int) perimeter);
     }
 
     public void addBots(List<Bot> bots) {
@@ -23,7 +23,7 @@ public class World {
     public void addAttack(Attack attack) {
         attacks.add(attack);
     }
-    
+
     public void addChargingStations(List<ChargingStation> chargingStations) {
         this.chargingStations = chargingStations;
     }
@@ -37,10 +37,13 @@ public class World {
         // [TODO] Detection да се гледа по периметъра спрямо обхвата, а не сравнение
         // всеки със всеки
         for (Bot bot : bots) {
-            for (Attack attack : attacks) {
-                if (attack.getStatus() == AttackStatus.ACTIVE
-                        && bot.detect(attack)) {
-                    attack.intercept(currentTime); // ✅
+            List<Attack> nearby = perimeter.getNearbyAttacks(
+                    bot.getPosition().getX(),
+                    bot.getLidar().getRange());
+
+            for (Attack attack : nearby) {
+                if (attack.isActive()) {
+                    attack.intercept(currentTime);
                 }
             }
         }
@@ -62,8 +65,8 @@ public class World {
         return attacks;
     }
 
-    public double getPerimeterSize() {
-        return perimeterSize;
+    public Perimeter getPerimeter() {
+        return perimeter;
     }
 
     public List<Bot> getBots() {

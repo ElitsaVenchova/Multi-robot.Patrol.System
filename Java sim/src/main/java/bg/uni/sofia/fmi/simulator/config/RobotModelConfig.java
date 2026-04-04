@@ -3,14 +3,18 @@ package bg.uni.sofia.fmi.simulator.config;
 public class RobotModelConfig {
 
     private String name;
-    private String type;
+    private String type; // "GROUND" or "DRONE"
 
     private double batteryCapacity;
     private double batteryConsumption;
 
     private double lidarRange;
+    private double lidarBatteryConsumptionRate;
 
-    private double speed;
+    private double maxSpeed;
+    private double price;
+    private double failureProbability;
+    private double batteryConsumptionRate;
 
     // Getters & Setters
 
@@ -38,12 +42,12 @@ public class RobotModelConfig {
         this.lidarRange = lidarRange;
     }
 
-    public double getSpeed() {
-        return speed;
+    public double getMaxSpeed() {
+        return maxSpeed;
     }
 
-    public void setSpeed(double speed) {
-        this.speed = speed;
+    public void setMaxSpeed(double speed) {
+        this.maxSpeed = speed;
     }
 
     public String getName() {
@@ -60,5 +64,37 @@ public class RobotModelConfig {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getFailureProbability() {
+        return failureProbability;
+    }
+
+    public void setFailureProbability(double failureProbability) {
+        this.failureProbability = failureProbability;
+    }
+
+    public double getBatteryConsumptionRate() {
+        return batteryConsumptionRate;
+    }
+
+    public void setBatteryConsumptionRate(double batteryConsumptionRate) {
+        this.batteryConsumptionRate = batteryConsumptionRate;
+    }
+
+    public double getLidarBatteryConsumptionRate() {
+        return lidarBatteryConsumptionRate;
+    }
+
+    public void setLidarBatteryConsumptionRate(double lidarBatteryConsumptionRate) {
+        this.lidarBatteryConsumptionRate = lidarBatteryConsumptionRate;
     }
 }

@@ -3,4 +3,8 @@ batteryCapacity: 100.0
 batteryConsumption: 0.1
 lidarRange: 5.0
 speed: 1.0
-type: ground
+price: 1000
+failureProbability: 0.1
+type: GROUND
+batteryConsumptionRate: 0.1
+lidarBatteryConsumptionRate: 0.1

@@ -27,7 +27,7 @@ public class CounterPhasePatrol implements PatrolModel {
             if (i % 2 == 0) {
                 bot.move(); // forward
             } else {
-                bot.getPosition().move(-1); // backward (simplified)
+                bot.move(); // backward (simplified)
             }
         }
     }
