@@ -3,8 +3,6 @@ package bg.uni.sofia.fmi.simulator.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import bg.uni.sofia.fmi.simulator.domain.enums.AttackStatus;
-
 public class World {
 
     private List<Bot> bots = new ArrayList<>();
@@ -31,33 +29,7 @@ public class World {
     public void tick(int currentTime) {
         // Move robots
         for (Bot bot : bots) {
-            bot.move();
-        }
-
-        // [TODO] Detection да се гледа по периметъра спрямо обхвата, а не сравнение
-        // всеки със всеки
-        for (Bot bot : bots) {
-            List<Attack> nearby = perimeter.getNearbyAttacks(
-                    bot.getPosition().getX(),
-                    bot.getLidar().getRange());
-
-            for (Attack attack : nearby) {
-                if (attack.isActive()) {
-                    attack.intercept(currentTime);
-                }
-            }
-        }
-
-        // 1. Отчитане на пропуснати след определено време
-        // 2. Отчитане на време за засичане
-        for (Attack attack : attacks) {
-            if (attack.getStatus() == AttackStatus.ACTIVE) {
-                // Expiration
-                if (attack.isExpired(currentTime)) {
-                    attack.miss();
-                    continue;
-                }
-            }
+            bot.update(this, currentTime);
         }
     }
 

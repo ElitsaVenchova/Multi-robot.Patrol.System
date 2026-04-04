@@ -15,6 +15,7 @@ public class Bot {
     private double batteryConsumptionRate;
 
     private Position position;
+    private BehaviorModule behavior;
 
     public Bot(Position position, Battery battery, Lidar lidar, double speed, RobotType type, String name,
             double failureProbability, double price, double batteryConsumptionRate) {
@@ -29,8 +30,19 @@ public class Bot {
         this.batteryConsumptionRate = batteryConsumptionRate;
     }
 
-    // [TODO] Да има посока и цел, но все пак да има леко произвилно джижение
-    // Произволността поможе би да е конфигурация
+    public void update(World world, int currentTime) {
+        // 1. Decision making (planning)
+        behavior.update(this, world, currentTime);
+
+        // 2. Detection (can stay here OR external engine)
+        lidar.detect(position, world.getPerimeter(), currentTime);
+
+        // 3. Energy consumption (optional next step)
+        battery.consume(this.maxSpeed * this.batteryConsumptionRate);
+        battery.consume(this.lidar.getBatteryConsumptionRate());
+    }
+
+    // [TODO] Да има леко произвилно джижение. Произволността може би да е конфигурация
     public void move() {
         if (!battery.isEmpty()) {
             // always move along perimeter (x)
@@ -82,6 +94,10 @@ public class Bot {
 
     public double getPrice() {
         return price;
+    }
+
+    public double getMaxSpeed() {
+        return maxSpeed;
     }
 
 }

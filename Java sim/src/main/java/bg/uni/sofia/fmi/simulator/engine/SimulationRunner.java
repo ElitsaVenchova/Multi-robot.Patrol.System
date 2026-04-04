@@ -5,6 +5,7 @@ import java.util.List;
 import bg.uni.sofia.fmi.simulator.config.ConfigLoader;
 import bg.uni.sofia.fmi.simulator.config.SimulationConfig;
 import bg.uni.sofia.fmi.simulator.domain.Attack;
+import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.AttackStatus;
 import bg.uni.sofia.fmi.simulator.factory.DomainFactory;
@@ -53,16 +54,21 @@ public class SimulationRunner {
             }
 
             // Execute patrol behavior
-            patrolModel.execute(world.getBots(), world);
+            for (Bot bot : world.getBots()) {
+                bot.update(world, t);
+            }
 
             // Update world (movement + detection)
             world.tick(t); // ✅
 
-            //Parallerization (optional)
+            // Parallerization (optional)
             // SimulationMode mode = SimulationMode.PARALLEL;
-            // ParallelExecutor executor = new ParallelExecutor(Runtime.getRuntime().availableProcessors());
-            // ParallelPatrolExecutor patrolExecutor = new ParallelPatrolExecutor(executor.getExecutor());
-            // ParallelDetectionEngine detectionEngine = new ParallelDetectionEngine(executor.getExecutor());
+            // ParallelExecutor executor = new
+            // ParallelExecutor(Runtime.getRuntime().availableProcessors());
+            // ParallelPatrolExecutor patrolExecutor = new
+            // ParallelPatrolExecutor(executor.getExecutor());
+            // ParallelDetectionEngine detectionEngine = new
+            // ParallelDetectionEngine(executor.getExecutor());
             // // Movement
             // patrolExecutor.execute(world.getBots());
             // // Detection

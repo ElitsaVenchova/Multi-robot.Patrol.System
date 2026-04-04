@@ -1,5 +1,9 @@
 package bg.uni.sofia.fmi.simulator.domain;
 
+import java.util.List;
+
+import bg.uni.sofia.fmi.simulator.domain.enums.AttackStatus;
+
 public class Lidar {
     private double range;
     private double batteryConsumptionRate;
@@ -8,18 +12,23 @@ public class Lidar {
         this.range = range;
     }
 
-    // [TODO] Може би ще е по-добре да проверява "петиметъра" по обхвата,
-    // а не само разстоянието между бота и всяка атака
-    public boolean detect(Position botPosition, Attack attack) {
-        double dx = Math.abs(botPosition.getX() - attack.getPosition().getX());
-        return dx <= this.range;
-    }
-
     public double getBatteryConsumptionRate() {
         return batteryConsumptionRate;
     }
 
     public double getRange() {
         return range;
+    }
+
+    public void detect(Position botPosition, Perimeter perimeter, int currentTime) {
+        List<Attack> nearby = perimeter.getNearbyAttacks(botPosition.getX(), range);
+
+        for (Attack attack : nearby) {
+            synchronized (attack) {
+                if (attack.getStatus() == AttackStatus.ACTIVE) {
+                    attack.intercept(currentTime);
+                }
+            }
+        }
     }
 }
