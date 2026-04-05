@@ -1,4 +1,6 @@
-package bg.uni.sofia.fmi.simulator.domain;
+package bg.uni.sofia.fmi.simulator.planning;
+
+import bg.uni.sofia.fmi.simulator.domain.Bot;
 
 public class EnergyManager {
 

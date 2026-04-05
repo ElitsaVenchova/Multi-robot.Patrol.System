@@ -1,8 +1,27 @@
-package bg.uni.sofia.fmi.simulator.domain;
+package bg.uni.sofia.fmi.simulator.planning;
+
+import bg.uni.sofia.fmi.simulator.domain.Bot;
+import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
+import bg.uni.sofia.fmi.simulator.domain.Position;
+import bg.uni.sofia.fmi.simulator.domain.World;
+import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
 
 public class Navigation {
+    private ObstacleAvoidance obstacleAvoidance;
+
+    public Navigation(ObstacleAvoidance obstacleAvoidance) {
+        this.obstacleAvoidance = obstacleAvoidance;
+    }
 
     public void patrol(Bot bot, World world) {
+
+        if (bot.getState() != BotState.PATROLLING) {
+            return;
+        }
+
+        // avoid obstacles (currently dummy)
+        obstacleAvoidance.avoid(bot, world);
+
         // simple movement for now
         bot.move();
     }
@@ -11,7 +30,8 @@ public class Navigation {
 
         ChargingStation station = findNearestStation(bot, world);
 
-        if (station == null) return;
+        if (station == null)
+            return;
 
         moveTowards(bot, station.getLocation());
     }
@@ -37,7 +57,7 @@ public class Navigation {
         return best;
     }
 
-    private void moveTowards(Bot bot, Position target) {
+    public void moveTowards(Bot bot, Position target) {
 
         Position p = bot.getPosition();
 
@@ -48,7 +68,8 @@ public class Navigation {
 
         double length = Math.sqrt(dx * dx + dy * dy);
 
-        if (length == 0) return;
+        if (length == 0)
+            return;
 
         p.setX(p.getX() + step * dx / length);
         p.setY(p.getY() + step * dy / length);

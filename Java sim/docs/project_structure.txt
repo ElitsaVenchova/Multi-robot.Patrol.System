@@ -145,6 +145,22 @@ The simulation environment is extended with infrastructure entities such as char
 
 Charging stations are explicitly positioned in a two-dimensional space, allowing controlled experiments on spatial resource allocation, while robot detection remains constrained to a one-dimensional perimeter projection.
 
+Detection is encapsulated within sensor modules, allowing robots to query the environment locally based on their sensing capabilities, supporting both sequential and parallel execution models.
+
+	The behavioral architecture of the robots is structured into modular components separating decision-making, navigation, sensing, and actuation.
+
+	Navigation is implemented as a dedicated module responsible for movement and path execution, while object detection and locomotion are encapsulated within the robot entity as hardware-level functionalities.
+
+	Obstacle and collision avoidance are introduced as a separate module, currently implemented as a placeholder to enable future extensions without affecting the system architecture.
+
+	Task planning is realized using a simplified behavior-based approach, enabling dynamic switching between patrol and energy management behaviors.
+
+	Energy management is handled through a threshold-based model that triggers charging behavior when battery levels fall below a predefined limit.
+
+	Safe wandering behavior is not included in the current implementation, as it is not essential for the evaluated patrol scenarios.
+	
+Robot behavior is modeled through a finite state abstraction, where each robot transitions between patrolling, charging, and error states based on energy levels and environmental conditions.
+
 
 ----------------------------------------------------------------------------------------
 //[TODO] Да се направи по-реалистично зареждане
@@ -155,8 +171,10 @@ Charging stations are explicitly positioned in a two-dimensional space, allowing
 // TODO: attack weakest defended area
 // [TODO] Да има леко произвилно джижение. Произволността може би да е конфигурация
 // [TODO] Да се оправи във всяка реализация Patrol.execute
-
-👉 robot charging behavior (VERY strong)
-👉 or add station failure dynamics (stochastic)
+// [TODO] Това трябва да е по-сложно. Трябва да се отчита какво е правил.
+        // Да се сложи по едно извикване за всяко дейсвие + консумация по подразбиране, напр. 0.01.
+		
+👉 or add station/bot failure dynamics (stochastic)
+👉 move patrol strategies into Navigation (or Behavior layer)
 
 // Дали е по-добре лидара и батерията да са отделни конфигурации в YAML и как да се задават, за да може да има различни ботове с различни лидари (мощност и цена)

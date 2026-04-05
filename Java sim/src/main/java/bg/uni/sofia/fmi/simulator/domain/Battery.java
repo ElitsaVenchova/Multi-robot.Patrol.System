@@ -9,22 +9,30 @@ public class Battery {
         this.currentLevel = capacity;
     }
 
-    //[TODO] Да се направи по-реалистична консумация
+    // [TODO] Да се направи по-реалистична консумация
     public void consume(double consumptionRate) {
         currentLevel -= consumptionRate;
         if (currentLevel < 0)
             currentLevel = 0;
     }
 
-    //[TODO] Да се направи по-реалистично зареждане
-    public void recharge(double amount) {
+    // [TODO] Да се направи по-реалистично зареждане
+    public void charge(double amount) {
         currentLevel += amount;
         if (currentLevel > capacity)
             currentLevel = capacity;
     }
 
+    public int estimateTimeToFull(double chargeRate) {
+        return (int) ((capacity - currentLevel) / chargeRate);
+    }
+
     public boolean isEmpty() {
         return currentLevel <= 0;
+    }
+
+    public boolean isFull() {
+        return currentLevel >= capacity;
     }
 
     public double getCurrentLevel() {
