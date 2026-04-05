@@ -17,6 +17,7 @@ import bg.uni.sofia.fmi.simulator.domain.Lidar;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
+import bg.uni.sofia.fmi.simulator.planning.EnergyManager;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 /**
@@ -33,7 +34,7 @@ public class DomainFactory {
         World world = new World(perimeter);
 
         // Robots
-        List<Bot> bots = createBots(config.getRobots(), world);
+        List<Bot> bots = createBots(config.getRobots(), world, config.getSimulation().getChargeThreshold());
         world.addBots(bots);
 
         // Charging stations
@@ -44,7 +45,7 @@ public class DomainFactory {
         return world;
     }
 
-    public static List<Bot> createBots(List<RobotConfig> robotConfigs, World world) {
+    public static List<Bot> createBots(List<RobotConfig> robotConfigs, World world, double energyThreshold) {
 
         List<Bot> bots = new ArrayList<>();
         RobotModelLoader loader = new RobotModelLoader();
@@ -54,14 +55,14 @@ public class DomainFactory {
             RobotModelConfig model = loader.load(config.getModel());
 
             for (int i = 0; i < config.getCount(); i++) {
-                bots.add(createBot(model, world));
+                bots.add(createBot(model, world, energyThreshold));
             }
         }
 
         return bots;
     }
 
-    private static Bot createBot(RobotModelConfig model, World world) {
+    private static Bot createBot(RobotModelConfig model, World world, double energyThreshold) {
         // [TODO] Позицията може да се задава в конфигурацията или да се генерира
         // на базата на броя ботове и размера на периметъра, за да се избегне струпване
         Position position = new Position(
@@ -72,13 +73,15 @@ public class DomainFactory {
         Lidar lidar = new Lidar(model.getLidarRange(), model.getBatteryConsumptionRate());
         RobotType type;
 
+        EnergyManager energyManager = new EnergyManager(energyThreshold);
+
         try {
             type = RobotType.valueOf(model.getType().toUpperCase());
         } catch (Exception e) {
             throw new RuntimeException("Invalid robot type: " + model.getType());
         }
         return new Bot(position, battery, lidar, model.getMaxSpeed(), type, model.getName(), model.getFailureProbability(),
-                model.getPrice(), model.getBatteryConsumptionRate());
+                model.getPrice(), model.getBatteryConsumptionRate(), energyManager);
     }
 
     public static List<ChargingStation> createStations(

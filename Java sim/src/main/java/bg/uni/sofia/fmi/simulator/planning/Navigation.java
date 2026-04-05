@@ -57,6 +57,10 @@ public class Navigation {
         return best;
     }
 
+    public void moveForward(Bot bot) {
+        bot.move();
+    }
+
     public void moveTowards(Bot bot, Position target) {
 
         Position p = bot.getPosition();

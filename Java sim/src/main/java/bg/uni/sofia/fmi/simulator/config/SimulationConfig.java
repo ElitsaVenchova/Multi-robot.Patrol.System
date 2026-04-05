@@ -57,6 +57,7 @@ public class SimulationConfig {
         private int duration;
         private int perimeterSize;
         private Long seed;
+        private double chargeThreshold;
 
         public int getDuration() {
             return duration;
@@ -80,6 +81,14 @@ public class SimulationConfig {
 
         public void setSeed(Long seed) {
             this.seed = seed;
+        }
+
+        public double getChargeThreshold() {
+            return chargeThreshold;
+        }
+
+        public void setChargeThreshold(double chargeThreshold) {
+            this.chargeThreshold = chargeThreshold;
         }
     }
 }
