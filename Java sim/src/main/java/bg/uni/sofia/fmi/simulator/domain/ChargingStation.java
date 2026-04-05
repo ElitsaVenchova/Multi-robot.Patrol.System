@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import bg.uni.sofia.fmi.simulator.domain.enums.ChargingStationStatus;
+import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 
 public class ChargingStation {
 
@@ -14,6 +15,7 @@ public class ChargingStation {
     private double failureProbability;
     private Position location;
 
+    private long id; // за да може да се идентифицира станцията при нужда, напр. за логване
     private ChargingStationStatus status;
     private Queue<Bot> queue = new LinkedList<>();
 
@@ -31,6 +33,7 @@ public class ChargingStation {
         this.failureProbability = failureProbability;
         this.location = location;
 
+        this.id = IdGenerator.nextId();
         this.status = ChargingStationStatus.AVAILABLE;
     }
 
@@ -108,6 +111,7 @@ public class ChargingStation {
         } else {
             status = ChargingStationStatus.AVAILABLE;
         }
+        System.out.println("ChargingStation " + id + " status: " + status + " queue size: " + queue.size());
     }
 
     public boolean isAvailable() {

@@ -3,6 +3,7 @@ package bg.uni.sofia.fmi.simulator.domain;
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import bg.uni.sofia.fmi.simulator.planning.BehaviorModule;
+import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 //[TODO] Да се добави секция, която се охранява
@@ -16,6 +17,7 @@ public class Bot {
     private double price;
     private double batteryConsumptionRate;
 
+    private long id; // за да може да се идентифицира бота при нужда, напр. за логване
     private Position position;
     private BehaviorModule behavior;
     private BotState state;
@@ -34,11 +36,11 @@ public class Bot {
         this.price = price;
         this.batteryConsumptionRate = batteryConsumptionRate;
 
+        this.id = IdGenerator.nextId();
         this.state = BotState.PATROLLING;
     }
 
     public void update(World world, int currentTime) {
-        System.out.println("Bot " + position + " state: " + state);
         // 1. Decision making (planning)
         behavior.update(this, world, currentTime);
 
@@ -58,6 +60,7 @@ public class Bot {
         if (state == BotState.CHARGING) {
             battery.charge(currentStation.getPower()); // you implement simple version
         }
+        System.out.println("Bot " + id + " at " + position + " state: " + state);
     }
 
     // [TODO] Да има леко произвилно джижение. Произволността може би да е
