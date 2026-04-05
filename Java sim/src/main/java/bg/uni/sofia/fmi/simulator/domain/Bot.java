@@ -49,7 +49,7 @@ public class Bot {
 
         // 3. Energy handling
         // [TODO] Това трябва да е по-сложно. Трябва да се отчита какво е правил.
-        // Най-добре е да се сложи по едно извикване за всяко дейсвие + консумация по подразбиране, напр. 0.01.
+        // Да се сложи по едно извикване за всяко дейсвие + консумация по подразбиране, напр. 0.01.
         if (state != BotState.CHARGING) {
             battery.consume(this.maxSpeed * this.batteryConsumptionRate);
             battery.consume(this.lidar.getBatteryConsumptionRate());
