@@ -1,6 +1,7 @@
 package bg.uni.sofia.fmi.simulator.config;
 
-// This class performs basic validation on the loaded config to ensure required fields are present and have valid values.
+// Клас за валидация на конфигурацията спрямо очакваната структура и изисквания
+// [TODO] да се обновят накрая
 public class SchemaValidator {
     public static void validate(SimulationConfig config) {
 

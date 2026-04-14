@@ -1,8 +1,10 @@
 package bg.uni.sofia.fmi.simulator.domain;
 
+// Клас, представляващ батерията на робота
 public class Battery {
-    private double capacity;
-    private double currentLevel;
+    private double capacity; // максимален капацитет на батерията
+
+    private double currentLevel; // текущо ниво на батерията
 
     public Battery(double capacity) {
         this.capacity = capacity;

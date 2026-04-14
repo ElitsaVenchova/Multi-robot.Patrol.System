@@ -20,61 +20,49 @@ import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import bg.uni.sofia.fmi.simulator.planning.EnergyManager;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
-/**
- * Factory class responsible for creating domain objects based on the simulation
- * configuration.
- * - building World
- * - creating Bots based on RobotConfig
- */
+//Фабрика за създаване на домейн обекти (Bot, ChargingStation, World) от конфигурацията.
 public class DomainFactory {
-
     public static World createWorld(SimulationConfig config) {
-
+        // Създаване на света от конфигурацията
         double perimeter = config.getSimulation().getPerimeterSize();
         World world = new World(perimeter);
-
-        // Robots
+        // Ботове
         List<Bot> bots = createBots(config.getRobots(), world, config.getSimulation().getChargeThreshold());
         world.addBots(bots);
-
-        // Charging stations
+        // Зарядни станции
         List<ChargingStation> stations = createStations(config.getChargingStations(), world);
-
         world.addChargingStations(stations);
 
         return world;
     }
-
+    // Създаване на ботове от конфигурацията
     public static List<Bot> createBots(List<RobotConfig> robotConfigs, World world, double energyThreshold) {
-
         List<Bot> bots = new ArrayList<>();
         RobotModelLoader loader = new RobotModelLoader();
-
+        
         for (RobotConfig config : robotConfigs) {
-
             RobotModelConfig model = loader.load(config.getModel());
-
             for (int i = 0; i < config.getCount(); i++) {
                 bots.add(createBot(model, world, energyThreshold));
             }
         }
-
         return bots;
     }
-
+    //Създаване на бот от конфигурацията
     private static Bot createBot(RobotModelConfig model, World world, double energyThreshold) {
+        // Начална позиция на робота
         // [TODO] Позицията може да се задава в конфигурацията или да се генерира
         // на базата на броя ботове и размера на периметъра, за да се избегне струпване
         Position position = new Position(
                 RandomProvider.nextDouble() * world.getPerimeter().getSize());
-
+        // Батерията на бота
         Battery battery = new Battery(model.getBatteryCapacity());
-
+        // Лидарът на бота
         Lidar lidar = new Lidar(model.getLidarRange(), model.getBatteryConsumptionRate());
         RobotType type;
-
+        // Модул за управление на енергията, който ще се използва от поведението на бота
         EnergyManager energyManager = new EnergyManager(energyThreshold);
-
+        // Опит за конвертиране на типа на бота от конфигурацията към enum. Ако е невалиден, хвърляме грешка.
         try {
             type = RobotType.valueOf(model.getType().toUpperCase());
         } catch (Exception e) {
@@ -83,23 +71,20 @@ public class DomainFactory {
         return new Bot(position, battery, lidar, model.getMaxSpeed(), type, model.getName(), model.getFailureProbability(),
                 model.getPrice(), model.getBatteryConsumptionRate(), energyManager);
     }
-
+    // Създаване на зарядни станции от конфигурацията
     public static List<ChargingStation> createStations(
             List<ChargingStationConfig> configs,
             World world) {
-
         List<ChargingStation> stations = new ArrayList<>();
         ChargingStationModelLoader loader = new ChargingStationModelLoader();
-
         for (ChargingStationConfig config : configs) {
-
             ChargingStationModelConfig model = loader.load(config.getModel());
-
+            // Проверка дали позицията на станцията е в рамките на периметъра
             if (config.getX() < 0 || config.getX() > world.getPerimeter().getSize()) {
                 throw new RuntimeException(
                         "Station X out of bounds. x=" + config.getX() + ", perimeter=" + world.getPerimeter());
             }
-
+            // Създаване на позиция за станцията
             Position position = new Position(
                     config.getX(),
                     config.getY(),
@@ -114,7 +99,6 @@ public class DomainFactory {
                     model.getFailureProbability(),
                     position));
         }
-
         return stations;
     }
 }

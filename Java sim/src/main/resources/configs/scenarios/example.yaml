@@ -21,9 +21,9 @@ chargingStations:
     y: 2.0
 
 patrol:
-  type: RingPatrol
+  model: RingPatrol
   robotsPerSection: 2
 
 attackModel:
-  type: PoissonAttack
+  model: PoissonAttack
   lambda: 0.3

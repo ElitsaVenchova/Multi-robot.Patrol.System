@@ -18,71 +18,61 @@ public class SimpleBehaviorController implements BehaviorModule {
 
     @Override
     public void update(Bot bot, World world, int currentTime) {
-
+        // Ако батерията е празна, ботът влиза в грешка и не може да прави нищо друго
         if (bot.getBattery().isEmpty()) {
             bot.setState(BotState.ERROR);
             return;
         }
 
-        // =========================
-        // CHARGING
-        // =========================
+        // Ако ботът е в процес на зареждане
         if (bot.getState() == BotState.CHARGING) {
+            // Зареждаме бота
             bot.getCurrentStation().chargeBot(bot);
 
+            // Ако батерията е пълна, освобождаваме слота и се връщаме към патрулиране
             if (bot.getBattery().isFull()) {
-
                 bot.getCurrentStation().releaseSlot(bot);
                 bot.setCurrentStation(null);
 
                 bot.setState(BotState.PATROLLING);
             }
-
             return;
         }
 
-        // =========================
-        // LOW ENERGY
-        // =========================
+        // Ако батерията е ниска
         if (energyManager.isLow(bot)) {
-
+            // Избираме най-добрата станция за зареждане
             StationSelector selector = new StationSelector();
-
             ChargingStation best = selector.selectBestStation(bot, world);
-
+            // Ако няма налична станция
             if (best == null) {
-                bot.setState(BotState.ERROR);
+                // Ще потърси отново на следващия ход
+                // bot.setState(BotState.ERROR);
                 return;
             }
-
+            bot.setState(BotState.GOING_TO_CHARGE);
             bot.setTargetStation(best);
 
             double dist = distance(bot.getPosition(), best.getLocation());
-
             if (dist < 1.0) {
-
                 boolean canCharge = best.tryOccupySlot(bot);
-
                 if (canCharge) {
+                    bot.setTargetStation(null);
                     bot.setCurrentStation(best);
                     bot.setState(BotState.CHARGING);
                 } else {
-                    // wait in queue
+                    // чака, [TODO] но ако е заето повече от 5 цикъла, търси друга станция
                     bot.setState(BotState.GOING_TO_CHARGE);
                 }
-
                 return;
             }
-
-            bot.setState(BotState.GOING_TO_CHARGE);
-            navigation.moveTowards(bot, best.getLocation());
+            // Насочваме се към станцията
+            navigation.goToChargingStation(bot, world);
 
             return;
         }
 
-        // =========================
-        // PATROL
-        // =========================
+        // Ако батерията е достатъчна, продължаваме с патрулирането
         bot.setState(BotState.PATROLLING);
         navigation.patrol(bot, world);
     }

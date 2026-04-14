@@ -171,8 +171,6 @@ Robot behavior is modeled through a finite state abstraction, where each robot t
 // TODO: attack weakest defended area
 // [TODO] Да има леко произвилно джижение. Произволността може би да е конфигурация
 // [TODO] Да се оправи във всяка реализация Patrol.execute
-// [TODO] Това трябва да е по-сложно. Трябва да се отчита какво е правил.
-        // Да се сложи по едно извикване за всяко дейсвие + консумация по подразбиране, напр. 0.01.
 		
 👉 or add station/bot failure dynamics (stochastic)
 👉 move patrol strategies into Navigation (or Behavior layer)

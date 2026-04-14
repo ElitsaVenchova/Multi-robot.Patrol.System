@@ -1,13 +1,8 @@
 package bg.uni.sofia.fmi.simulator.engine;
 
-import java.util.List;
-
 import bg.uni.sofia.fmi.simulator.config.ConfigLoader;
 import bg.uni.sofia.fmi.simulator.config.SimulationConfig;
-import bg.uni.sofia.fmi.simulator.domain.Attack;
-import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.World;
-import bg.uni.sofia.fmi.simulator.domain.enums.AttackStatus;
 import bg.uni.sofia.fmi.simulator.factory.DomainFactory;
 import bg.uni.sofia.fmi.simulator.factory.StrategyFactory;
 import bg.uni.sofia.fmi.simulator.results.MetricsCalculator;
@@ -18,49 +13,54 @@ import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 /**
- * Main class responsible for running the simulation.
- * - loads configuration
- * - creates world and strategies
- * - runs the simulation loop
- * - collects and prints results
+ * Основен клас за стартиране на симулацията.
+ * - зарежда конфигурацията
+ * - създава света и стратегиите
+ * - изпълнява цикъла на симулацията
+ * - събира и отпечатва резултатите
  */
 public class SimulationRunner {
-
+    // Метод за стартиране на симулацията с даден конфигурационен файл
+    // (за бързо стартиране от main метода)
     public void run(String configPath) {
-        // 1️⃣ Load config
+        // Зареждане на конфигурацията
         ConfigLoader loader = new ConfigLoader();
         SimulationConfig config = loader.load(configPath);
+        World world = run(config);
+
+        // След края на симулацията, събиране и отпечатване на резултатите
+        printResults(world);
+    }
+
+    // Метод за стартиране на симулацията и връщане на резултатите
+    // (за експерименти и анализ)
+    public SimulationMetrics runWithResult(SimulationConfig config) {
+        World world = run(config);
+        // Събиране на резултатите
+        MetricsCalculator calculator = new MetricsCalculator();
+        return calculator.calculate(world);
+    }
+
+    // Метод за стартиране на симулацията и връщане на света (за по-нататъшен анализ)
+    private World run(SimulationConfig config) {
         RandomProvider.setSeed(config.getSimulation().getSeed());
-
-        // 2️⃣ Create world
+        // Създаване на света от конфигурацията
         World world = DomainFactory.createWorld(config);
-
-        // 3️⃣ Create strategies
+        // Създаване на стратегиите за патрулиране и генериране на атаки
         PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
-        LoadModel attackModel = StrategyFactory.createAttack(config.getAttackModel());
-
-        // 4️⃣ Initialize strategies
         patrolModel.initialize(world.getBots(), world);
-
+        LoadModel attackModel = StrategyFactory.createAttack(config.getAttackModel());
+        world.setAttackModel(attackModel);
+        world.setPatrolModel(patrolModel);
+        // Основен цикъл на симулацията
         int duration = config.getSimulation().getDuration();
-
-        // 5️⃣ Simulation loop
         for (int t = 0; t < duration; t++) {
+            // Обновяване на състоянието на света
+            // (движение на атаки, проверка за интерцептирани и пропуснати атаки и т.н.)
+            world.tick(t);
 
-            // Generate attacks
-            List<Attack> newAttacks = attackModel.generateAttacks(world, t);
-            for (Attack attack : newAttacks) {
-                world.addAttack(attack);
-            }
-
-            // Execute patrol behavior
-            for (Bot bot : world.getBots()) {
-                bot.update(world, t);
-            }
-
-            // Update world (movement + detection)
-            world.tick(t); // ✅
-
+            // [TODO] Това може да се оптимизира, като се прави паралелно за всеки бот и за
+            // засичането на атаки
             // Parallerization (optional)
             // SimulationMode mode = SimulationMode.PARALLEL;
             // ParallelExecutor executor = new
@@ -76,19 +76,11 @@ public class SimulationRunner {
             // executor.shutdown();
         }
 
-        // 6️⃣ Results
-        printResults(world);
+        return world;
     }
 
+    // Метод за събиране и отпечатване на резултатите от симулацията
     private void printResults(World world) {
-        for (Attack attack : world.getAttacks()) {
-            if (attack.getStatus() == AttackStatus.INTERCEPTED) {
-                attack.intercept();
-            } else if (attack.getStatus() == AttackStatus.MISSED) {
-                attack.miss();
-            }
-        }
-
         MetricsCalculator calculator = new MetricsCalculator();
         SimulationMetrics metrics = calculator.calculate(world);
 
@@ -102,32 +94,5 @@ public class SimulationRunner {
         // Export
         ResultExporter exporter = new ResultExporter();
         exporter.export(metrics);
-    }
-
-    public SimulationMetrics runWithResult(SimulationConfig config) {
-        RandomProvider.setSeed(config.getSimulation().getSeed());
-
-        World world = DomainFactory.createWorld(config);
-
-        PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
-        LoadModel attackModel = StrategyFactory.createAttack(config.getAttackModel());
-
-        patrolModel.initialize(world.getBots(), world);
-
-        int duration = config.getSimulation().getDuration();
-
-        for (int t = 0; t < duration; t++) {
-
-            List<Attack> newAttacks = attackModel.generateAttacks(world, t);
-            for (Attack attack : newAttacks) {
-                world.addAttack(attack);
-            }
-
-            patrolModel.execute(world.getBots(), world);
-            world.tick(t);
-        }
-
-        MetricsCalculator calculator = new MetricsCalculator();
-        return calculator.calculate(world);
     }
 }

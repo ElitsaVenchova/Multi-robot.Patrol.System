@@ -1,5 +1,6 @@
 package bg.uni.sofia.fmi.simulator.domain;
 
+// Клас, представляващ позиция в 3D пространство
 public class Position {
     private double x;
     private double y;

@@ -1,11 +1,9 @@
 package bg.uni.sofia.fmi.simulator.config;
 
+// Конфигурация за зарядните станции
 public class ChargingStationConfig {
-
-    
-
-    private String model;
-
+    private String model; //името на модела на зарядната станция
+    //позицията може да се задава в конфигурацията, но може и да се [TODO] генерира на базата на броя станции и размера на света
     private double x;
     private double y;
 

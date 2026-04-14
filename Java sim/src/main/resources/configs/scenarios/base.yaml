@@ -7,6 +7,15 @@ robots:
   - model: turtlebot_pi
     count: 5
 
+chargingStations:
+  - model: fast_station
+    x: 10.0
+    y: 5.0
+
+  - model: cheap_station
+    x: 50.0
+    y: 2.0
+
 patrol:
   type: RingPatrol
   robotsPerSection: 2

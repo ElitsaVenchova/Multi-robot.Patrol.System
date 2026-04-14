@@ -1,16 +1,16 @@
 package bg.uni.sofia.fmi.simulator.config;
 
+// Конфигурация за патрулирането
 public class PatrolConfig {
+    private String model; //името на вида патрулиране, което може да се използва за избор на конкретна реализация на патрулирането в симулацията
+    private Integer robotsPerSection; // опционално за някои видове патрулиране, като [TODO] асинхронно
 
-    private String type;
-    private Integer robotsPerSection;
-
-    public String getType() {
-        return type;
+    public String getModel() {
+        return model;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setModel(String type) {
+        this.model = type;
     }
 
     public Integer getRobotsPerSection() {

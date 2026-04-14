@@ -1,6 +1,5 @@
 name: Drone
 batteryCapacity: 60.0
-batteryConsumption: 0.3
 lidarRange: 10.0
 maxSpeed: 2.5
 price: 1000

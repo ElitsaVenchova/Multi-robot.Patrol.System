@@ -6,22 +6,21 @@ import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.ChargingStationStatus;
 
+// Клас, отговорен за избора на най-добрата станция за зареждане, когато батерията е ниска
 public class StationSelector {
-
     public ChargingStation selectBestStation(Bot bot, World world) {
-
         ChargingStation best = null;
         double bestScore = Double.MAX_VALUE;
 
         for (ChargingStation s : world.getChargingStations()) {
-
+            // Ако станцията е в грешка, я пропускаме
             if (s.getStatus() == ChargingStationStatus.FAIL) {
                 continue;
             }
 
+            // Изчисляваме "оценка" за станцията, която включва разстояние и време за чакане
             double distance = distance(bot.getPosition(), s.getLocation());
             int waitTime = s.getEstimatedWaitTime();
-
             double score = distance + waitTime;
 
             if (score < bestScore) {

@@ -1,7 +1,6 @@
 package bg.uni.sofia.fmi.simulator.planning;
 
 import bg.uni.sofia.fmi.simulator.domain.Bot;
-import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
@@ -14,55 +13,24 @@ public class Navigation {
     }
 
     public void patrol(Bot bot, World world) {
-
         if (bot.getState() != BotState.PATROLLING) {
             return;
         }
 
-        // avoid obstacles (currently dummy)
+        // Избягване на препятствия (засега празно)
         obstacleAvoidance.avoid(bot, world);
 
-        // simple movement for now
+        // Просто се движим напред. [TODO] Това трябва да е по-сложно, с някаква логика от PatrolModel
         bot.move();
     }
 
+    // Предвижване към зарядна станция
     public void goToChargingStation(Bot bot, World world) {
-
-        ChargingStation station = findNearestStation(bot, world);
-
-        if (station == null)
-            return;
-
-        moveTowards(bot, station.getLocation());
+        moveTowards(bot, bot.getTargetStation().getLocation());
     }
 
-    private ChargingStation findNearestStation(Bot bot, World world) {
-
-        ChargingStation best = null;
-        double bestDist = Double.MAX_VALUE;
-
-        for (ChargingStation s : world.getChargingStations()) {
-
-            double dx = bot.getPosition().getX() - s.getLocation().getX();
-            double dy = bot.getPosition().getY() - s.getLocation().getY();
-
-            double dist = Math.sqrt(dx * dx + dy * dy);
-
-            if (dist < bestDist) {
-                bestDist = dist;
-                best = s;
-            }
-        }
-
-        return best;
-    }
-
-    public void moveForward(Bot bot) {
-        bot.move();
-    }
-
+    // [TODO] Да се разгледа какво прави и дали мясото му е тук.
     public void moveTowards(Bot bot, Position target) {
-
         Position p = bot.getPosition();
 
         double dx = target.getX() - p.getX();

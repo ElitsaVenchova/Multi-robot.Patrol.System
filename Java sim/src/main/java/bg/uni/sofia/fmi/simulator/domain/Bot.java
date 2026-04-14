@@ -10,21 +10,22 @@ import bg.uni.sofia.fmi.simulator.planning.SimpleBehaviorController;
 import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
+// Клас, представляващ бот в симулацията
 //[TODO] Да се добави секция, която се охранява
 public class Bot {
-    private Battery battery;
-    private Lidar lidar;
-    private double maxSpeed;
-    private RobotType type;
-    private String name;
-    private double failureProbability;
-    private double price;
-    private double batteryConsumptionRate;
+    private String name; // име на бота, за по-лесно логване и идентификация
+    private Battery battery; // батерията на бота
+    private Lidar lidar; // сензор за засичане на атаки
+    private double maxSpeed; // максимална скорост на бота
+    private RobotType type; // тип на бота (наземен, дрон и т.н.)
+    private double failureProbability; // вероятност за повреда при всяко действие
+    private double price; // цена на бота, за оптимизация на разходите
+    private double batteryConsumptionRate; // колко батерия консумира на единица движение
 
     private long id; // за да може да се идентифицира бота при нужда, напр. за логване
-    private Position position;
-    private BehaviorModule behavior;
-    private BotState state;
+    private Position position; // позицията на бота
+    private BehaviorModule behavior; // модул за вземане на решения и планиране на действията
+    private BotState state; // текущо състояние на бота (патрулиране, зареждане, грешка и т.н.)
     private ChargingStation currentStation; // за да знаем на коя станция се зареждаме
     private ChargingStation targetStation; // за да знаем към коя станция се насочваме
 
@@ -45,31 +46,26 @@ public class Bot {
         this.state = BotState.PATROLLING;
     }
 
+    // Основен метод за обновяване на състоянието на бота при всяка итерация на симулацията
     public void update(World world, int currentTime) {
-        // 1. Decision making (planning)
+        // Взима се решение за действие и се определя състоянието
         behavior.update(this, world, currentTime);
 
-        // 2. Detection only if active
+        // Сканиране с лидара за нарушители
         if (state != BotState.ERROR && state != BotState.CHARGING) {
             lidar.detect(position, world.getPerimeter(), currentTime);
-        }
-
-        // 3. Energy handling
-        // [TODO] Това трябва да е по-сложно. Трябва да се отчита какво е правил.
-        // Да се сложи по едно извикване за всяко дейсвие + консумация по подразбиране, напр. 0.01.
-        if (state != BotState.CHARGING) {
-            battery.consume(this.maxSpeed * this.batteryConsumptionRate);
             battery.consume(this.lidar.getBatteryConsumptionRate());
         }
 
-        if (state == BotState.CHARGING) {
-            battery.charge(currentStation.getPower()); // you implement simple version
-        }
+        // консумация по подразбиране, за да може да се изтощава с времето дори да не прави нищо
+        battery.consume(0.01); 
+
         System.out.println("Bot " + id + " at " + position + " state: " + state);
     }
 
-    // [TODO] Да има леко произвилно джижение. Произволността може би да е
-    // конфигурация
+    // Движение на бота
+    // [TODO] Да има леко произвилно джижение. Произволността може би да е конфигурация
+    // [TODO] Някак това движение е безцелно. По-скоро трябва да има параметър с посоки
     public void move() {
         if (!battery.isEmpty()) {
             // always move along perimeter (x)

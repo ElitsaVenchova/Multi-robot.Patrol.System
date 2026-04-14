@@ -1,17 +1,17 @@
 package bg.uni.sofia.fmi.simulator.config;
 
-// configuration for an attack, e.g. type and parameters such as lambda for exponential distribution of
+// Конфигурация за атаките
 public class AttackConfig {
-    private String type;
-    private Double lambda; // optional depending on type
-    private Integer duration; // optional
+    private String model; //името на вида атака
+    private Double lambda; // опционално за атаки с експоненциално разпределение
+    private Integer duration; // опционално за атаки с фиксирана продължителност. Ако не е зададено, атаката продължава до засичането й.
 
-    public String getType() {
-        return type;
+    public String getModel() {
+        return model;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setModel(String type) {
+        this.model = type;
     }
 
     public Double getLambda() {

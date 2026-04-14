@@ -1,22 +1,18 @@
 package bg.uni.sofia.fmi.simulator.config;
 
+// Конфигурация за моделите на роботите
 public class RobotModelConfig {
 
-    private String name;
+    private String name; //името на модела
     private String type; // "GROUND" or "DRONE"
+    private double batteryCapacity; // в единици, например mAh
+    private double batteryConsumptionRate; // в единици на консумация, например mAh/s, когато роботът е активен
+    private double maxSpeed; // в метри/сек, максимална скорост
+    private double price; // в единици, например USD
+    private double failureProbability; // вероятност за неуспех
 
-    private double batteryCapacity;
-    private double batteryConsumption;
-
-    private double lidarRange;
-    private double lidarBatteryConsumptionRate;
-
-    private double maxSpeed;
-    private double price;
-    private double failureProbability;
-    private double batteryConsumptionRate;
-
-    // Getters & Setters
+    private double lidarRange; // в метри, обхват на LiDAR сензора
+    private double lidarBatteryConsumptionRate; // в единици на консумация, например mAh/s, когато LiDAR е активен
 
     public double getBatteryCapacity() {
         return batteryCapacity;
@@ -24,14 +20,6 @@ public class RobotModelConfig {
 
     public void setBatteryCapacity(double batteryCapacity) {
         this.batteryCapacity = batteryCapacity;
-    }
-
-    public double getBatteryConsumption() {
-        return batteryConsumption;
-    }
-
-    public void setBatteryConsumption(double batteryConsumption) {
-        this.batteryConsumption = batteryConsumption;
     }
 
     public double getLidarRange() {

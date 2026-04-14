@@ -4,6 +4,8 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 
+// Зарядните станции могат да имат различни модели с различни характеристики, които се дефинират в отделни YAML файлове.
+// Този клас зарежда конфигурацията за даден модел на зарядна станция от съответния YAML файл.
 public class ChargingStationModelLoader {
 
     public ChargingStationModelConfig load(String modelName) {

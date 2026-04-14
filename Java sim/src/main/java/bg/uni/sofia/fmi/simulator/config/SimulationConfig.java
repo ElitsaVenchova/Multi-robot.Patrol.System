@@ -2,15 +2,18 @@ package bg.uni.sofia.fmi.simulator.config;
 
 import java.util.List;
 
-//This represents the main YAML structure. 
-// It will be used by SnakeYAML to map the YAML file to Java objects.
+// Главен клас за конфигурацията на симулацията, 
+// който обединява всички други конфигурационни класове.
 public class SimulationConfig {
-
+    // основни параметри на симулацията като продължителност, размер на периметъра, 
+    // сийд за генератора на случайни числа и прагове за зареждане
     private SimulationParameters simulation;
+    // конфигурация за различните видове роботи, които ще участват в симулацията
     private List<RobotConfig> robots;
+    // конфигурация за зарядните станции в симулацията
     private List<ChargingStationConfig> chargingStations;
-    private PatrolConfig patrolModel;
-    private AttackConfig attackModel;
+    private PatrolConfig patrolModel; // конфигурация за патрулирането
+    private AttackConfig attackModel; // конфигурация за атаките
 
     public void setSimulation(SimulationParameters simulation) {
         this.simulation = simulation;
