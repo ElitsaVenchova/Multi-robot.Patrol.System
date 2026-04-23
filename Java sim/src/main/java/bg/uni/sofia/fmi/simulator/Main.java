@@ -4,7 +4,7 @@ import bg.uni.sofia.fmi.simulator.engine.SimulationRunner;
 import bg.uni.sofia.fmi.simulator.experiments.ExperimentRunner;
 
 public class Main {
-    private static String configPath = "configs/scenarios/example.yaml";
+    private static String configPath = "configs/scenarios/single_robot.yaml";//example.yaml
     private static String execMode = "R"; // R - run simulation, E - run experiments
     public static void main(String[] args) {
         // Четене на аргументи от командния ред за конфигурационния файл и режима на изпълнение

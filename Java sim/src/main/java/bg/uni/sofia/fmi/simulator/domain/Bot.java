@@ -7,6 +7,7 @@ import bg.uni.sofia.fmi.simulator.planning.EnergyManager;
 import bg.uni.sofia.fmi.simulator.planning.Navigation;
 import bg.uni.sofia.fmi.simulator.planning.ObstacleAvoidance;
 import bg.uni.sofia.fmi.simulator.planning.SimpleBehaviorController;
+import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
 import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
@@ -28,9 +29,11 @@ public class Bot {
     private BotState state; // текущо състояние на бота (патрулиране, зареждане, грешка и т.н.)
     private ChargingStation currentStation; // за да знаем на коя станция се зареждаме
     private ChargingStation targetStation; // за да знаем към коя станция се насочваме
+    private double direction = 1.0; // +1 or -1 за посока на движение по периметъра
 
     public Bot(Position position, Battery battery, Lidar lidar, double speed, RobotType type, String name,
-            double failureProbability, double price, double batteryConsumptionRate, EnergyManager energyManager) {
+            double failureProbability, double price, double batteryConsumptionRate, EnergyManager energyManager,
+            PatrolModel patrolModel) {
         this.position = position;
         this.battery = battery;
         this.lidar = lidar;
@@ -42,7 +45,7 @@ public class Bot {
         this.batteryConsumptionRate = batteryConsumptionRate;
 
         this.id = IdGenerator.nextId();
-        this.behavior = new SimpleBehaviorController(energyManager, new Navigation(new ObstacleAvoidance()));
+        this.behavior = new SimpleBehaviorController(energyManager, patrolModel);
         this.state = BotState.PATROLLING;
     }
 
@@ -65,26 +68,34 @@ public class Bot {
 
     // Движение на бота
     // [TODO] Да има леко произвилно джижение. Произволността може би да е конфигурация
-    // [TODO] Някак това движение е безцелно. По-скоро трябва да има параметър с посоки
-    public void move() {
-        if (!battery.isEmpty()) {
-            // always move along perimeter (x)
-            position.setX(position.getX() + maxSpeed);
+    // [TODO] Размерът на периметъра да се смени с размера на охраняемата секция
+    public void move(Perimeter perimeter) {
+        if (battery.isEmpty()) return;
 
-            if (type == RobotType.GROUND) {
-                // 2D only
-                position.setZ(0.0);
+        double newX = position.getX() + direction * maxSpeed;
 
-                // optional: small Y variation
-                position.setY(position.getY());
+        // 🔥 Clamp to perimeter
+        double max = perimeter.getSize();
 
-            } else if (type == RobotType.DRONE) {
-                // 3D movement
-                position.setY(position.getY() + randomOffset());
-                position.setZ(position.getZ() + randomOffset());
-            }
-            battery.consume(this.maxSpeed * this.batteryConsumptionRate);
+        if (newX > max) {
+            newX = max;
+            direction = -1; // bounce back
+        } else if (newX < 0) {
+            newX = 0;
+            direction = 1;
         }
+
+        position.setX(newX);
+
+        // keep other axes simple
+        if (type == RobotType.GROUND) {
+            position.setZ(0.0);
+        } else if (type == RobotType.DRONE) {
+            position.setY(position.getY() + randomOffset());
+            position.setZ(position.getZ() + randomOffset());
+        }
+
+        battery.consume(maxSpeed * batteryConsumptionRate);
     }
 
 
@@ -132,6 +143,10 @@ public class Bot {
         this.state = state;
     }
 
+    public BehaviorModule getBehavior() {
+        return behavior;
+    }
+
     public void setBehavior(BehaviorModule behavior) {
         this.behavior = behavior;
     }
@@ -150,5 +165,9 @@ public class Bot {
 
     public void setTargetStation(ChargingStation targetStation) {
         this.targetStation = targetStation;
+    }
+
+    public void setDirection(double direction) {
+        this.direction = direction;
     }
 }

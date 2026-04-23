@@ -20,14 +20,16 @@ public class CounterPhasePatrol implements PatrolModel {
     }
 
     @Override
-    public void execute(List<Bot> bots, World world) {
+    public void execute(List<Bot> bots, World world, Navigation navigation) {
         for (int i = 0; i < bots.size(); i++) {
             Bot bot = bots.get(i);
 
             if (i % 2 == 0) {
-                bot.move(); // forward
+                bot.setDirection(-1);
+                bot.getBehavior().getNavigation().moveTowards(bot, world); // forward
             } else {
-                bot.move(); // backward (simplified)
+                bot.setDirection(1);
+                bot.getBehavior().getNavigation().moveTowards(bot, world); // backward (simplified)
             }
         }
     }

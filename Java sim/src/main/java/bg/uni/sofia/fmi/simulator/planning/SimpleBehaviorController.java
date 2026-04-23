@@ -5,15 +5,15 @@ import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
+import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
 
 public class SimpleBehaviorController implements BehaviorModule {
     private EnergyManager energyManager;
-    private Navigation navigation;
+    private PatrolModel patrolModel;
 
-    public SimpleBehaviorController(EnergyManager energyManager,
-            Navigation navigation) {
+    public SimpleBehaviorController(EnergyManager energyManager,PatrolModel patrolModel) {
         this.energyManager = energyManager;
-        this.navigation = navigation;
+        this.patrolModel = patrolModel;
     }
 
     @Override

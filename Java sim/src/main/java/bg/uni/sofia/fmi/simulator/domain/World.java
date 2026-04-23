@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
-import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
 
 // Клас, представляващ света на симулацията, 
 // който съдържа всички роботи, атаки, зарядни станции и периметър
 public class World {
     private LoadModel attackModel; // Модел за генериране на атаки
-    private PatrolModel patrolModel; // Модел за патрулиране
     private List<Bot> bots = new ArrayList<>(); // Списък с всички роботи
     private List<Attack> attacks = new ArrayList<>(); // Списък с всички активни атаки
     private List<ChargingStation> chargingStations; // Списък с всички зарядни станции
@@ -42,7 +40,6 @@ public class World {
         for (Attack attack : newAttacks) {
             this.addAttack(attack);
         }
-        patrolModel.execute(this.getBots(), this);
 
         // Обновяване на състоянието на всеки бот
         for (Bot bot : this.getBots()) {
@@ -68,9 +65,5 @@ public class World {
 
     public void setAttackModel(LoadModel attackModel) {
         this.attackModel = attackModel;
-    }
-
-    public void setPatrolModel(PatrolModel patrolModel) {
-        this.patrolModel = patrolModel;
     }
 }

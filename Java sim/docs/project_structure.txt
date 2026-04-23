@@ -163,6 +163,14 @@ Robot behavior is modeled through a finite state abstraction, where each robot t
 
 
 ----------------------------------------------------------------------------------------
+Current flow is actually GOOD:
+World
+ → Bot.update
+   → Behavior (decides state)
+     → Strategy (decides where)
+       → Navigation (how to move)
+         → Bot (executes)
+----------------------------------------------------------------------------------------
 //[TODO] Да се направи по-реалистично зареждане
 //[TODO] Да се направи по-реалистична консумация
 //[TODO] Да се добави секция, която се охранява

@@ -44,14 +44,13 @@ public class SimulationRunner {
     // Метод за стартиране на симулацията и връщане на света (за по-нататъшен анализ)
     private World run(SimulationConfig config) {
         RandomProvider.setSeed(config.getSimulation().getSeed());
-        // Създаване на света от конфигурацията
-        World world = DomainFactory.createWorld(config);
-        // Създаване на стратегиите за патрулиране и генериране на атаки
+        // Създаване на стратегиите за патрулиране
         PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
-        patrolModel.initialize(world.getBots(), world);
+        // Създаване на света от конфигурацията
+        World world = DomainFactory.createWorld(config, patrolModel);
+        //генериране на атаки
         LoadModel attackModel = StrategyFactory.createAttack(config.getAttackModel());
         world.setAttackModel(attackModel);
-        world.setPatrolModel(patrolModel);
         // Основен цикъл на симулацията
         int duration = config.getSimulation().getDuration();
         for (int t = 0; t < duration; t++) {

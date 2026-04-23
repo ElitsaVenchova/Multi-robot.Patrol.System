@@ -1,0 +1,26 @@
+simulation:
+  duration: 3600
+  perimeterSize: 100
+  seed: 42
+  chargeThreshold: 20.0
+
+robots:
+  - model: turtlebot_pi
+    count: 1
+
+chargingStations:
+  - model: fast_station
+    x: 10.0
+    y: 5.0
+
+  - model: cheap_station
+    x: 50.0
+    y: 2.0
+
+patrol:
+  model: RingPatrol
+  robotsPerSection: 2
+
+attackModel:
+  model: PoissonAttack
+  lambda: 0.3
