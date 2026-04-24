@@ -8,12 +8,10 @@ import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.planning.Navigation;
 
 public class RingPatrol implements PatrolModel {
-    private Navigation navigation;
     private Integer robotsPerSection;
 
     public RingPatrol(PatrolConfig config) {
         this.robotsPerSection = config.getRobotsPerSection();
-        this.navigation = new Navigation(new bg.uni.sofia.fmi.simulator.planning.ObstacleAvoidance());
     }
 
     @Override
@@ -22,7 +20,7 @@ public class RingPatrol implements PatrolModel {
     }
 
     @Override
-    public void execute(List<Bot> bots, World world) {
+    public void execute(List<Bot> bots, World world, Navigation navigation) {
         for (Bot bot : bots) {
             bot.getBehavior().getNavigation().moveTowards(bot, world); // simple continuous movement
         }

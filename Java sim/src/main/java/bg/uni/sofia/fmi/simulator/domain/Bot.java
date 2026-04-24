@@ -3,11 +3,6 @@ package bg.uni.sofia.fmi.simulator.domain;
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import bg.uni.sofia.fmi.simulator.planning.BehaviorModule;
-import bg.uni.sofia.fmi.simulator.planning.EnergyManager;
-import bg.uni.sofia.fmi.simulator.planning.Navigation;
-import bg.uni.sofia.fmi.simulator.planning.ObstacleAvoidance;
-import bg.uni.sofia.fmi.simulator.planning.SimpleBehaviorController;
-import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
 import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
@@ -32,8 +27,7 @@ public class Bot {
     private double direction = 1.0; // +1 or -1 за посока на движение по периметъра
 
     public Bot(Position position, Battery battery, Lidar lidar, double speed, RobotType type, String name,
-            double failureProbability, double price, double batteryConsumptionRate, EnergyManager energyManager,
-            PatrolModel patrolModel) {
+            double failureProbability, double price, double batteryConsumptionRate, BehaviorModule behavior) {
         this.position = position;
         this.battery = battery;
         this.lidar = lidar;
@@ -45,7 +39,7 @@ public class Bot {
         this.batteryConsumptionRate = batteryConsumptionRate;
 
         this.id = IdGenerator.nextId();
-        this.behavior = new SimpleBehaviorController(energyManager, patrolModel);
+        this.behavior = behavior;
         this.state = BotState.PATROLLING;
     }
 

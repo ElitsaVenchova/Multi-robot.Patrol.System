@@ -4,12 +4,9 @@ import bg.uni.sofia.fmi.simulator.config.ConfigLoader;
 import bg.uni.sofia.fmi.simulator.config.SimulationConfig;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.factory.DomainFactory;
-import bg.uni.sofia.fmi.simulator.factory.StrategyFactory;
 import bg.uni.sofia.fmi.simulator.results.MetricsCalculator;
 import bg.uni.sofia.fmi.simulator.results.ResultExporter;
 import bg.uni.sofia.fmi.simulator.results.SimulationMetrics;
-import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
-import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 /**
@@ -43,14 +40,9 @@ public class SimulationRunner {
 
     // Метод за стартиране на симулацията и връщане на света (за по-нататъшен анализ)
     private World run(SimulationConfig config) {
-        RandomProvider.setSeed(config.getSimulation().getSeed());
-        // Създаване на стратегиите за патрулиране
-        PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
+        RandomProvider.setSeed(config.getSimulation().getSeed()); 
         // Създаване на света от конфигурацията
-        World world = DomainFactory.createWorld(config, patrolModel);
-        //генериране на атаки
-        LoadModel attackModel = StrategyFactory.createAttack(config.getAttackModel());
-        world.setAttackModel(attackModel);
+        World world = DomainFactory.createWorld(config);
         // Основен цикъл на симулацията
         int duration = config.getSimulation().getDuration();
         for (int t = 0; t < duration; t++) {
