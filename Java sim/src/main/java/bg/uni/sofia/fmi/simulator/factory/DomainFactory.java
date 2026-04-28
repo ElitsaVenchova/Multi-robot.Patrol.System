@@ -19,6 +19,8 @@ import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import bg.uni.sofia.fmi.simulator.planning.BehaviorModule;
 import bg.uni.sofia.fmi.simulator.planning.EnergyManager;
+import bg.uni.sofia.fmi.simulator.planning.Navigation;
+import bg.uni.sofia.fmi.simulator.planning.ObstacleAvoidance;
 import bg.uni.sofia.fmi.simulator.planning.SimpleBehaviorController;
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
@@ -32,7 +34,7 @@ public class DomainFactory {
         World world = new World(perimeter);
         // Създаване на стратегиите за патрулиране
         PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
-        patrolModel.initialize(world.getBots(), world);
+        patrolModel.initialize(world.getBots());
         // Ботове
         List<Bot> bots = createBots(config.getRobots(), world, config.getSimulation().getChargeThreshold(), patrolModel);
         world.addBots(bots);
@@ -77,9 +79,11 @@ public class DomainFactory {
         } catch (Exception e) {
             throw new RuntimeException("Invalid robot type: " + model.getType());
         }
-        BehaviorModule behavior = new SimpleBehaviorController(energyManager, patrolModel);
+        ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance();
+        Navigation navigation = new Navigation(obstacleAvoidance);
+        BehaviorModule behavior = new SimpleBehaviorController(energyManager, patrolModel, navigation);
         return new Bot(position, battery, lidar, model.getMaxSpeed(), type, model.getName(), model.getFailureProbability(),
-                model.getPrice(), model.getBatteryConsumptionRate(), behavior);
+                model.getPrice(), model.getBatteryConsumptionRate(), behavior, world);
     }
     // Създаване на зарядни станции от конфигурацията
     public static List<ChargingStation> createStations(

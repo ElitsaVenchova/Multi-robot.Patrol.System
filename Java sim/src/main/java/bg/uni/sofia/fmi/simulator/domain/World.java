@@ -43,7 +43,7 @@ public class World {
 
         // Обновяване на състоянието на всеки бот
         for (Bot bot : this.getBots()) {
-            bot.update(this, currentTime);
+            bot.update(currentTime);
         }
     }
 

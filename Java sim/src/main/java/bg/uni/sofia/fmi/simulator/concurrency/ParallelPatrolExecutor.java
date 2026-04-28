@@ -22,7 +22,8 @@ public class ParallelPatrolExecutor {
         List<Future<?>> futures = new ArrayList<>();
 
         for (Bot bot : bots) {
-            futures.add(executor.submit(bot::move));
+            //[TODO] Да се оправи, че се подава времето
+            futures.add(executor.submit(() -> bot.update(0)));
         }
 
         waitAll(futures);

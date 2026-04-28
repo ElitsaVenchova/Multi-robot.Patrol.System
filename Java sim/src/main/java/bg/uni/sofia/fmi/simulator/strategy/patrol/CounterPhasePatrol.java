@@ -1,10 +1,7 @@
 package bg.uni.sofia.fmi.simulator.strategy.patrol;
 
-import java.util.List;
-
 import bg.uni.sofia.fmi.simulator.config.PatrolConfig;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
-import bg.uni.sofia.fmi.simulator.domain.World;
 
 public class CounterPhasePatrol implements PatrolModel {
 
@@ -15,23 +12,19 @@ public class CounterPhasePatrol implements PatrolModel {
     }
 
     @Override
-    public void initialize(List<Bot> bots, World world) {
+    public void initialize(Bot bot) {
         // assign directions (even/odd)
     }
 
     @Override
-    public void execute(List<Bot> bots, World world, Navigation navigation) {
-        for (int i = 0; i < bots.size(); i++) {
-            Bot bot = bots.get(i);
-
-            if (i % 2 == 0) {
+    public void execute(Bot bot) {
+            if (bot.getId() % 2 == 0) {
                 bot.setDirection(-1);
-                bot.getBehavior().getNavigation().moveTowards(bot, world); // forward
+                bot.getBehavior().getNavigation().moveTowards(bot); // forward
             } else {
                 bot.setDirection(1);
-                bot.getBehavior().getNavigation().moveTowards(bot, world); // backward (simplified)
+                bot.getBehavior().getNavigation().moveTowards(bot); // backward (simplified)
             }
-        }
     }
 
     public Integer getRobotsPerSection() {

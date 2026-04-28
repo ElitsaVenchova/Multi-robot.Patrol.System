@@ -1,15 +1,11 @@
 package bg.uni.sofia.fmi.simulator.strategy.patrol;
 
-import java.util.List;
-
 import bg.uni.sofia.fmi.simulator.domain.Bot;
-import bg.uni.sofia.fmi.simulator.domain.World;
-import bg.uni.sofia.fmi.simulator.planning.Navigation;
 
 public interface PatrolModel {
     //setup (positions, phases)
-    void initialize(List<Bot> bots, World world);
+    void initialize(Bot bot);
     //called every tick
     // [TODO] Да се оправи във всяка реализация
-    void execute(List<Bot> bots, World world, Navigation navigation);
+    void execute(Bot bot);
 }

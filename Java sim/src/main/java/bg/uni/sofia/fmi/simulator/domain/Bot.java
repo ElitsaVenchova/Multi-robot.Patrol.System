@@ -25,9 +25,10 @@ public class Bot {
     private ChargingStation currentStation; // за да знаем на коя станция се зареждаме
     private ChargingStation targetStation; // за да знаем към коя станция се насочваме
     private double direction = 1.0; // +1 or -1 за посока на движение по периметъра
+    private World world; // референция към света, в който се намира бота. В бъдеще ще е света, в който си мисли, че се намира спрямо събраната информация от сензорит/комуникация
 
     public Bot(Position position, Battery battery, Lidar lidar, double speed, RobotType type, String name,
-            double failureProbability, double price, double batteryConsumptionRate, BehaviorModule behavior) {
+            double failureProbability, double price, double batteryConsumptionRate, BehaviorModule behavior, World world) {
         this.position = position;
         this.battery = battery;
         this.lidar = lidar;
@@ -37,6 +38,10 @@ public class Bot {
         this.failureProbability = failureProbability;
         this.price = price;
         this.batteryConsumptionRate = batteryConsumptionRate;
+        this.world = world;
+
+        //[TODO] Инициализация на поведението, ако е необходимо. Може би някои стратегии имат нужда от референция към света или бота, за да се инициализират правилно
+        // patrolModel.initialize(this);
 
         this.id = IdGenerator.nextId();
         this.behavior = behavior;
@@ -44,9 +49,9 @@ public class Bot {
     }
 
     // Основен метод за обновяване на състоянието на бота при всяка итерация на симулацията
-    public void update(World world, int currentTime) {
+    public void update(int currentTime) {
         // Взима се решение за действие и се определя състоянието
-        behavior.update(this, world, currentTime);
+        behavior.update(this, currentTime);
 
         // Сканиране с лидара за нарушители
         if (state != BotState.ERROR && state != BotState.CHARGING) {
@@ -63,13 +68,13 @@ public class Bot {
     // Движение на бота
     // [TODO] Да има леко произвилно джижение. Произволността може би да е конфигурация
     // [TODO] Размерът на периметъра да се смени с размера на охраняемата секция
-    public void move(Perimeter perimeter) {
+    public void move() {
         if (battery.isEmpty()) return;
 
         double newX = position.getX() + direction * maxSpeed;
 
         // 🔥 Clamp to perimeter
-        double max = perimeter.getSize();
+        double max = world.getPerimeter().getSize();
 
         if (newX > max) {
             newX = max;
@@ -163,5 +168,13 @@ public class Bot {
 
     public void setDirection(double direction) {
         this.direction = direction;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public World getWorld() {
+        return world;
     }
 }

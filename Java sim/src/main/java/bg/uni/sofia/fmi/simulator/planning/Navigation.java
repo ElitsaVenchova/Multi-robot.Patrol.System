@@ -1,7 +1,6 @@
 package bg.uni.sofia.fmi.simulator.planning;
 
 import bg.uni.sofia.fmi.simulator.domain.Bot;
-import bg.uni.sofia.fmi.simulator.domain.World;
 
 public class Navigation {
     private ObstacleAvoidance obstacleAvoidance;
@@ -11,15 +10,15 @@ public class Navigation {
     }
 
     // Предвижване към зарядна станция
-    public void goToChargingStation(Bot bot, World world) {
-        moveTowards(bot, world);
+    public void goToChargingStation(Bot bot) {
+        moveTowards(bot);
     }
 
     // Основен метод за движение напред, който може да се използва от различни стратегии
-    public void moveTowards(Bot bot, World world) {
+    public void moveTowards(Bot bot) {
         // Избягване на препятствия (засега празно)
-        obstacleAvoidance.avoid(bot, world);
+        obstacleAvoidance.avoid(bot);
 
-        bot.move(world.getPerimeter());
+        bot.move();
     }
 }
