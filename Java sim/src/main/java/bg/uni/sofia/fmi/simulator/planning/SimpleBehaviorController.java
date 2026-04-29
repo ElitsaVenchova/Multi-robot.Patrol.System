@@ -52,13 +52,13 @@ public class SimpleBehaviorController implements BehaviorModule {
                 return;
             }
             bot.setState(BotState.GOING_TO_CHARGE);
-            bot.setTargetStation(best);
+            bot.setGoalPosition(best.getLocation());
 
-            double dist = distance(bot.getPosition(), best.getLocation());
+            double dist = distance(bot.getPosition(), bot.getGoalPosition());
             if (dist < 1.0) {
                 boolean canCharge = best.tryOccupySlot(bot);
                 if (canCharge) {
-                    bot.setTargetStation(null);
+                    bot.setGoalPosition(null);
                     bot.setCurrentStation(best);
                     bot.setState(BotState.CHARGING);
                 } else {

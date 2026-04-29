@@ -23,8 +23,7 @@ public class Bot {
     private BehaviorModule behavior; // модул за вземане на решения и планиране на действията
     private BotState state; // текущо състояние на бота (патрулиране, зареждане, грешка и т.н.)
     private ChargingStation currentStation; // за да знаем на коя станция се зареждаме
-    private ChargingStation targetStation; // за да знаем към коя станция се насочваме
-    private double direction = 1.0; // +1 or -1 за посока на движение по периметъра
+    private Position goalPosition; // цел (място с атака, зарядна станция и т.н.), към която се движим
     private World world; // референция към света, в който се намира бота. В бъдеще ще е света, в който си мисли, че се намира спрямо събраната информация от сензорит/комуникация
 
     public Bot(Position position, Battery battery, Lidar lidar, double speed, RobotType type, String name,
@@ -68,16 +67,23 @@ public class Bot {
     // Движение на бота
     // [TODO] Да има леко произвилно джижение. Произволността може би да е конфигурация
     // [TODO] Размерът на периметъра да се смени с размера на охраняемата секция
-    public void move() {
+    public void move(Position target) {
         if (battery.isEmpty()) return;
 
-        double newX = position.getX() + direction * maxSpeed;
+        double dx = target.getX() - position.getX();
+        double distance = Math.abs(dx);
 
-        // 🔥 Clamp to perimeter
-        double max = world.getPerimeter().getSize();
+        if (distance < 0.001) return;
 
-        if (newX > max) {
-            newX = max;
+        double step = Math.min(this.maxSpeed, distance);
+        double direction = dx > 0 ? 1 : -1;
+        double newX = position.getX() + direction * step;
+
+        // clamp
+        newX = Math.max(0, Math.min(newX, world.getPerimeter().getSize()));
+
+        if (newX > world.getPerimeter().getSize()) {
+            newX = world.getPerimeter().getSize();
             direction = -1; // bounce back
         } else if (newX < 0) {
             newX = 0;
@@ -94,7 +100,7 @@ public class Bot {
             position.setZ(position.getZ() + randomOffset());
         }
 
-        battery.consume(maxSpeed * batteryConsumptionRate);
+        battery.consume(step * batteryConsumptionRate);
     }
 
 
@@ -158,16 +164,12 @@ public class Bot {
         this.currentStation = chargintStation;
     }
 
-    public ChargingStation getTargetStation() {
-        return targetStation;
+    public Position getGoalPosition() {
+        return goalPosition;
     }
 
-    public void setTargetStation(ChargingStation targetStation) {
-        this.targetStation = targetStation;
-    }
-
-    public void setDirection(double direction) {
-        this.direction = direction;
+    public void setGoalPosition(Position goalPosition) {
+        this.goalPosition = goalPosition;
     }
 
     public long getId() {

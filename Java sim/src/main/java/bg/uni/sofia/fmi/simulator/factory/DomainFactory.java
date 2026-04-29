@@ -34,7 +34,6 @@ public class DomainFactory {
         World world = new World(perimeter);
         // Създаване на стратегиите за патрулиране
         PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
-        patrolModel.initialize(world.getBots());
         // Ботове
         List<Bot> bots = createBots(config.getRobots(), world, config.getSimulation().getChargeThreshold(), patrolModel);
         world.addBots(bots);
