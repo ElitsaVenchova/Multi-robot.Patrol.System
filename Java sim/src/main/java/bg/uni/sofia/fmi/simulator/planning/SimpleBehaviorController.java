@@ -54,8 +54,8 @@ public class SimpleBehaviorController implements BehaviorModule {
             bot.setState(BotState.GOING_TO_CHARGE);
             bot.setGoalPosition(best.getLocation());
 
-            double dist = distance(bot.getPosition(), bot.getGoalPosition());
-            if (dist < 1.0) {
+            double distX = distanceX(bot.getPosition(), bot.getGoalPosition());
+            if (distX < 1.0) {
                 boolean canCharge = best.tryOccupySlot(bot);
                 if (canCharge) {
                     bot.setGoalPosition(null);
@@ -78,10 +78,8 @@ public class SimpleBehaviorController implements BehaviorModule {
         patrolModel.execute(bot);
     }
 
-    private double distance(Position a, Position b) {
-        double dx = a.getX() - b.getX();
-        double dy = a.getY() - b.getY();
-        return Math.sqrt(dx * dx + dy * dy);
+    private double distanceX(Position a, Position b) {
+        return Math.abs(a.getX() - b.getX());
     }
 
     @Override
