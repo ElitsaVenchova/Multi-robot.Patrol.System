@@ -4,7 +4,7 @@ package bg.uni.sofia.fmi.simulator.results;
 // This is a data container (DTO) for results.
 public class SimulationMetrics {
 
-    private int totalAttacks;
+    private long totalAttacks;
     private int interceptedAttacks;
     private int missedAttacks;
     private double successRate;
@@ -14,11 +14,11 @@ public class SimulationMetrics {
 
     // Getters & Setters
 
-    public int getTotalAttacks() {
+    public long getTotalAttacks() {
         return totalAttacks;
     }
 
-    public void setTotalAttacks(int totalAttacks) {
+    public void setTotalAttacks(long totalAttacks) {
         this.totalAttacks = totalAttacks;
     }
 

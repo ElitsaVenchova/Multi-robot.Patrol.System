@@ -1,10 +1,12 @@
 package bg.uni.sofia.fmi.simulator.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 // Периметърът, който трябва да се патрулира, разделен на клетки, в които могат да се появяват атаки
-public class Perimeter {
+public class Perimeter { 
     private int size; // дължина на периметъра, разделен на клетки
     private List<Attack>[] cells; // масив от списъци, където всяка клетка съдържа атаките, които се намират в нея
 
@@ -41,6 +43,12 @@ public class Perimeter {
         }
 
         return result;
+    }
+    
+    // Получаване на всички атаки в периметъра (използва се от Калкулатора на метрики)
+    public Stream<Attack> streamAttacks() {
+        return Arrays.stream(cells)
+                    .flatMap(List::stream);
     }
 
     // Помощен метод за ограничаване на индекса в рамките на размера на периметъра

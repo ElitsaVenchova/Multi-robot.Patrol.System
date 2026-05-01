@@ -11,14 +11,14 @@ public class MetricsCalculator {
 
         SimulationMetrics metrics = new SimulationMetrics();
 
-        int total = world.getAttacks().size();
+        long total = world.getPerimeter().streamAttacks().count();
         int intercepted = 0;
         int missed = 0;
 
         double totalDetectionTime = 0.0;
         int detectedCount = 0;
 
-        for (Attack attack : world.getAttacks()) {
+        for (Attack attack : world.getPerimeter().streamAttacks().toList()) {
 
             if (attack.getStatus() == AttackStatus.INTERCEPTED) {
                 intercepted++;
