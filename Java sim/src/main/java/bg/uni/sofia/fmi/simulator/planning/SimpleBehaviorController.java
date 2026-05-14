@@ -21,6 +21,10 @@ public class SimpleBehaviorController implements BehaviorModule {
     public void update(Bot bot, int currentTime) {
         // Ако батерията е празна, ботът влиза в грешка и не може да прави нищо друго
         if (bot.getBattery().isEmpty()) {
+            // System.out.println("Bot " + bot.getId() + " at " + bot.getPosition() + " state: " + bot.getState());
+            // System.out.println("Bot " + bot.getId() + " battery level: " + bot.getBattery().getCurrentLevel());
+            // System.out.println("Bot " + bot.getId() + " goal position: " + bot.getGoalPosition());
+            // System.out.println("Bot " + bot.getId() + " current station: " + (bot.getCurrentStation() != null ? bot.getCurrentStation().getName() : "None"));
             bot.setState(BotState.ERROR);
             return;
         }

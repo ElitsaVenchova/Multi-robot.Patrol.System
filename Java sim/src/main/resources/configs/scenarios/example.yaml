@@ -1,6 +1,6 @@
 simulation:
-  duration: 3600
-  perimeterSize: 100
+  duration: 7200
+  perimeterSize: 1000
   seed: 42
   chargeThreshold: 20.0
 
@@ -13,11 +13,11 @@ robots:
 
 chargingStations:
   - model: fast_station
-    x: 10.0
+    x: 20.0
     y: 5.0
 
   - model: cheap_station
-    x: 50.0
+    x: 60.0
     y: 2.0
 
 patrol:

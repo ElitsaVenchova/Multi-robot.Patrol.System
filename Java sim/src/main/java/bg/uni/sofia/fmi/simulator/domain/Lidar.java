@@ -26,10 +26,11 @@ public class Lidar {
     //Открива атаки в радиус от позицията на робота и ги прекъсва, ако са активни
     public void detect(Position botPosition, Perimeter perimeter, int currentTime) {
         List<Attack> nearby = perimeter.getNearbyAttacks(botPosition.getX(), range);
-
         for (Attack attack : nearby) {
             synchronized (attack) {
-                if (attack.getStatus() == AttackStatus.ACTIVE) {
+                if (attack.isActive() && attack.isExpired(currentTime)) {
+                    attack.intercept(currentTime);
+                } else if (attack.isActive()) {
                     attack.intercept(currentTime);
                 }
             }

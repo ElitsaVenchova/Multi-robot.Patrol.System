@@ -12,6 +12,12 @@ public class Navigation {
 
     // Предвижване към зарядна станция
     public void goToChargingStation(Bot bot) {
+        // if(bot.getId() == 5) {
+        //     System.out.println("Bot " + bot.getId() + " at " + bot.getPosition() + " state: " + bot.getState());
+        //     System.out.println("Bot " + bot.getId() + " battery level: " + bot.getBattery().getCurrentLevel());
+        //     System.out.println("Bot " + bot.getId() + " goal position: " + bot.getGoalPosition());
+        //     System.out.println("Bot " + bot.getId() + " current station: " + (bot.getCurrentStation() != null ? bot.getCurrentStation().getName() : "None"));
+        // }
         moveTowards(bot, bot.getGoalPosition());
     }
 

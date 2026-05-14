@@ -51,7 +51,7 @@ public class StrategyFactory {
                 return new PoissonAttack(config.getLambda(),
                         config.getDuration());
             case "UniformAttack":
-                return new UniformAttack(config.getDuration());
+                return new UniformAttack(config.getLambda(), config.getDuration());
             case "VulnerabilityAttack":
                 return new VulnerabilityAttack(config.getDuration());
             default:

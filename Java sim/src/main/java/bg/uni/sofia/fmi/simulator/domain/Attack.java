@@ -27,7 +27,7 @@ public class Attack {
         if (duration == null)
             return false;
 
-        return (currentTime - creationTime) > duration;
+        return (currentTime - creationTime) >= duration;
     }
 
     public void intercept(int time) {
@@ -41,10 +41,6 @@ public class Attack {
 
     public AttackStatus getStatus() {
         return status;
-    }
-
-    public void intercept() {
-        this.status = AttackStatus.INTERCEPTED;
     }
 
     public void miss() {

@@ -161,6 +161,14 @@ Detection is encapsulated within sensor modules, allowing robots to query the en
 	
 Robot behavior is modeled through a finite state abstraction, where each robot transitions between patrolling, charging, and error states based on energy levels and environmental conditions.
 
+At each tick, an attack happens with probability p.
+If it happens, its position is uniformly random on the perimeter.
+
+UniformAttack:
+    - each tick, generate an attack with probability attackProbability
+    - if an attack is generated, choose its position uniformly in [0, perimeterSize)
+    - attack has configured duration
+	
 
 ----------------------------------------------------------------------------------------
 Current flow is actually GOOD:
