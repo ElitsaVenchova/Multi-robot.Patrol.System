@@ -9,9 +9,10 @@ import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 // който съдържа всички роботи, атаки, зарядни станции и периметър
 public class World {
     private LoadModel attackModel; // Модел за генериране на атаки
-    private List<Bot> bots = new ArrayList<>(); // Списък с всички роботи
+
+    private final List<Bot> bots = new ArrayList<>(); // Списък с всички роботи
     private List<ChargingStation> chargingStations; // Списък с всички зарядни станции
-    private Perimeter perimeter; // Периметърът, който трябва да се патрулира
+    private final Perimeter perimeter; // Периметърът, който трябва да се патрулира
 
     public World(double perimeter) {
         this.perimeter = new Perimeter((int) perimeter);
@@ -28,7 +29,6 @@ public class World {
     // Метод, който се извиква при всяка итерация на симулацията, за да се обнови състоянието на света
     // - генериране на нови атаки според модела
     // - обновяване на състоянието на всеки бот (движение, сканиране, зареждане и т.н.)
-    // [TODO] patrolModel.execute и bot.update май се препокриват
     public void tick(int currentTime) {
         // Генериране на нови атаки според модела
         List<Attack> newAttacks = attackModel.generateAttacks(this, currentTime);

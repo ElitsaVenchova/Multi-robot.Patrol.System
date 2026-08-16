@@ -49,22 +49,6 @@ public class SimulationRunner {
             // Обновяване на състоянието на света
             // (движение на атаки, проверка за интерцептирани и пропуснати атаки и т.н.)
             world.tick(t);
-
-            // [TODO] Това може да се оптимизира, като се прави паралелно за всеки бот и за
-            // засичането на атаки
-            // Parallerization (optional)
-            // SimulationMode mode = SimulationMode.PARALLEL;
-            // ParallelExecutor executor = new
-            // ParallelExecutor(Runtime.getRuntime().availableProcessors());
-            // ParallelPatrolExecutor patrolExecutor = new
-            // ParallelPatrolExecutor(executor.getExecutor());
-            // ParallelDetectionEngine detectionEngine = new
-            // ParallelDetectionEngine(executor.getExecutor());
-            // // Movement
-            // patrolExecutor.execute(world.getBots());
-            // // Detection
-            // detectionEngine.detect(world.getBots(), world.getAttacks(), t);
-            // executor.shutdown();
         }
 
         return world;

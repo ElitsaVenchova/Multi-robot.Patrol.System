@@ -22,8 +22,9 @@ public class Bot {
     private BehaviorModule behavior; // модул за вземане на решения и планиране на действията
     private BotState state; // текущо състояние на бота (патрулиране, зареждане, грешка и т.н.)
 
-    public Bot(Position position, Battery battery, Lidar lidar, double speed, RobotType type, String name,
+    public Bot(long id, Position position, Battery battery, Lidar lidar, double speed, RobotType type, String name,
             double failureProbability, double price, double batteryConsumptionRate, BehaviorModule behavior) {
+        this.id = id;
         this.position = position;
         this.battery = battery;
         this.lidar = lidar;
@@ -34,10 +35,6 @@ public class Bot {
         this.price = price;
         this.batteryConsumptionRate = batteryConsumptionRate;
 
-        //[TODO] Инициализация на поведението, ако е необходимо. Може би някои стратегии имат нужда от референция към света или бота, за да се инициализират правилно
-        // patrolModel.initialize(this);
-
-        this.id = IdGenerator.nextId();
         this.behavior = behavior;
         this.state = BotState.PATROLLING;
     }

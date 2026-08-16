@@ -24,7 +24,6 @@ import bg.uni.sofia.fmi.simulator.planning.ObstacleAvoidance;
 import bg.uni.sofia.fmi.simulator.planning.SimpleBehaviorController;
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
-import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 //Фабрика за създаване на домейн обекти (Bot, ChargingStation, World) от конфигурацията.
 public class DomainFactory {
@@ -52,18 +51,16 @@ public class DomainFactory {
         
         for (RobotConfig config : robotConfigs) {
             RobotModelConfig model = loader.load(config.getModel());
-            for (int i = 0; i < config.getCount(); i++) {
-                bots.add(createBot(model, world, energyThreshold, patrolModel));
+            for (int id = 0; id < config.getCount(); id++) {
+                bots.add(createBot(id, model, world, energyThreshold, patrolModel));
             }
         }
         return bots;
     }
     //Създаване на бот от конфигурацията
-    private static Bot createBot(RobotModelConfig model, World world, double energyThreshold, PatrolModel patrolModel) {
-        // Начална позиция на робота
-        // [TODO] Позицията може да се задава в конфигурацията или да се генерира
-        // на базата на броя ботове и размера на периметъра, за да се избегне струпване
-        Position position = new Position(RandomProvider.nextDouble() * world.getPerimeter().getSize());
+    private static Bot createBot(int id, RobotModelConfig model, World world, double energyThreshold, PatrolModel patrolModel) {
+        // Начална позиция на робота. Наредени са подред спрямо позицията си
+        Position position = new Position(id);
         // Батерията на бота
         Battery battery = new Battery(model.getBatteryCapacity());
         // Лидарът на бота
@@ -80,7 +77,7 @@ public class DomainFactory {
         ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance();
         Navigation navigation = new Navigation(obstacleAvoidance);
         BehaviorModule behavior = new SimpleBehaviorController(energyManager, patrolModel, navigation, world);
-        return new Bot(position, battery, lidar, model.getMaxSpeed(), type, model.getName(), model.getFailureProbability(),
+        return new Bot(id, position, battery, lidar, model.getMaxSpeed(), type, model.getName(), model.getFailureProbability(),
                 model.getPrice(), model.getBatteryConsumptionRate(), behavior);
     }
     // Създаване на зарядни станции от конфигурацията

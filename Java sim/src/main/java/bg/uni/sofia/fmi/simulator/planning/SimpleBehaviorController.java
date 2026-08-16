@@ -56,7 +56,7 @@ public class SimpleBehaviorController implements BehaviorModule {
     private void lowBattery(Bot bot) {
         // Избираме най-добрата станция за зареждане
         StationSelector selector = new StationSelector();
-        ChargingStation best = selector.selectBestStation(bot);
+        ChargingStation best = selector.selectBestStation(bot, world.getChargingStations());
         // Ако няма налична станция
         if (best == null) {
             // Ще потърси отново на следващия ход
@@ -69,7 +69,6 @@ public class SimpleBehaviorController implements BehaviorModule {
         if (distX < 1.0) {
             boolean canCharge = best.tryOccupySlot(bot);
             if (canCharge) {
-                goalPosition = null;
                 currentStation = best;
                 bot.setState(BotState.CHARGING);
             } else {
