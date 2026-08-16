@@ -1,8 +1,9 @@
-package bg.uni.sofia.fmi.simulator.planning;
+package bg.uni.sofia.fmi.simulator.behavior.navigation;
 
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
+import bg.uni.sofia.fmi.simulator.behavior.collisionAvoidance.ObstacleAvoidance;
 
 public class Navigation {
     private final ObstacleAvoidance obstacleAvoidance;

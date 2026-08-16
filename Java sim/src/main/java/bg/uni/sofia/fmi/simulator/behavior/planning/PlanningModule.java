@@ -1,10 +1,11 @@
-package bg.uni.sofia.fmi.simulator.planning;
+package bg.uni.sofia.fmi.simulator.behavior.planning;
 
 import bg.uni.sofia.fmi.simulator.domain.Bot;
+import bg.uni.sofia.fmi.simulator.behavior.navigation.Navigation;
 
 // Интерфейс за поведенчески модул, който определя как ботът взема 
 // решения въз основа на текущото състояние на света и времето
-public interface BehaviorModule {
+public interface PlanningModule {
     // Метод за актуализиране на поведението на бота, който се извиква всеки такт на симулацията
     void update(Bot bot, int currentTime);
 

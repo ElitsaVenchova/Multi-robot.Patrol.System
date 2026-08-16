@@ -2,8 +2,8 @@ package bg.uni.sofia.fmi.simulator.domain;
 
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
-import bg.uni.sofia.fmi.simulator.planning.BehaviorModule;
-import bg.uni.sofia.fmi.simulator.util.IdGenerator;
+import bg.uni.sofia.fmi.simulator.behavior.planning.PlanningModule;
+import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolSection;
 
 // Клас, представляващ бот в симулацията
 //[TODO] Да се добави секция, която се охранява
@@ -19,11 +19,11 @@ public class Bot {
 
     private final long id; // за да може да се идентифицира бота при нужда, напр. за логване
     private final Position position; // позицията на бота
-    private BehaviorModule behavior; // модул за вземане на решения и планиране на действията
+    private final PlanningModule planningModule; // модул за вземане на решения и планиране на действията
     private BotState state; // текущо състояние на бота (патрулиране, зареждане, грешка и т.н.)
 
     public Bot(long id, Position position, Battery battery, Lidar lidar, double speed, RobotType type, String name,
-            double failureProbability, double price, double batteryConsumptionRate, BehaviorModule behavior) {
+            double failureProbability, double price, double batteryConsumptionRate, PlanningModule behavior) {
         this.id = id;
         this.position = position;
         this.battery = battery;
@@ -35,14 +35,14 @@ public class Bot {
         this.price = price;
         this.batteryConsumptionRate = batteryConsumptionRate;
 
-        this.behavior = behavior;
+        this.planningModule = behavior;
         this.state = BotState.PATROLLING;
     }
 
     // Основен метод за обновяване на състоянието на бота при всяка итерация на симулацията
     public void update(int currentTime) {
         // Взима се решение за действие и се определя състоянието
-        behavior.update(this, currentTime);
+        planningModule.update(this, currentTime);
 
         // консумация по подразбиране, за да може да се изтощава с времето дори да не прави нищо
         battery.consume(0.01); 
@@ -68,6 +68,26 @@ public class Bot {
         }
 
         battery.consume(distance * batteryConsumptionRate);
+    }
+
+    //Проверява дали робота е в секцията за патрулиране
+    public boolean isInPatrolSection(PatrolSection patrolSection) {
+        if (patrolSection == null) {
+            return false;
+        }
+        double minX = Math.min(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
+        double maxX = Math.max(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
+        return position.getX() >= minX && position.getX() <= maxX;
+    }
+
+    //Връща по-близкия край на секцията за патрулиране
+    public Position getTargetToPatrolSection(PatrolSection patrolSection) {
+        double minX = Math.min(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
+        double maxX = Math.max(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
+
+        // If bot is outside the section, return the closest boundary position
+        double targetX = (position.getX() < minX) ? minX : maxX;
+        return new Position(targetX);
     }
 
     public Position getPosition() {
@@ -110,12 +130,8 @@ public class Bot {
         this.state = state;
     }
 
-    public BehaviorModule getBehavior() {
-        return behavior;
-    }
-
-    public void setBehavior(BehaviorModule behavior) {
-        this.behavior = behavior;
+    public PlanningModule getPlanningModule() {
+        return planningModule;
     }
 
     public long getId() {

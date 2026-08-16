@@ -1,13 +1,15 @@
-package bg.uni.sofia.fmi.simulator.planning;
+package bg.uni.sofia.fmi.simulator.behavior.planning;
 
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
+import bg.uni.sofia.fmi.simulator.behavior.energyManagment.EnergyManager;
+import bg.uni.sofia.fmi.simulator.behavior.navigation.Navigation;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
 
-public class SimpleBehaviorController implements BehaviorModule {
+public class SimplePlanningController implements PlanningModule {
     private final EnergyManager energyManager;
     private final PatrolModel patrolModel;
     private final Navigation navigation;
@@ -15,7 +17,7 @@ public class SimpleBehaviorController implements BehaviorModule {
     private ChargingStation currentStation; // за да знаем на коя станция се зареждаме
     private final World world; // референция към света, в който се намира бота. В бъдеще ще е света, в който си мисли, че се намира спрямо събраната информация от сензорит/комуникация
 
-    public SimpleBehaviorController(EnergyManager energyManager,PatrolModel patrolModel, Navigation navigation, World world) {
+    public SimplePlanningController(EnergyManager energyManager, PatrolModel patrolModel, Navigation navigation, World world) {
         this.energyManager = energyManager;
         this.patrolModel = patrolModel;
         this.navigation = navigation;
@@ -24,6 +26,7 @@ public class SimpleBehaviorController implements BehaviorModule {
 
     @Override
     public void update(Bot bot, int currentTime) {
+        Position goalPosition = null;
         // Ако батерията е празна, ботът влиза в грешка и не може да прави нищо друго
         if (bot.getBattery().isEmpty()) {
 //             System.out.println("Bot " + bot.getId() + " at " + bot.getPosition() + " state: " + bot.getState() + " battery level: " + bot.getBattery().getCurrentLevel() +
@@ -34,11 +37,15 @@ public class SimpleBehaviorController implements BehaviorModule {
             change(bot);
         } else if (energyManager.isLow(bot)) {
             // Ако батерията е ниска
-            lowBattery(bot);
+            goalPosition = lowBattery(bot);
         } else {
             // Ако батерията е достатъчна, продължаваме с патрулирането
             bot.setState(BotState.PATROLLING);
-            patrolModel.execute(bot, world, currentTime);
+            goalPosition = patrolModel.execute(bot, world, currentTime);
+        }
+
+        if(goalPosition != null){
+            navigation.moveTowards(bot, world, goalPosition);
         }
     }
 
@@ -53,14 +60,14 @@ public class SimpleBehaviorController implements BehaviorModule {
         }
     }
 
-    private void lowBattery(Bot bot) {
+    private Position lowBattery(Bot bot) {
         // Избираме най-добрата станция за зареждане
         StationSelector selector = new StationSelector();
         ChargingStation best = selector.selectBestStation(bot, world.getChargingStations());
         // Ако няма налична станция
         if (best == null) {
             // Ще потърси отново на следващия ход
-            return;
+            return null;
         }
         bot.setState(BotState.GOING_TO_CHARGE);
         Position goalPosition = best.getLocation();
@@ -75,9 +82,10 @@ public class SimpleBehaviorController implements BehaviorModule {
                 // чака, [TODO] но ако е заето повече от 5 цикъла, търси друга станция
                 bot.setState(BotState.GOING_TO_CHARGE);
             }
+            return null;
         } else {
             // Насочваме се към станцията
-            navigation.moveTowards(bot, world, goalPosition);
+            return goalPosition;
         }
     }
 

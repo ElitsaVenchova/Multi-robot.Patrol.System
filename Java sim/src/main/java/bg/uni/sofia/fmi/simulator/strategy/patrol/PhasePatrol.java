@@ -8,11 +8,11 @@ import bg.uni.sofia.fmi.simulator.domain.World;
 //Патрулиране по секции като всички роботи се движат едновременно в една или друга посока като
 // така поддържат еднакво разстояние помежду си
 public class PhasePatrol implements PatrolModel {
+    private PatrolSection patrolSection;//секцията, в която ще патрулира робота
 
 
-    public PhasePatrol(PatrolConfig config) {
+    public PhasePatrol(PatrolConfig config) { }
 
-    }
 
     @Override
     public void initialize(Bot bot, World world) {
@@ -20,21 +20,14 @@ public class PhasePatrol implements PatrolModel {
     }
 
     @Override
-    public void execute(Bot bot, World world, int currentTime) {
-        double step = bot.getMaxSpeed();
-        double perimeter = world.getPerimeter().getSize();
-        double targetX;
-
-        if (bot.getId() % 2 == 0) {
-            targetX = bot.getPosition().getX() - step;
-        } else {
-            targetX = bot.getPosition().getX() + step;
+    public Position execute(Bot bot, World world, int currentTime) {
+        //Ако стратегията няма секция за патрулиране, инициализираме патрулирането
+        if(patrolSection == null) {
+            initialize(bot, world);
         }
-        targetX = Math.max(0, Math.min(targetX, perimeter));
-        Position target = new Position(targetX);
-        
-        bot.getBehavior().getNavigation().moveTowards(bot, target);
 
         PatrolModel.scan(bot, world, currentTime);
+
+        return null;
     }
 }

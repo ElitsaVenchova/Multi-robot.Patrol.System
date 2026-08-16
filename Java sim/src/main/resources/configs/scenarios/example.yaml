@@ -21,8 +21,10 @@ chargingStations:
     y: 5.0
 
 patrol:
-  model: RingPatrol
-  robotsPerSection: 2
+  model: AsyncPatrol
+  randomness: 0.5
+  deviationProbability: 0.10
+  maxDeviationDuration: 20
 
 attackModel:
   model: PoissonAttack

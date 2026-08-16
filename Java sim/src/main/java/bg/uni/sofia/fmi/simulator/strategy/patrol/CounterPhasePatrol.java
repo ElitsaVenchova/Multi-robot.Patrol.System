@@ -7,12 +7,9 @@ import bg.uni.sofia.fmi.simulator.domain.World;
 
 //Патрулиране по секции с противоположни фази за всеки 2 съседни робота
 public class CounterPhasePatrol implements PatrolModel {
+    private PatrolSection patrolSection;//секцията, в която ще патрулира робота
 
-    private Integer robotsPerSection;
-
-    public CounterPhasePatrol(PatrolConfig config) {
-        this.robotsPerSection = config.getRobotsPerSection();
-    }
+    public CounterPhasePatrol(PatrolConfig config) { }
 
     @Override
     public void initialize(Bot bot, World world) {
@@ -20,29 +17,14 @@ public class CounterPhasePatrol implements PatrolModel {
     }
 
     @Override
-    public void execute(Bot bot, World world, int currentTime) {
-        double step = bot.getMaxSpeed();
-        double perimeter = world.getPerimeter().getSize();
-        double targetX;
-
-        if (bot.getId() % 2 == 0) {
-            targetX = bot.getPosition().getX() - step;
-        } else {
-            targetX = bot.getPosition().getX() + step;
+    public Position execute(Bot bot, World world, int currentTime) {
+        //Ако стратегията няма секция за патрулиране, инициализираме патрулирането
+        if(patrolSection == null) {
+            initialize(bot, world);
         }
-        targetX = Math.max(0, Math.min(targetX, perimeter));
-        Position target = new Position(targetX);
-        
-        bot.getBehavior().getNavigation().moveTowards(bot, target);
 
         PatrolModel.scan(bot, world, currentTime);
-    }
 
-    public Integer getRobotsPerSection() {
-        return robotsPerSection;
-    }
-
-    public void setRobotsPerSection(Integer robotsPerSection) {
-        this.robotsPerSection = robotsPerSection;
+        return null;
     }
 }

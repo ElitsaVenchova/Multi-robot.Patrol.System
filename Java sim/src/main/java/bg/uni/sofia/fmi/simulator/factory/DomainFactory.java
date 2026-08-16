@@ -17,11 +17,11 @@ import bg.uni.sofia.fmi.simulator.domain.Lidar;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
-import bg.uni.sofia.fmi.simulator.planning.BehaviorModule;
-import bg.uni.sofia.fmi.simulator.planning.EnergyManager;
-import bg.uni.sofia.fmi.simulator.planning.Navigation;
-import bg.uni.sofia.fmi.simulator.planning.ObstacleAvoidance;
-import bg.uni.sofia.fmi.simulator.planning.SimpleBehaviorController;
+import bg.uni.sofia.fmi.simulator.behavior.planning.PlanningModule;
+import bg.uni.sofia.fmi.simulator.behavior.energyManagment.EnergyManager;
+import bg.uni.sofia.fmi.simulator.behavior.navigation.Navigation;
+import bg.uni.sofia.fmi.simulator.behavior.collisionAvoidance.ObstacleAvoidance;
+import bg.uni.sofia.fmi.simulator.behavior.planning.SimplePlanningController;
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
 
@@ -76,7 +76,7 @@ public class DomainFactory {
         }
         ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance();
         Navigation navigation = new Navigation(obstacleAvoidance);
-        BehaviorModule behavior = new SimpleBehaviorController(energyManager, patrolModel, navigation, world);
+        PlanningModule behavior = new SimplePlanningController(energyManager, patrolModel, navigation, world);
         return new Bot(id, position, battery, lidar, model.getMaxSpeed(), type, model.getName(), model.getFailureProbability(),
                 model.getPrice(), model.getBatteryConsumptionRate(), behavior);
     }
