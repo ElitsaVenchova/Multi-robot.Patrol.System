@@ -1,7 +1,7 @@
 name: TurtleBot Pi
 batteryCapacity: 100.0
 lidarRange: 5.0
-maxSpeed: 1.0
+maxSpeed: 2.5
 price: 1000
 failureProbability: 0.1
 type: GROUND

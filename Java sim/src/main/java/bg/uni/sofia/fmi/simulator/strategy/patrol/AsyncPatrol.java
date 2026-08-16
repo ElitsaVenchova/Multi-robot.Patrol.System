@@ -37,6 +37,11 @@ public class AsyncPatrol implements PatrolModel {
         Position endPosition = new Position(endPos);
 
         this.patrolSection = new PatrolSection(startPosition, endPosition);
+
+        // Initial patrol direction
+        this.patrolDirection = Direction.RIGHT;
+        this.movementDirection = this.patrolDirection;
+        this.remainingDeviationTicks = 0;
     }
 
     @Override
@@ -47,11 +52,13 @@ public class AsyncPatrol implements PatrolModel {
         }
         //Ако роботът не е в секцията за патрулиране, то трябва да се предвижи до нея.
         if(!bot.isInPatrolSection(patrolSection)) {
+            if (currentTime < 500) { System.out.println(" Bot " + bot.getId() + " PatrolSection " + patrolSection + " to " + patrolDirection + "/" + movementDirection + " GOTO: " + bot.getTargetToPatrolSection(patrolSection));  }
             return bot.getTargetToPatrolSection(patrolSection);
+        } else {
+            PatrolModel.scan(bot, world, currentTime);
+            if (currentTime < 500) { System.out.println(" Bot " + bot.getId() + " PatrolSection " + patrolSection + " to " + patrolDirection + "/" +  movementDirection + " PATROL: " + getPatrolTarget(bot));  }
+            return getPatrolTarget(bot);
         }
-
-        PatrolModel.scan(bot, world, currentTime);
-        return getPatrolTarget(bot);
     }
 
     //Посока, към която да се движи робота докато патрулира.

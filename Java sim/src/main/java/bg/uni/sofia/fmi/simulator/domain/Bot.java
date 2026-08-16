@@ -23,7 +23,7 @@ public class Bot {
     private BotState state; // текущо състояние на бота (патрулиране, зареждане, грешка и т.н.)
 
     public Bot(long id, Position position, Battery battery, Lidar lidar, double speed, RobotType type, String name,
-            double failureProbability, double price, double batteryConsumptionRate, PlanningModule behavior) {
+            double failureProbability, double price, double batteryConsumptionRate, PlanningModule planningModule) {
         this.id = id;
         this.position = position;
         this.battery = battery;
@@ -35,19 +35,18 @@ public class Bot {
         this.price = price;
         this.batteryConsumptionRate = batteryConsumptionRate;
 
-        this.planningModule = behavior;
+        this.planningModule = planningModule;
         this.state = BotState.PATROLLING;
     }
 
     // Основен метод за обновяване на състоянието на бота при всяка итерация на симулацията
     public void update(int currentTime) {
+        if(currentTime < 500) { System.out.print(" Bot " + id + " at " + position + " state: " + state); }
         // Взима се решение за действие и се определя състоянието
         planningModule.update(this, currentTime);
 
         // консумация по подразбиране, за да може да се изтощава с времето дори да не прави нищо
-        battery.consume(0.01); 
-
-        System.out.println("Bot " + id + " at " + position + " state: " + state);
+        battery.consume(0.01);
     }
 
     // Движение на бота

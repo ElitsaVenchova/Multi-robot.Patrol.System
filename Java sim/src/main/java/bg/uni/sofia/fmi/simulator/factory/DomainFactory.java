@@ -24,6 +24,7 @@ import bg.uni.sofia.fmi.simulator.behavior.collisionAvoidance.ObstacleAvoidance;
 import bg.uni.sofia.fmi.simulator.behavior.planning.SimplePlanningController;
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
+import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 
 //Фабрика за създаване на домейн обекти (Bot, ChargingStation, World) от конфигурацията.
 public class DomainFactory {
@@ -31,10 +32,8 @@ public class DomainFactory {
         // Създаване на света от конфигурацията
         double perimeter = config.getSimulation().getPerimeterSize();
         World world = new World(perimeter);
-        // Създаване на стратегиите за патрулиране
-        PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
         // Ботове
-        List<Bot> bots = createBots(config.getRobots(), world, config.getSimulation().getChargeThreshold(), patrolModel);
+        List<Bot> bots = createBots(config, world, config.getSimulation().getChargeThreshold());
         world.addBots(bots);
         // Зарядни станции
         List<ChargingStation> stations = createStations(config.getChargingStations(), world);
@@ -45,20 +44,23 @@ public class DomainFactory {
         return world;
     }
     // Създаване на ботове от конфигурацията
-    private static List<Bot> createBots(List<RobotConfig> robotConfigs, World world, double energyThreshold, PatrolModel patrolModel) {
+    private static List<Bot> createBots(SimulationConfig config, World world, double energyThreshold) {
         List<Bot> bots = new ArrayList<>();
         RobotModelLoader loader = new RobotModelLoader();
         
-        for (RobotConfig config : robotConfigs) {
-            RobotModelConfig model = loader.load(config.getModel());
-            for (int id = 0; id < config.getCount(); id++) {
+        for (RobotConfig robotConfig : config.getRobots()) {
+            RobotModelConfig model = loader.load(robotConfig.getModel());
+            for (int i = 0; i < robotConfig.getCount(); i++) {
+                long id = IdGenerator.nextId();
+                // Създаване на стратегиите за патрулиране
+                PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
                 bots.add(createBot(id, model, world, energyThreshold, patrolModel));
             }
         }
         return bots;
     }
     //Създаване на бот от конфигурацията
-    private static Bot createBot(int id, RobotModelConfig model, World world, double energyThreshold, PatrolModel patrolModel) {
+    private static Bot createBot(long id, RobotModelConfig model, World world, double energyThreshold, PatrolModel patrolModel) {
         // Начална позиция на робота. Наредени са подред спрямо позицията си
         Position position = new Position(id);
         // Батерията на бота
@@ -76,9 +78,9 @@ public class DomainFactory {
         }
         ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance();
         Navigation navigation = new Navigation(obstacleAvoidance);
-        PlanningModule behavior = new SimplePlanningController(energyManager, patrolModel, navigation, world);
+        PlanningModule planningModule = new SimplePlanningController(energyManager, patrolModel, navigation, world);
         return new Bot(id, position, battery, lidar, model.getMaxSpeed(), type, model.getName(), model.getFailureProbability(),
-                model.getPrice(), model.getBatteryConsumptionRate(), behavior);
+                model.getPrice(), model.getBatteryConsumptionRate(), planningModule);
     }
     // Създаване на зарядни станции от конфигурацията
     private static List<ChargingStation> createStations(List<ChargingStationConfig> configs, World world) {
