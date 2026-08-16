@@ -46,7 +46,7 @@ public class DomainFactory {
         return world;
     }
     // Създаване на ботове от конфигурацията
-    public static List<Bot> createBots(List<RobotConfig> robotConfigs, World world, double energyThreshold, PatrolModel patrolModel) {
+    private static List<Bot> createBots(List<RobotConfig> robotConfigs, World world, double energyThreshold, PatrolModel patrolModel) {
         List<Bot> bots = new ArrayList<>();
         RobotModelLoader loader = new RobotModelLoader();
         
@@ -63,8 +63,7 @@ public class DomainFactory {
         // Начална позиция на робота
         // [TODO] Позицията може да се задава в конфигурацията или да се генерира
         // на базата на броя ботове и размера на периметъра, за да се избегне струпване
-        Position position = new Position(
-                RandomProvider.nextDouble() * world.getPerimeter().getSize());
+        Position position = new Position(RandomProvider.nextDouble() * world.getPerimeter().getSize());
         // Батерията на бота
         Battery battery = new Battery(model.getBatteryCapacity());
         // Лидарът на бота
@@ -85,32 +84,20 @@ public class DomainFactory {
                 model.getPrice(), model.getBatteryConsumptionRate(), behavior);
     }
     // Създаване на зарядни станции от конфигурацията
-    public static List<ChargingStation> createStations(
-            List<ChargingStationConfig> configs,
-            World world) {
+    private static List<ChargingStation> createStations(List<ChargingStationConfig> configs, World world) {
         List<ChargingStation> stations = new ArrayList<>();
         ChargingStationModelLoader loader = new ChargingStationModelLoader();
         for (ChargingStationConfig config : configs) {
             ChargingStationModelConfig model = loader.load(config.getModel());
             // Проверка дали позицията на станцията е в рамките на периметъра
             if (config.getX() < 0 || config.getX() > world.getPerimeter().getSize()) {
-                throw new RuntimeException(
-                        "Station X out of bounds. x=" + config.getX() + ", perimeter=" + world.getPerimeter());
+                throw new RuntimeException("Station X out of bounds. x=" + config.getX() + ", perimeter=" + world.getPerimeter());
             }
             // Създаване на позиция за станцията
-            Position position = new Position(
-                    config.getX(),
-                    config.getY(),
-                    0.0 // stations are on ground
-            );
+            Position position = new Position(config.getX(), config.getY(), 0.0); // stations are on ground
 
-            stations.add(new ChargingStation(
-                    model.getName(),
-                    model.getPrice(),
-                    model.getSlots(),
-                    model.getPower(),
-                    model.getFailureProbability(),
-                    position));
+            stations.add(new ChargingStation(model.getName(), model.getPrice(), model.getSlots(),
+                    model.getPower(), model.getFailureProbability(), position));
         }
         return stations;
     }
