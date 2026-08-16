@@ -38,7 +38,7 @@ public class SimpleBehaviorController implements BehaviorModule {
         } else {
             // Ако батерията е достатъчна, продължаваме с патрулирането
             bot.setState(BotState.PATROLLING);
-            patrolModel.execute(bot);
+            patrolModel.execute(bot, world, currentTime);
         }
     }
 

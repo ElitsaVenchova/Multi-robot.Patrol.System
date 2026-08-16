@@ -44,12 +44,6 @@ public class Bot {
         // Взима се решение за действие и се определя състоянието
         behavior.update(this, currentTime);
 
-        // Сканиране с лидара за нарушители
-//        if (state != BotState.ERROR && state != BotState.CHARGING) {
-//            lidar.detect(position, world.getPerimeter(), currentTime);
-//            battery.consume(this.lidar.getBatteryConsumptionRate());
-//        }
-
         // консумация по подразбиране, за да може да се изтощава с времето дори да не прави нищо
         battery.consume(0.01); 
 

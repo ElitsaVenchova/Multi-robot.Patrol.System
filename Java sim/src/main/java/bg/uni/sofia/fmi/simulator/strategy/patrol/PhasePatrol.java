@@ -5,13 +5,13 @@ import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 
-//Патрулиране по секции с противоположни фази за всеки 2 съседни робота
-public class CounterPhasePatrol implements PatrolModel {
+//Патрулиране по секции като всички роботи се движат едновременно в една или друга посока като
+// така поддържат еднакво разстояние помежду си
+public class PhasePatrol implements PatrolModel {
 
-    private Integer robotsPerSection;
 
-    public CounterPhasePatrol(PatrolConfig config) {
-        this.robotsPerSection = config.getRobotsPerSection();
+    public PhasePatrol(PatrolConfig config) {
+
     }
 
     @Override
@@ -36,13 +36,5 @@ public class CounterPhasePatrol implements PatrolModel {
         bot.getBehavior().getNavigation().moveTowards(bot, target);
 
         PatrolModel.scan(bot, world, currentTime);
-    }
-
-    public Integer getRobotsPerSection() {
-        return robotsPerSection;
-    }
-
-    public void setRobotsPerSection(Integer robotsPerSection) {
-        this.robotsPerSection = robotsPerSection;
     }
 }

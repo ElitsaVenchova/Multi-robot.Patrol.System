@@ -6,10 +6,7 @@ import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 import bg.uni.sofia.fmi.simulator.strategy.attack.PoissonAttack;
 import bg.uni.sofia.fmi.simulator.strategy.attack.UniformAttack;
 import bg.uni.sofia.fmi.simulator.strategy.attack.VulnerabilityAttack;
-import bg.uni.sofia.fmi.simulator.strategy.patrol.AsyncPatrol;
-import bg.uni.sofia.fmi.simulator.strategy.patrol.CounterPhasePatrol;
-import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
-import bg.uni.sofia.fmi.simulator.strategy.patrol.RingPatrol;
+import bg.uni.sofia.fmi.simulator.strategy.patrol.*;
 
 // Фабрика за създаване на стратегии за патрулиране и генериране на атаки от конфигурацията
 public class StrategyFactory {
@@ -22,17 +19,13 @@ public class StrategyFactory {
         }
         // В зависимост от зададения тип, се създава съответната стратегия. 
         // Ако типът е невалиден, се хвърля грешка.
-        switch (config.getModel()) {
-            case "RingPatrol":
-                return new RingPatrol(config);
-            case "CounterPhasePatrol":
-                return new CounterPhasePatrol(config);
-            case "AsyncPatrol":
-                return new AsyncPatrol(config);
-            default:
-                throw new IllegalArgumentException(
-                        "Unknown patrol model: " + config.getModel());
-        }
+        return switch (config.getModel()) {
+            case "PhasePatrol" -> new PhasePatrol(config);
+            case "CounterPhasePatrol" -> new CounterPhasePatrol(config);
+            case "AsyncPatrol" -> new AsyncPatrol(config);
+            default -> throw new IllegalArgumentException(
+                    "Unknown patrol model: " + config.getModel());
+        };
     }
 
     // Създаване на модел за генериране на атаки от конфигурацията.
@@ -43,19 +36,17 @@ public class StrategyFactory {
         }
         // В зависимост от зададения тип, се създава съответната стратегия.
         // Ако типът е невалиден, се хвърля грешка.
-        switch (config.getModel()) {
-            case "PoissonAttack":
+        return switch (config.getModel()) {
+            case "PoissonAttack" -> {
                 if (config.getLambda() == null) {
                     throw new IllegalArgumentException("PoissonAttack requires lambda");
                 }
-                return new PoissonAttack(config.getLambda(),
+                yield new PoissonAttack(config.getLambda(),
                         config.getDuration());
-            case "UniformAttack":
-                return new UniformAttack(config.getLambda(), config.getDuration());
-            case "VulnerabilityAttack":
-                return new VulnerabilityAttack(config.getDuration());
-            default:
-                throw new IllegalArgumentException("Unknown attack model: " + config.getModel());
-        }
+            }
+            case "UniformAttack" -> new UniformAttack(config.getLambda(), config.getDuration());
+            case "VulnerabilityAttack" -> new VulnerabilityAttack(config.getDuration());
+            default -> throw new IllegalArgumentException("Unknown attack model: " + config.getModel());
+        };
     }
 }
