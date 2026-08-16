@@ -40,4 +40,12 @@ public class Battery {
     public double getCurrentLevel() {
         return currentLevel;
     }
+
+    @Override
+    public String toString() {
+        return "Battery{" +
+                "capacity=" + capacity +
+                ", currentLevel=" + currentLevel +
+                '}';
+    }
 }

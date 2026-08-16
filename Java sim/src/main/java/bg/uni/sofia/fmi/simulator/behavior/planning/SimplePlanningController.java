@@ -35,6 +35,7 @@ public class SimplePlanningController implements PlanningModule {
         } else if (bot.getState() == BotState.CHARGING) {
             // Ако ботът е в процес на зареждане
             change(bot);
+            if (currentTime < 500) { System.out.println(" Bot " + bot.getId()  + bot.getBattery());  }
         } else if (energyManager.isLow(bot)) {
             // Ако батерията е ниска
             goalPosition = lowBattery(bot);
