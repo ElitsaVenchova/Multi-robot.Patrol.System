@@ -7,8 +7,8 @@ import java.util.stream.Stream;
 
 // Периметърът, който трябва да се патрулира, разделен на клетки, в които могат да се появяват атаки
 public class Perimeter { 
-    private int size; // дължина на периметъра, разделен на клетки
-    private List<Attack>[] cells; // масив от списъци, където всяка клетка съдържа атаките, които се намират в нея
+    private final int size; // дължина на периметъра, разделен на клетки
+    private final List<Attack>[] cells; // масив от списъци, където всяка клетка съдържа атаките, които се намират в нея
 
     public Perimeter(int size) {
         this.size = size;

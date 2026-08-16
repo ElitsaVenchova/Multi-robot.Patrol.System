@@ -8,16 +8,16 @@ import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 
 // Зарядна станция, където ботът може да зарежда батерията си
 public class ChargingStation {
-    private String name; // име на модела на станцията
-    private double price; // цена за зареждане, която се използва за оптимизация на разходите
-    private int totalSlots; // общ брой слотове за зареждане
-    private double power; // мощност на зареждане, която определя колко бързо се зарежда батерията
-    private double failureProbability; // вероятност за повреда при всяко действие
-    private Position location; // позиция на станцията в света, за да може ботът да се насочва към нея
+    private final String name; // име на модела на станцията
+    private final double price; // цена за зареждане, която се използва за оптимизация на разходите
+    private final int totalSlots; // общ брой слотове за зареждане
+    private final double power; // мощност на зареждане, която определя колко бързо се зарежда батерията
+    private final double failureProbability; // вероятност за повреда при всяко действие
+    private final Position location; // позиция на станцията в света, за да може ботът да се насочва към нея
 
-    private long id; // за да може да се идентифицира станцията при нужда, напр. за логване
+    private final long id; // за да може да се идентифицира станцията при нужда, напр. за логване
     private ChargingStationStatus status; // текущ статус на станцията (напр. свободна, заета, в грешка)
-    private Queue<Bot> queue = new LinkedList<>(); // опашка от ботове, които чакат да се заредят
+    private final Queue<Bot> queue = new LinkedList<>(); // опашка от ботове, които чакат да се заредят
 
     public ChargingStation(String name,
             double price,

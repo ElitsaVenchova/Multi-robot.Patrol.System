@@ -80,9 +80,9 @@ public class DomainFactory {
         }
         ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance();
         Navigation navigation = new Navigation(obstacleAvoidance);
-        BehaviorModule behavior = new SimpleBehaviorController(energyManager, patrolModel, navigation);
+        BehaviorModule behavior = new SimpleBehaviorController(energyManager, patrolModel, navigation, world);
         return new Bot(position, battery, lidar, model.getMaxSpeed(), type, model.getName(), model.getFailureProbability(),
-                model.getPrice(), model.getBatteryConsumptionRate(), behavior, world);
+                model.getPrice(), model.getBatteryConsumptionRate(), behavior);
     }
     // Създаване на зарядни станции от конфигурацията
     public static List<ChargingStation> createStations(

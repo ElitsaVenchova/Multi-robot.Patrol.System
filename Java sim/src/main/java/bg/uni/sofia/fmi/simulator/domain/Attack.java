@@ -5,12 +5,12 @@ import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 
 // Клас, представляващ атака в симулацията
 public class Attack {
-    private Integer duration; // null = infinite
+    private final Integer duration; // null = infinite
     
-    private long id; // за да може да се идентифицира бота при нужда, напр. за логване
-    private Position position; // позиция на атаката
+    private final long id; // за да може да се идентифицира бота при нужда, напр. за логване
+    private final Position position; // позиция на атаката
+    private final int creationTime; // време на създаване на атаката
     private AttackStatus status; // статус на атаката
-    private int creationTime; // време на създаване на атаката
     private int detectionTime = -1; // време на засичане (ако е засечена)
 
     public Attack(Position position, int creationTime, Integer duration) {

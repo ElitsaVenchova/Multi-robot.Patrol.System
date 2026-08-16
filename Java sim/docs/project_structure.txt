@@ -96,80 +96,6 @@ Java sim/
 ├── README.md
 └── .gitignore
 
-Notes:
-The domain/ folder reflects the metamodel.
-strategies/ pattern is cleanly separated. It easy to add new patrol strategies or new attacker models.
-/engine is isolated. DSL stays independent; execution logic is separate
-/outputs are separated
-/experiments folder is where it is easy to run batch simulations, or compare strategies, or generate results for papers.
-outputs/plots/ for result diagrams
-src/config/schema - for YAML validation which avoids bugs.
-
-Perfect match with the DSL architecture (1:1 with your Section 3)
-resources/configs/   → DSL (YAML)
-config/              → parser
-domain/              → metamodel
-engine/              → interpreter
-results/             → outputs
-
-
-Patrol and attack behaviors are implemented using the Strategy design pattern, allowing interchangeable and extensible behavior definitions.
-
-The simulation engine interprets the DSL configuration and executes the simulation through a discrete-time loop, where patrol strategies and attack models interact within the defined environment.
-
-"interpretation of DSL constructs into executable simulation components"
-
-The simulation engine interprets the DSL configuration and executes the simulation through a discrete-time loop, where patrol strategies and attack models interact within the defined environment.
-
-The results module computes performance metrics such as interception rate and detection efficiency, enabling systematic evaluation and comparison of patrol strategies.
-
-Simulation results are exported in a structured format (CSV), enabling further statistical analysis and visualization of performance metrics.
-
-In addition to interception rate, we evaluate the temporal efficiency of patrol strategies by measuring the average detection time, defined as the delay between attack occurrence and interception.
-
-Each configuration was executed multiple times, and the results are reported as mean values with standard deviation to account for stochastic variability.
-
-Patrol strategies are configured through structured DSL elements that support parameterization, enabling flexible experimentation with strategy-specific configurations such as robot distribution.
-
-As the attack rate increases, the success rate decreases while detection time increases, indicating higher system load and reduced responsiveness.
-
-A parallel execution model was explored to evaluate the scalability of the simulation, where robot behaviors and detection processes are executed concurrently using a thread pool.
-
-To ensure reproducibility, all stochastic components of the simulation are controlled through a centralized random number provider initialized with a configurable seed.
-
-Robot characteristics are defined in separate configuration files, enabling reuse and reducing coupling between simulation scenarios and platform-specific parameters.
-
-The attack model supports both persistent and time-constrained threats, allowing the evaluation of patrol strategies under different temporal conditions.
-
-The simulation environment is extended with infrastructure entities such as charging stations, modeled as configurable resources with capacity, cost, and reliability constraints.
-
-Charging stations are explicitly positioned in a two-dimensional space, allowing controlled experiments on spatial resource allocation, while robot detection remains constrained to a one-dimensional perimeter projection.
-
-Detection is encapsulated within sensor modules, allowing robots to query the environment locally based on their sensing capabilities, supporting both sequential and parallel execution models.
-
-	The behavioral architecture of the robots is structured into modular components separating decision-making, navigation, sensing, and actuation.
-
-	Navigation is implemented as a dedicated module responsible for movement and path execution, while object detection and locomotion are encapsulated within the robot entity as hardware-level functionalities.
-
-	Obstacle and collision avoidance are introduced as a separate module, currently implemented as a placeholder to enable future extensions without affecting the system architecture.
-
-	Task planning is realized using a simplified behavior-based approach, enabling dynamic switching between patrol and energy management behaviors.
-
-	Energy management is handled through a threshold-based model that triggers charging behavior when battery levels fall below a predefined limit.
-
-	Safe wandering behavior is not included in the current implementation, as it is not essential for the evaluated patrol scenarios.
-	
-Robot behavior is modeled through a finite state abstraction, where each robot transitions between patrolling, charging, and error states based on energy levels and environmental conditions.
-
-At each tick, an attack happens with probability p.
-If it happens, its position is uniformly random on the perimeter.
-
-UniformAttack:
-    - each tick, generate an attack with probability attackProbability
-    - if an attack is generated, choose its position uniformly in [0, perimeterSize)
-    - attack has configured duration
-	
-
 ----------------------------------------------------------------------------------------
 Current flow is actually GOOD:
 World
@@ -180,13 +106,13 @@ World
          → Bot (executes)
 ----------------------------------------------------------------------------------------
 //[TODO] Да се направи по-реалистично зареждане
-//[TODO] Да се направи по-реалистична консумация
 //[TODO] Да се добави секция, която се охранява
 // [TODO] Позицията може да се задава в конфигурацията или да се генерира
         // на базата на броя ботове и размера на периметъра, за да се избегне струпване
 // TODO: attack weakest defended area
 // [TODO] Да има леко произвилно джижение. Произволността може би да е конфигурация
 // [TODO] Да се оправи във всяка реализация Patrol.execute
+// [TODO] Липстват SafeWandering и Communication
 		
 👉 or add station/bot failure dynamics (stochastic)
 👉 move patrol strategies into Navigation (or Behavior layer)

@@ -5,5 +5,5 @@ maxSpeed: 1.0
 price: 1000
 failureProbability: 0.1
 type: GROUND
-batteryConsumptionRate: 0.1
-lidarBatteryConsumptionRate: 0.1
+batteryConsumptionRate: 0.02
+lidarBatteryConsumptionRate: 0.02

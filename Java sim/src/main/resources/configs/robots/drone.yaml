@@ -5,5 +5,5 @@ maxSpeed: 2.5
 price: 1000
 failureProbability: 0.1
 type: DRONE
-batteryConsumptionRate: 0.3
-lidarBatteryConsumptionRate: 0.3
+batteryConsumptionRate: 0.05
+lidarBatteryConsumptionRate: 0.05

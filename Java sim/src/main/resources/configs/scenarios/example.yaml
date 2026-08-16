@@ -13,12 +13,12 @@ robots:
 
 chargingStations:
   - model: fast_station
-    x: 20.0
+    x: 333.0
     y: 5.0
 
-  - model: cheap_station
-    x: 60.0
-    y: 2.0
+  - model: fast_station
+    x: 666.0
+    y: 5.0
 
 patrol:
   model: RingPatrol
