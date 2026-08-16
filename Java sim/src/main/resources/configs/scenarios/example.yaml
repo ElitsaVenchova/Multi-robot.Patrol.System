@@ -22,7 +22,6 @@ chargingStations:
 
 patrol:
   model: AsyncPatrol
-  randomness: 0.5
   deviationProbability: 0.10
   maxDeviationDuration: 20
 

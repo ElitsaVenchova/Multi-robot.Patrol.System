@@ -52,7 +52,8 @@ public class ResultExporter {
                 writer.append("total_attacks,intercepted,missed,success_rate,avg_detection_time,avg_response_time\n");
             }
 
-            writer.append(String.valueOf(config.getPatrolModel().getRobotsPerSection())).append(",");
+            writer.append(String.valueOf(config.getPatrolModel().getDeviationProbability())).append(",");
+            writer.append(String.valueOf(config.getPatrolModel().getMaxDeviationDuration())).append(",");
             writer.append(String.valueOf(config.getAttackModel().getLambda())).append(",");
             writer.append(String.valueOf(metrics.getTotalAttacks())).append(",");
             writer.append(String.valueOf(metrics.getInterceptedAttacks())).append(",");

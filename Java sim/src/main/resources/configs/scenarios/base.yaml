@@ -18,7 +18,8 @@ chargingStations:
 
 patrol:
   type: RingPatrol
-  robotsPerSection: 2
+  deviationProbability: 0.10
+  maxDeviationDuration: 20
 
 attackModel:
   type: PoissonAttack
