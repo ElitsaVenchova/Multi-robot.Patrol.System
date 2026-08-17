@@ -50,15 +50,17 @@ public class AsyncPatrol implements PatrolModel {
         if(patrolSection == null) {
             initialize(bot, world);
         }
+        Position goalPosition = null;//Някой от крайщатата на patrolSection като цел на робота
         //Ако роботът не е в секцията за патрулиране, то трябва да се предвижи до нея.
         if(!bot.isInPatrolSection(patrolSection)) {
-            if (currentTime < 500) { System.out.println(" Bot " + bot.getId() + " PatrolSection " + patrolSection + " to " + patrolDirection + "/" + movementDirection + " GOTO: " + bot.getTargetToPatrolSection(patrolSection));  }
-            return bot.getTargetToPatrolSection(patrolSection);
+            goalPosition = bot.getTargetToPatrolSection(patrolSection);
         } else {
             PatrolModel.scan(bot, world, currentTime);
-            if (currentTime < 500) { System.out.println(" Bot " + bot.getId() + " PatrolSection " + patrolSection + " to " + patrolDirection + "/" +  movementDirection + " PATROL: " + getPatrolTarget(bot));  }
-            return getPatrolTarget(bot);
+
+            goalPosition = getPatrolTarget(bot);
         }
+        if (currentTime < 2500) { System.out.print(patrolSection + " to " + patrolDirection + "/" +  movementDirection);  }
+        return goalPosition;
     }
 
     //Посока, към която да се движи робота докато патрулира.

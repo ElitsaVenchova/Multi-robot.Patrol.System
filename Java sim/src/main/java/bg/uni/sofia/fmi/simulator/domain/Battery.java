@@ -43,9 +43,6 @@ public class Battery {
 
     @Override
     public String toString() {
-        return "Battery{" +
-                "capacity=" + capacity +
-                ", currentLevel=" + currentLevel +
-                '}';
+        return String.format(" Battery{capacity=%.2f, currentLevel=%.2f}", capacity, currentLevel);
     }
 }

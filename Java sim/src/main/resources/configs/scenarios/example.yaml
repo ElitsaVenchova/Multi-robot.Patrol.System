@@ -22,7 +22,7 @@ chargingStations:
 
 patrol:
   model: AsyncPatrol
-  deviationProbability: 0.10
+  deviationProbability: 0.07
   maxDeviationDuration: 20
 
 attackModel:

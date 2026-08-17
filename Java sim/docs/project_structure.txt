@@ -100,18 +100,24 @@ Java sim/
 Current flow is actually GOOD:
 World
  → Bot.update
-   → Behavior (decides state)
+   → Planning (decides state)
+     → Energy manager
      → Strategy (decides where)
-       → Navigation (how to move)
-         → Bot (executes)
+		→ Object Detection //липсва, засега обикновен scan на периметъра
+     → Navigation (how to move)
+		→ Safe wandering //липсва
+			→ Object Detection //липсва
+		→ Collision Avoidance //засега е кух и връща същата цел
+			→ Object Detection //липсва
+		→ Bot (executes)
+     → Communication //липсва
 ----------------------------------------------------------------------------------------
 //[TODO] Да се направи по-реалистично зареждане
 //[TODO] Да се добави секция, която се охранява
 // TODO: attack weakest defended area
 // [TODO] Да има леко произвилно джижение. Произволността може би да е конфигурация
 // [TODO] Липстват SafeWandering и Communication
-		
-👉 or add station/bot failure dynamics (stochastic)
-👉 move patrol strategies into Navigation (or Behavior layer)
+// @TODO: Да се добави параметър дали периметъра е кръг. Това трябва после да може да се пренесе до модела за патрулиране
+// @TODO: Да се обнови структурата на проекта
 
 // Дали е по-добре лидара и батерията да са отделни конфигурации в YAML и как да се задават, за да може да има различни ботове с различни лидари (мощност и цена)

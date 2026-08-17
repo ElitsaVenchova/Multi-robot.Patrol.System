@@ -41,7 +41,6 @@ public class Bot {
 
     // Основен метод за обновяване на състоянието на бота при всяка итерация на симулацията
     public void update(int currentTime) {
-        if(currentTime < 500) { System.out.print(" Bot " + id + " at " + position + " state: " + state); }
         // Взима се решение за действие и се определя състоянието
         planningModule.update(this, currentTime);
 

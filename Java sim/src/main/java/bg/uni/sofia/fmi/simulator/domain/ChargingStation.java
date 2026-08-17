@@ -104,7 +104,7 @@ public class ChargingStation {
         } else {
             status = ChargingStationStatus.AVAILABLE;
         }
-        System.out.println("ChargingStation " + id + " status: " + status + " queue size: " + queue.size());
+        System.out.println(" ChargingStation " + id + " status: " + status + " queue size: " + queue.size());
     }
 
     // Проверка дали станцията е налична за зареждане (т.е. не е в грешка и има свободни слотове)

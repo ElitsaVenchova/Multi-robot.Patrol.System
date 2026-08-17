@@ -33,6 +33,6 @@ public class PatrolSection {
 
     @Override
     public String toString() {
-        return String.format("PatrolSection[start: %s, end: %s]", startPosition, endPosition);
+        return String.format(" PatrolSection[start: %s, end: %s]", startPosition, endPosition);
     }
 }

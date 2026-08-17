@@ -26,16 +26,15 @@ public class SimplePlanningController implements PlanningModule {
 
     @Override
     public void update(Bot bot, int currentTime) {
+        if(currentTime < 2500) { System.out.print(" Bot " + bot.getId() + " at " + bot.getPosition() +
+                " state: " + bot.getState() + bot.getBattery()); }
         Position goalPosition = null;
         // Ако батерията е празна, ботът влиза в грешка и не може да прави нищо друго
         if (bot.getBattery().isEmpty()) {
-//             System.out.println("Bot " + bot.getId() + " at " + bot.getPosition() + " state: " + bot.getState() + " battery level: " + bot.getBattery().getCurrentLevel() +
-//                              " goal position: " + bot.getGoalPosition() + " current station: " + (bot.getCurrentStation() != null ? bot.getCurrentStation().getName() : "None"));
             bot.setState(BotState.ERROR);
         } else if (bot.getState() == BotState.CHARGING) {
             // Ако ботът е в процес на зареждане
             change(bot);
-            if (currentTime < 500) { System.out.println(" Bot " + bot.getId()  + bot.getBattery());  }
         } else if (energyManager.isLow(bot)) {
             // Ако батерията е ниска
             goalPosition = lowBattery(bot);
@@ -44,10 +43,10 @@ public class SimplePlanningController implements PlanningModule {
             bot.setState(BotState.PATROLLING);
             goalPosition = patrolModel.execute(bot, world, currentTime);
         }
-
         if(goalPosition != null){
             navigation.moveTowards(bot, world, goalPosition);
         }
+        if(currentTime < 2500) { System.out.println(goalPosition != null ? " " + goalPosition : ""); }
     }
 
     private void change(Bot bot){
