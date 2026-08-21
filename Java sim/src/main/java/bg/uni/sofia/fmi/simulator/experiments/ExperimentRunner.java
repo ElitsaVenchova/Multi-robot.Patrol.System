@@ -16,7 +16,7 @@ import bg.uni.sofia.fmi.simulator.results.SimulationMetrics;
 public class ExperimentRunner {
     private static final String BASE_CONFIG = "configs/scenarios/base.yaml";
 
-    public void runExperiments() {
+    public void runExperiments(boolean visualization) {
         ConfigLoader loader = new ConfigLoader();
         ResultExporter exporter = new ResultExporter();
         MetricsAggregator aggregator = new MetricsAggregator();
@@ -44,7 +44,7 @@ public class ExperimentRunner {
                     config.getSimulation().setSeed(System.currentTimeMillis() + run);
                     // Стартиране на симулацията и събиране на резултатите
                     SimulationRunner runner = new SimulationRunner();
-                    SimulationMetrics metrics = runner.runWithResult(config);
+                    SimulationMetrics metrics = runner.runWithResult(config, visualization);
                     // Съхраняване на резултатите от текущия експеримент
                     results.add(metrics);
                 }
