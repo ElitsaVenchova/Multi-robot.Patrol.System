@@ -2,9 +2,11 @@ package bg.uni.sofia.fmi.simulator.visualization;
 
 import bg.uni.sofia.fmi.simulator.domain.*;
 import bg.uni.sofia.fmi.simulator.domain.enums.AttackStatus;
+import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
 import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.engine.SimulationCallback;
 import bg.uni.sofia.fmi.simulator.engine.Simulator;
+import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolSection;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -30,12 +32,18 @@ public class SimulationVisualizer extends Application {
     private static final double CIRCULAR_CENTER_X = 500;
     private static final double CIRCULAR_CENTER_Y = 320;
     private static final double CIRCULAR_RADIUS = 220;
+    private static final Color[] PATROL_SECTION_COLORS = {
+            Color.DODGERBLUE, Color.MEDIUMSEAGREEN, Color.DARKORANGE,
+            Color.MEDIUMPURPLE, Color.DEEPSKYBLUE, Color.HOTPINK
+    };
     
     // Phase 6: Animation loop members
     private Map<Bot, RobotVisualNode> robotNodes = new HashMap<>();
     // Phase 7: Charging stations
     private Map<ChargingStation, ChargingStationVisualNode> stationNodes = new HashMap<>();
     private final Map<Attack, AttackVisualNode> attackNodes = new HashMap<>();
+    private final Map<Bot, PatrolSectionVisualNode> patrolSectionNodes = new HashMap<>();
+    private final Group patrolSectionLayer = new Group();
     private final Group attackLayer = new Group();
     private ScaleMapper scaleMapper;
     private Label tickLabel;
@@ -101,7 +109,7 @@ public class SimulationVisualizer extends Application {
         attackSummaryLabel.setLayoutY(40);
         updateAttackSummaryLabel();
 
-        root.getChildren().addAll(perimeter, attackLayer);
+        root.getChildren().addAll(perimeter, patrolSectionLayer, attackLayer);
         root.getChildren().addAll(perimeterLabels);
         root.getChildren().addAll(tickLabel, attackSummaryLabel);
 
@@ -160,6 +168,7 @@ public class SimulationVisualizer extends Application {
                 }
 
                 updateTickLabel();
+                updatePatrolSectionVisuals();
                 updateAttackVisuals();
                 updateAttackSummaryLabel();
 
@@ -206,6 +215,34 @@ public class SimulationVisualizer extends Application {
                 attacks.size(),
                 successRate
         ));
+    }
+
+    /** Show a robot's patrol section only while it is actively patrolling it. */
+    private void updatePatrolSectionVisuals() {
+        for (Bot bot : world.getBots()) {
+            PatrolSection patrolSection = bot.getPlanningModule().getPatrolModel().getPatrolSection();
+            PatrolSectionVisualNode sectionNode = patrolSectionNodes.get(bot);
+
+            if (bot.getState() == BotState.PATROLLING && patrolSection != null) {
+                if (sectionNode == null) {
+                    sectionNode = new PatrolSectionVisualNode(
+                            patrolSection,
+                            scaleMapper,
+                            PERIMETER_Y,
+                            getPatrolSectionColor(bot)
+                    );
+                    patrolSectionNodes.put(bot, sectionNode);
+                    patrolSectionLayer.getChildren().add(sectionNode);
+                }
+                sectionNode.setVisible(true);
+            } else if (sectionNode != null) {
+                sectionNode.setVisible(false);
+            }
+        }
+    }
+
+    private Color getPatrolSectionColor(Bot bot) {
+        return PATROL_SECTION_COLORS[Math.floorMod(bot.getId(), PATROL_SECTION_COLORS.length)];
     }
 
     /** Add marks for newly generated attacks and refresh their current status. */

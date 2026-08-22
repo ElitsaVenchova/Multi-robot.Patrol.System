@@ -7,10 +7,12 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.transform.Rotate;
 
 /** Visual tick mark for an attack at its position on the perimeter. */
 public class AttackVisualNode extends Group {
-    private static final double MARKER_HEIGHT = 20;
+    private static final double POINT_RADIUS = 6;
+    private static final double MARKER_LENGTH = 14;
 
     private final Attack attack;
     private final Line marker;
@@ -18,14 +20,19 @@ public class AttackVisualNode extends Group {
 
     public AttackVisualNode(Attack attack, ScaleMapper scaleMapper, double perimeterY) {
         this.attack = attack;
-        this.marker = new Line(0, -MARKER_HEIGHT, 0, 0);
-        this.point = new Circle(0, 0, 3);
+        this.marker = new Line(
+                0, -(POINT_RADIUS + MARKER_LENGTH),
+                0, -(POINT_RADIUS + 1)
+        );
+        this.point = new Circle(0, 0, POINT_RADIUS);
 
         getChildren().addAll(marker, point);
         Point2D canvasPosition = scaleMapper.toCanvasPoint(attack.getPosition().getX(), perimeterY);
         setLayoutX(canvasPosition.getX());
         setLayoutY(canvasPosition.getY());
-        setRotate(scaleMapper.toMarkerRotationDegrees(attack.getPosition().getX()));
+        getTransforms().add(new Rotate(
+                scaleMapper.toMarkerRotationDegrees(attack.getPosition().getX()), 0, 0
+        ));
         updateFrame();
     }
 
@@ -41,6 +48,7 @@ public class AttackVisualNode extends Group {
         marker.setStrokeWidth(2);
         point.setFill(color);
         point.setStroke(Color.WHITE);
+        point.setStrokeWidth(2);
 
         if (attack.getStatus() == AttackStatus.MISSED) {
             marker.getStrokeDashArray().setAll(3.0, 3.0);

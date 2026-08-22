@@ -4,6 +4,7 @@ import bg.uni.sofia.fmi.simulator.config.PatrolConfig;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
+import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 //Патрулиране по секции като всеко робот се вдижи независимо в своята секция
@@ -53,8 +54,10 @@ public class AsyncPatrol implements PatrolModel {
         Position goalPosition = null;//Някой от крайщатата на patrolSection като цел на робота
         //Ако роботът не е в секцията за патрулиране, то трябва да се предвижи до нея.
         if(!bot.isInPatrolSection(patrolSection)) {
+            bot.setState(BotState.GOING_TO_PATROL);
             goalPosition = bot.getTargetToPatrolSection(patrolSection);
         } else {
+            bot.setState(BotState.PATROLLING);
             PatrolModel.scan(bot, world, currentTime);
 
             goalPosition = getPatrolTarget(bot);
@@ -94,4 +97,7 @@ public class AsyncPatrol implements PatrolModel {
         }
         return new Position(targetX);
     }
+
+    @Override
+    public PatrolSection getPatrolSection() { return this.patrolSection; }
 }

@@ -40,7 +40,6 @@ public class SimplePlanningController implements PlanningModule {
             goalPosition = lowBattery(bot);
         } else {
             // Ако батерията е достатъчна, продължаваме с патрулирането
-            bot.setState(BotState.PATROLLING);
             goalPosition = patrolModel.execute(bot, world, currentTime);
         }
         if(goalPosition != null){
@@ -97,4 +96,7 @@ public class SimplePlanningController implements PlanningModule {
     public Navigation getNavigation() {
         return navigation;
     }
+
+    @Override
+    public PatrolModel getPatrolModel() { return patrolModel; }
 }

@@ -21,6 +21,7 @@ import javafx.util.Duration;
  * - DRONE robots are drawn as triangles (pointing up)
  * - Color indicates robot state:
  *   - Green (PATROLLING)
+ *   - Blue (GOING_TO_PATROL)
  *   - Yellow (GOING_TO_CHARGE)
  *   - Orange (CHARGING)
  *   - Red (ERROR)
@@ -231,6 +232,7 @@ public class RobotVisualNode extends Group {
     private Color getStateColor() {
         return switch (bot.getState()) {
             case PATROLLING -> Color.GREEN;
+            case GOING_TO_PATROL -> Color.DODGERBLUE;
             case GOING_TO_CHARGE -> Color.YELLOW;
             case CHARGING -> Color.ORANGE;
             case ERROR -> Color.RED;

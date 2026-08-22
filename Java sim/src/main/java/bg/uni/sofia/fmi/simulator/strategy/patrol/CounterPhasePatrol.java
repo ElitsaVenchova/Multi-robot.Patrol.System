@@ -27,4 +27,7 @@ public class CounterPhasePatrol implements PatrolModel {
 
         return null;
     }
+
+    @Override
+    public PatrolSection getPatrolSection() { return this.patrolSection; }
 }

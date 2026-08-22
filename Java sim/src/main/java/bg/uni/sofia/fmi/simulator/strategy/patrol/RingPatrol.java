@@ -21,4 +21,7 @@ public class RingPatrol implements PatrolModel {
 
         return null;
     }
+
+    @Override
+    public PatrolSection getPatrolSection() { return null; }
 }

@@ -1,5 +1,6 @@
 package bg.uni.sofia.fmi.simulator.strategy.patrol;
 
+import bg.uni.sofia.fmi.simulator.behavior.navigation.Navigation;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
@@ -14,5 +15,9 @@ public interface PatrolModel {
         // Сканиране с лидара за нарушители
         bot.getLidar().detect(bot.getPosition(), world.getPerimeter(), currentTime);
         bot.getBattery().consume(bot.getLidar().batteryConsumptionRate());
+    }
+    // Секцията за патрулиране, ако е приложимо, иначе връща null
+    default PatrolSection getPatrolSection() {
+        return null;
     }
 }
