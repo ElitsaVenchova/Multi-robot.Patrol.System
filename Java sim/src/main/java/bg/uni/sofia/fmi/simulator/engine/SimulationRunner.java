@@ -14,7 +14,7 @@ import bg.uni.sofia.fmi.simulator.visualization.SimulationVisualizer;
  * Основен клас за стартиране на симулацията.
  * - зарежда конфигурацията
  * - създава света и стратегиите
- * - изпълнява цикъла на симулацията
+ * - изпълнява цикъла на симулацията (чрез Simulator)
  * - събира и отпечатва резултатите
  */
 public class SimulationRunner {
@@ -44,18 +44,15 @@ public class SimulationRunner {
         RandomProvider.setSeed(config.getSimulation().getSeed()); 
         // Създаване на света от конфигурацията
         World world = DomainFactory.createWorld(config);
-        
-        // Стартиране на визуализацията, ако е зададено
-        if (visualization) {
-            SimulationVisualizer.launch(world);
-        }
-        
-        // Основен цикъл на симулацията
         int duration = config.getSimulation().getDuration();
-        for (int t = 0; t < duration; t++) {
-            // Обновяване на състоянието на света
-            // (движение на атаки, проверка за интерцептирани и пропуснати атаки и т.н.)
-            world.tick(t);
+        
+        if (visualization) {
+            // Phase 6: Visualizer drives the simulation via callback
+            SimulationVisualizer.launch(world, duration);
+        } else {
+            // Non-visualization: Fast execution
+            Simulator simulator = new Simulator();
+            simulator.run(world, duration, null);
         }
 
         return world;
