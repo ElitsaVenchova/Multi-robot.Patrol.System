@@ -11,7 +11,10 @@ import javafx.scene.Scene;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +27,9 @@ public class SimulationVisualizer extends Application {
     private static final double CANVAS_WIDTH = 900;
     private static final double PERIMETER_Y = 300;
     private static final double LABEL_OFFSET_Y = 5;
+    private static final double CIRCULAR_CENTER_X = 500;
+    private static final double CIRCULAR_CENTER_Y = 320;
+    private static final double CIRCULAR_RADIUS = 220;
     
     // Phase 6: Animation loop members
     private Map<Bot, RobotVisualNode> robotNodes = new HashMap<>();
@@ -47,28 +53,43 @@ public class SimulationVisualizer extends Application {
         // Get perimeter size from world
         int perimeterSize = world.getPerimeter().getSize();
         
-        // Create scale mapper for coordinate transformations
-        scaleMapper = new ScaleMapper(
-                perimeterSize,
-                CANVAS_PADDING_X,
-                CANVAS_PADDING_X + CANVAS_WIDTH
-        );
+        PerimeterType perimeterType = world.getPerimeter().getType();
+        Shape perimeter;
+        List<Label> perimeterLabels = new java.util.ArrayList<>();
+        if (perimeterType == PerimeterType.CIRCULAR) {
+            scaleMapper = ScaleMapper.circular(
+                    perimeterSize, CIRCULAR_CENTER_X, CIRCULAR_CENTER_Y, CIRCULAR_RADIUS
+            );
+            perimeter = new Circle(CIRCULAR_CENTER_X, CIRCULAR_CENTER_Y, CIRCULAR_RADIUS);
+            perimeter.setFill(Color.TRANSPARENT);
+            perimeter.setStroke(Color.LIGHTGRAY);
+            perimeter.setStrokeWidth(1.5);
 
-        // Draw perimeter line based on real world size
-        Line perimeter = new Line(
-                CANVAS_PADDING_X, PERIMETER_Y,
-                CANVAS_PADDING_X + CANVAS_WIDTH, PERIMETER_Y
-        );
+            Label circularLabel = new Label("0 / " + perimeterSize);
+            circularLabel.setLayoutX(CIRCULAR_CENTER_X + 10);
+            circularLabel.setLayoutY(CIRCULAR_CENTER_Y - CIRCULAR_RADIUS - 10);
+            perimeterLabels.add(circularLabel);
+        } else {
+            scaleMapper = new ScaleMapper(
+                    perimeterSize,
+                    CANVAS_PADDING_X,
+                    CANVAS_PADDING_X + CANVAS_WIDTH
+            );
+            perimeter = new Line(
+                    CANVAS_PADDING_X, PERIMETER_Y,
+                    CANVAS_PADDING_X + CANVAS_WIDTH, PERIMETER_Y
+            );
 
-        // Start label (position 0)
-        Label startLabel = new Label("0");
-        startLabel.setLayoutX(CANVAS_PADDING_X - 5);
-        startLabel.setLayoutY(PERIMETER_Y + LABEL_OFFSET_Y);
+            Label startLabel = new Label("0");
+            startLabel.setLayoutX(CANVAS_PADDING_X - 5);
+            startLabel.setLayoutY(PERIMETER_Y + LABEL_OFFSET_Y);
+            perimeterLabels.add(startLabel);
 
-        // End label (perimeter size)
-        Label endLabel = new Label(String.valueOf(perimeterSize));
-        endLabel.setLayoutX(CANVAS_PADDING_X + CANVAS_WIDTH - 30);
-        endLabel.setLayoutY(PERIMETER_Y + LABEL_OFFSET_Y);
+            Label endLabel = new Label(String.valueOf(perimeterSize));
+            endLabel.setLayoutX(CANVAS_PADDING_X + CANVAS_WIDTH - 30);
+            endLabel.setLayoutY(PERIMETER_Y + LABEL_OFFSET_Y);
+            perimeterLabels.add(endLabel);
+        }
 
         tickLabel = new Label();
         tickLabel.setLayoutX(15);
@@ -80,14 +101,9 @@ public class SimulationVisualizer extends Application {
         attackSummaryLabel.setLayoutY(40);
         updateAttackSummaryLabel();
 
-        root.getChildren().addAll(
-                perimeter,
-                attackLayer,
-                startLabel,
-                endLabel,
-                tickLabel,
-                attackSummaryLabel
-        );
+        root.getChildren().addAll(perimeter, attackLayer);
+        root.getChildren().addAll(perimeterLabels);
+        root.getChildren().addAll(tickLabel, attackSummaryLabel);
 
         // Phase 7: Render all charging stations
         for (ChargingStation station : world.getChargingStations()) {

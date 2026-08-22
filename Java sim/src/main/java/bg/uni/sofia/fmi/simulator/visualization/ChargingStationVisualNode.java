@@ -2,6 +2,7 @@ package bg.uni.sofia.fmi.simulator.visualization;
 
 import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
 import bg.uni.sofia.fmi.simulator.domain.enums.ChargingStationStatus;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
@@ -95,9 +96,14 @@ public class ChargingStationVisualNode extends Group {
      * Update station rectangle position based on its X coordinate.
      */
     public void updatePosition() {
-        double canvasX = scaleMapper.toCanvasX(station.getLocation().getX());
-        this.setLayoutX(canvasX);
-        this.setLayoutY(perimeterY - STATION_HEIGHT);
+        if (scaleMapper.isCircular()) {
+            Point2D canvasPosition = scaleMapper.toCanvasPoint(station.getLocation().getX(), perimeterY, 15);
+            this.setLayoutX(canvasPosition.getX() - STATION_WIDTH / 2.0);
+            this.setLayoutY(canvasPosition.getY() - STATION_HEIGHT / 2.0);
+        } else {
+            this.setLayoutX(scaleMapper.toCanvasX(station.getLocation().getX()));
+            this.setLayoutY(perimeterY - STATION_HEIGHT);
+        }
     }
 
     /**

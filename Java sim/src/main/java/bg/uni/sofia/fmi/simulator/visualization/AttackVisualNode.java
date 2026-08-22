@@ -2,6 +2,7 @@ package bg.uni.sofia.fmi.simulator.visualization;
 
 import bg.uni.sofia.fmi.simulator.domain.Attack;
 import bg.uni.sofia.fmi.simulator.domain.enums.AttackStatus;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -17,12 +18,14 @@ public class AttackVisualNode extends Group {
 
     public AttackVisualNode(Attack attack, ScaleMapper scaleMapper, double perimeterY) {
         this.attack = attack;
-        this.marker = new Line(0, -MARKER_HEIGHT, 0, -3);
-        this.point = new Circle(0, -MARKER_HEIGHT, 3);
+        this.marker = new Line(0, -MARKER_HEIGHT, 0, 0);
+        this.point = new Circle(0, 0, 3);
 
         getChildren().addAll(marker, point);
-        setLayoutX(scaleMapper.toCanvasX(attack.getPosition().getX()));
-        setLayoutY(perimeterY);
+        Point2D canvasPosition = scaleMapper.toCanvasPoint(attack.getPosition().getX(), perimeterY);
+        setLayoutX(canvasPosition.getX());
+        setLayoutY(canvasPosition.getY());
+        setRotate(scaleMapper.toMarkerRotationDegrees(attack.getPosition().getX()));
         updateFrame();
     }
 

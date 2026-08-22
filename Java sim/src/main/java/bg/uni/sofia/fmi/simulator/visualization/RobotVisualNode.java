@@ -3,6 +3,7 @@ package bg.uni.sofia.fmi.simulator.visualization;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
@@ -180,9 +181,9 @@ public class RobotVisualNode extends Group {
      * Should be called whenever the bot moves.
      */
     public void updatePosition() {
-        double canvasX = scaleMapper.toCanvasX(bot.getPosition().getX());
-        this.setLayoutX(canvasX);
-        this.setLayoutY(perimeterY);
+        Point2D canvasPosition = scaleMapper.toCanvasPoint(bot.getPosition().getX(), perimeterY);
+        this.setLayoutX(canvasPosition.getX());
+        this.setLayoutY(canvasPosition.getY());
     }
 
     /**
