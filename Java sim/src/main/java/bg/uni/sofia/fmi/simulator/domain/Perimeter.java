@@ -1,5 +1,7 @@
 package bg.uni.sofia.fmi.simulator.domain;
 
+import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,10 +10,12 @@ import java.util.stream.Stream;
 // Периметърът, който трябва да се патрулира, разделен на клетки, в които могат да се появяват атаки
 public class Perimeter { 
     private final int size; // дължина на периметъра, разделен на клетки
+    private final PerimeterType type; // типа на перимтъра (линеен, кръг)
     private final List<Attack>[] cells; // масив от списъци, където всяка клетка съдържа атаките, които се намират в нея
 
-    public Perimeter(int size) {
+    public Perimeter(int size, PerimeterType type) {
         this.size = size;
+        this.type = type;
         this.cells = new ArrayList[size];
 
         for (int i = 0; i < size; i++) {
@@ -63,4 +67,5 @@ public class Perimeter {
     public int getSize() {
         return size;
     }
+    public PerimeterType getType() { return type; }
 }

@@ -1,10 +1,8 @@
 package bg.uni.sofia.fmi.simulator.visualization;
 
-import bg.uni.sofia.fmi.simulator.domain.Bot;
-import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
-import bg.uni.sofia.fmi.simulator.domain.Attack;
-import bg.uni.sofia.fmi.simulator.domain.World;
+import bg.uni.sofia.fmi.simulator.domain.*;
 import bg.uni.sofia.fmi.simulator.domain.enums.AttackStatus;
+import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.engine.SimulationCallback;
 import bg.uni.sofia.fmi.simulator.engine.Simulator;
 import javafx.animation.AnimationTimer;
@@ -208,7 +206,7 @@ public class SimulationVisualizer extends Application {
     }
 
     /**
-     * Stop the animation loop (called when visualizer is closed).
+     * Stop the animation loop (called when the visualizer is closed).
      */
     public void stopAnimationLoop() {
         if (animationTimer != null) {
@@ -232,7 +230,7 @@ public class SimulationVisualizer extends Application {
 
     public static void main(String[] args) {
         // Test launcher - creates a dummy world for testing
-        World testWorld = new World(1000);
+        World testWorld = new World(new Perimeter(1000, PerimeterType.CIRCULAR));
         launch(testWorld, 1000);
     }
 }

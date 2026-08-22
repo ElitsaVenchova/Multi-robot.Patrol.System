@@ -8,6 +8,8 @@ public class SimulationConfig {
     // основни параметри на симулацията като продължителност, размер на периметъра, 
     // сийд за генератора на случайни числа и прагове за зареждане
     private SimulationParameters simulation;
+    // конфигурация на периметъра
+    private PerimeterConfig perimeter;
     // конфигурация за различните видове роботи, които ще участват в симулацията
     private List<RobotConfig> robots;
     // конфигурация за зарядните станции в симулацията
@@ -55,10 +57,15 @@ public class SimulationConfig {
         this.chargingStations = chargingStations;
     }
 
+    public PerimeterConfig getPerimeter() { return perimeter; }
+
+    public void setPerimeter(PerimeterConfig perimeter) {
+        this.perimeter = perimeter;
+    }
+
     // Nested class for simulation parameters
     public static class SimulationParameters {
         private int duration;
-        private int perimeterSize;
         private Long seed;
         private double chargeThreshold;
 
@@ -68,14 +75,6 @@ public class SimulationConfig {
 
         public void setDuration(int duration) {
             this.duration = duration;
-        }
-
-        public int getPerimeterSize() {
-            return perimeterSize;
-        }
-
-        public void setPerimeterSize(int perimeterSize) {
-            this.perimeterSize = perimeterSize;
         }
 
         public Long getSeed() {

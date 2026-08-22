@@ -14,8 +14,8 @@ public class World {
     private List<ChargingStation> chargingStations; // Списък с всички зарядни станции
     private final Perimeter perimeter; // Периметърът, който трябва да се патрулира
 
-    public World(double perimeter) {
-        this.perimeter = new Perimeter((int) perimeter);
+    public World(Perimeter perimeter) {
+        this.perimeter = perimeter;
     }
 
     public void addBots(List<Bot> bots) {

@@ -10,12 +10,8 @@ import bg.uni.sofia.fmi.simulator.config.RobotConfig;
 import bg.uni.sofia.fmi.simulator.config.RobotModelConfig;
 import bg.uni.sofia.fmi.simulator.config.RobotModelLoader;
 import bg.uni.sofia.fmi.simulator.config.SimulationConfig;
-import bg.uni.sofia.fmi.simulator.domain.Battery;
-import bg.uni.sofia.fmi.simulator.domain.Bot;
-import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
-import bg.uni.sofia.fmi.simulator.domain.Lidar;
-import bg.uni.sofia.fmi.simulator.domain.Position;
-import bg.uni.sofia.fmi.simulator.domain.World;
+import bg.uni.sofia.fmi.simulator.domain.*;
+import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import bg.uni.sofia.fmi.simulator.behavior.planning.PlanningModule;
 import bg.uni.sofia.fmi.simulator.behavior.energyManagment.EnergyManager;
@@ -30,8 +26,9 @@ import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 public class DomainFactory {
     public static World createWorld(SimulationConfig config) {
         // Създаване на света от конфигурацията
-        double perimeter = config.getSimulation().getPerimeterSize();
-        World world = new World(perimeter);
+        int perimeterSize = config.getPerimeter().getSize();
+        PerimeterType perimeterType = PerimeterType.valueOf(config.getPerimeter().getType().toUpperCase());
+        World world = new World(new Perimeter(perimeterSize, perimeterType));
         // Ботове
         List<Bot> bots = createBots(config, world, config.getSimulation().getChargeThreshold());
         world.addBots(bots);
