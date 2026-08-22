@@ -144,4 +144,8 @@ public class ChargingStation {
     public Position getLocation() {
         return location;
     }
+
+    public long getId() { return id; }
+
+    public Queue<Bot> getQueue() { return queue; }
 }

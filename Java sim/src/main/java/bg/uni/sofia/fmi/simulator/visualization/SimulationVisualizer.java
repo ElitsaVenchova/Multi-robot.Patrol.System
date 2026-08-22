@@ -1,17 +1,22 @@
 package bg.uni.sofia.fmi.simulator.visualization;
 
 import bg.uni.sofia.fmi.simulator.domain.Bot;
+import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
+import bg.uni.sofia.fmi.simulator.domain.Attack;
 import bg.uni.sofia.fmi.simulator.domain.World;
+import bg.uni.sofia.fmi.simulator.domain.enums.AttackStatus;
 import bg.uni.sofia.fmi.simulator.engine.SimulationCallback;
 import bg.uni.sofia.fmi.simulator.engine.Simulator;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SimulationVisualizer extends Application {
@@ -24,6 +29,13 @@ public class SimulationVisualizer extends Application {
     
     // Phase 6: Animation loop members
     private Map<Bot, RobotVisualNode> robotNodes = new HashMap<>();
+    // Phase 7: Charging stations
+    private Map<ChargingStation, ChargingStationVisualNode> stationNodes = new HashMap<>();
+    private final Map<Attack, AttackVisualNode> attackNodes = new HashMap<>();
+    private final Group attackLayer = new Group();
+    private ScaleMapper scaleMapper;
+    private Label tickLabel;
+    private Label attackSummaryLabel;
     private AnimationTimer animationTimer;
     private int currentTick = 0;
 
@@ -38,7 +50,7 @@ public class SimulationVisualizer extends Application {
         int perimeterSize = world.getPerimeter().getSize();
         
         // Create scale mapper for coordinate transformations
-        ScaleMapper scaleMapper = new ScaleMapper(
+        scaleMapper = new ScaleMapper(
                 perimeterSize,
                 CANVAS_PADDING_X,
                 CANVAS_PADDING_X + CANVAS_WIDTH
@@ -60,11 +72,31 @@ public class SimulationVisualizer extends Application {
         endLabel.setLayoutX(CANVAS_PADDING_X + CANVAS_WIDTH - 30);
         endLabel.setLayoutY(PERIMETER_Y + LABEL_OFFSET_Y);
 
+        tickLabel = new Label();
+        tickLabel.setLayoutX(15);
+        tickLabel.setLayoutY(15);
+        updateTickLabel();
+
+        attackSummaryLabel = new Label();
+        attackSummaryLabel.setLayoutX(15);
+        attackSummaryLabel.setLayoutY(40);
+        updateAttackSummaryLabel();
+
         root.getChildren().addAll(
                 perimeter,
+                attackLayer,
                 startLabel,
-                endLabel
+                endLabel,
+                tickLabel,
+                attackSummaryLabel
         );
+
+        // Phase 7: Render all charging stations
+        for (ChargingStation station : world.getChargingStations()) {
+            ChargingStationVisualNode stationNode = new ChargingStationVisualNode(station, scaleMapper, PERIMETER_Y);
+            stationNodes.put(station, stationNode);
+            root.getChildren().add(stationNode);
+        }
 
         // Render all robots
         for (Bot bot : world.getBots()) {
@@ -113,11 +145,23 @@ public class SimulationVisualizer extends Application {
                     currentTick++;
                 }
 
+                updateTickLabel();
+                updateAttackVisuals();
+                updateAttackSummaryLabel();
+
                 // Update all robot visuals based on current world state
                 for (Bot bot : world.getBots()) {
                     RobotVisualNode robotNode = robotNodes.get(bot);
                     if (robotNode != null) {
                         robotNode.updateFrame();
+                    }
+                }
+                
+                // Phase 7: Update all charging station visuals
+                for (ChargingStation station : world.getChargingStations()) {
+                    ChargingStationVisualNode stationNode = stationNodes.get(station);
+                    if (stationNode != null) {
+                        stationNode.updateFrame();
                     }
                 }
                 
@@ -129,6 +173,38 @@ public class SimulationVisualizer extends Application {
         };
         
         animationTimer.start();
+    }
+
+    private void updateTickLabel() {
+        tickLabel.setText("Tick: " + currentTick + " / " + duration);
+    }
+
+    private void updateAttackSummaryLabel() {
+        List<Attack> attacks = world.getPerimeter().streamAttacks().toList();
+        long intercepted = attacks.stream()
+                .filter(attack -> attack.getStatus() == AttackStatus.INTERCEPTED)
+                .count();
+        double successRate = attacks.isEmpty() ? 0.0 : intercepted * 100.0 / attacks.size();
+
+        attackSummaryLabel.setText(String.format(
+                "Intercepted: %d / %d (Success rate: %.1f%%)",
+                intercepted,
+                attacks.size(),
+                successRate
+        ));
+    }
+
+    /** Add marks for newly generated attacks and refresh their current status. */
+    private void updateAttackVisuals() {
+        world.getPerimeter().streamAttacks().forEach(attack -> {
+            AttackVisualNode attackNode = attackNodes.get(attack);
+            if (attackNode == null) {
+                attackNode = new AttackVisualNode(attack, scaleMapper, PERIMETER_Y);
+                attackNodes.put(attack, attackNode);
+                attackLayer.getChildren().add(attackNode);
+            }
+            attackNode.updateFrame();
+        });
     }
 
     /**
