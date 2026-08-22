@@ -11,7 +11,7 @@ import javafx.scene.shape.StrokeLineCap;
 /** A translucent overlay for a robot's assigned patrol section. */
 public class PatrolSectionVisualNode extends Group {
     private static final int CIRCULAR_SEGMENTS = 48;
-    private static final double SECTION_WIDTH = 20;
+    private static final double SECTION_WIDTH = 24;
 
     public PatrolSectionVisualNode(PatrolSection patrolSection, ScaleMapper scaleMapper,
                                    double perimeterY, Color sectionColor) {
