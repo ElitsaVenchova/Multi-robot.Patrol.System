@@ -1,100 +1,145 @@
 Java sim/
 │
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── bg/uni/sofia/fmi/simulator
-│   │   │
-│   │   │       ├── Main.java
-│   │   │
-│   │   │       ├── config/              # YAML parsing & validation
-│   │   │       │   ├── ConfigLoader.java
-│   │   │       │   ├── SimulationConfig.java
-│	│	│		│	├── RobotConfig.java
-│	│	│		│	├── AttackConfig.java
-│   │   │       │   └── SchemaValidator.java
-│   │   │
-│   │   │       ├── domain/              # metamodel (UML classes)
-│   │   │       │   ├── World.java
-│   │   │       │   ├── Bot.java
-│   │   │       │   ├── Battery.java
-│   │   │       │   ├── Lidar.java
-│   │   │       │   ├── Attack.java
-│   │   │       │   ├── ChargeStation.java
-│	│	│		│	├── Position.java
-│	│	│		│	└── enums/
-│	│	│		│		└── AttackStatus.java
-│	│	│		└── factory/
-│	│	│			├── StrategyFactory.java
-│	│	│			└── DomainFactory.java
-│   │   │
-│   │   │       ├── strategy/            # Strategy pattern
-│   │   │       │   ├── patrol/
-│   │   │       │   │   ├── PatrolModel.java
-│   │   │       │   │   ├── RingPatrol.java
-│   │   │       │   │   ├── CounterPhasePatrol.java
-│   │   │       │   │   └── AsyncPatrol.java
-│   │   │       │   │
-│   │   │       │   ├── attack/
-│   │   │       │   │   ├── LoadModel.java
-│   │   │       │   │   ├── PoissonAttack.java
-│   │   │       │   │   ├── UniformAttack.java
-│   │   │       │   │   └── VulnerabilityAttack.java
-│   │   │
-│   │   │       ├── engine/              # simulation engine
-│   │   │       │   ├── Simulator.java
-│   │   │       │   ├── SimulationRunner.java
-│   │   │       │   ├── TickEngine.java
-│   │   │       │   └── EventManager.java
-│   │   │
-│   │   │       ├── concurrency/         # (future parallel execution)
-│   │   │       │   ├── TaskScheduler.java
-│   │   │       │   └── ParallelExecutor.java
-│   │   │
-│   │   │       ├── results/             # metrics & output
-│   │   │       │   ├── SimulationResult.java
-│   │   │       │   ├── MetricsCalculator.java
-│   │   │       │   └── ResultExporter.java
-│   │   │
-│   │   │       ├── util/                # helpers
-│   │   │       │   ├── LoggerUtil.java
-│   │   │       │   └── Constants.java
-│   │   │
-│   │   │       └── exception/           # error handling
-│   │   │           ├── ConfigException.java
-│   │   │           └── SimulationException.java
-│   │   │
-│   │   └── resources/
-│   │       ├── configs/                # YAML DSL files
-│   │       │   ├── scenarios/
-│	│		│	│   └── example.yaml
-│   │       │   ├── robots/
-│	│		│	│	├── turtlebot_pi.yaml
-│	│		│	│	└── drone.yaml
-│   │       │   └── templates/
-│   │       │
-│   │       └── logback.xml             # logging config
-│	│
-│   └── test/
-│       └── java/
-│           └── com/yourname/simulator/
-│               ├── config/
-│               ├── domain/
-│               └── engine/
+├── docs/                               # UML, figures for paper
+│   └── project_structure.txt
 │
 ├── outputs/                            # generated (NOT in git)
 │   ├── logs/
 │   ├── results/                        # CSV / JSON
 │   └── plots/                          # diagrams
 │
-├── experiments/                        # batch runs
-│   └── ExperimentRunner.java
+├── scripts/                            # output processing
+│   └── plot_result.py
 │
-├── docs/                               # UML, figures for paper
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── bg/uni/sofia/fmi/simulator
+│   │   │
+│   │   │       ├── Main.java
+│   │   │	 
+│   │   │       ├── behavior/
+│   │   │       │   ├── collisionAvoidance/
+│	│	│	 	│		└── ObstacleAvoidance.java
+│   │   │       │   ├── energyManagment/
+│	│	│	 	│		└── EnergyManager.java
+│	│	│	 	│	├── navigation/
+│	│	│	 	│		└── Navigation.java
+│   │   │       │   └── planning/
+│   │   │       │       ├── PlanningModule.java
+│   │   │       │       ├── SimplePlanningController.java
+│	│	│	 	│		└── StationSelector.java
+│   │   │
+│   │   │       ├── concurrency/         # (future parallel execution)
+│   │   │       │   ├── ParralelDetectionEngine.java
+│   │   │       │   ├── ParallelExecutor.java
+│   │   │       │   ├── ParallelPatrolExecutor.java
+│   │   │       │   └── SimulationMode.java
+│   │   │	 
+│   │   │       ├── config/              # YAML parsing & validation
+│   │   │       │   ├── AttackConfig.java
+│   │   │       │   ├── ChargingStationConfig.java
+│	│	│	 	│	├── ChargingStationModelConfig.java
+│   │   │       │   ├── ChargingStationModelLoader.java
+│   │   │       │   ├── ConfigLoader.java
+│	│	│	 	│	├── PatrolConfig.java
+│   │   │       │   ├── PerimeterConfig.java
+│   │   │       │   ├── RobotConfig.java
+│	│	│	  	│	├── RobotModelConfig.java
+│	│	│	  	│	├── RobotModelLoader.java
+│	│	│	  	│	├── SchemaValidator.java
+│   │   │       │   └── SimulationConfig.java
+│   │   │	  
+│   │   │       ├── domain/              # metamodel (UML classes)
+│   │   │       │   ├── enums/
+│   │   │       │       ├── AttackStatus.java
+│   │   │       │       ├── BotState.java
+│   │   │       │       ├── ChargingStationStatus.java
+│   │   │       │       ├── PerimeterType.java
+│	│	│	 	│		└── RobotType.java
+│   │   │       │   ├── Attack.java
+│   │   │       │   ├── Battery.java
+│   │   │       │   ├── Bot.java
+│   │   │       │   ├── ChargeStation.java
+│   │   │       │   ├── Lidar.java
+│   │   │       │   ├── Perimeter.java
+│   │   │       │   ├── Position.java
+│	│	│	 	│	└── World.java
+│   │   │
+│   │   │       ├── engine/              # simulation engine
+│   │   │       │   ├── Simulator.java
+│   │   │       │   ├── SimulationRunner.java
+│   │   │       │   └── SimulationCallback.java
+│	│	│	 	
+│	│	│	 	├── experiments/         # batch runs
+│	│	│	 		└── ExperimentRunner.java
+│	│	│	 	
+│	│	│	 	├── factory/
+│	│	│	 		├── DomainFactory.java
+│	│	│	 		└── StrategyFactory.java
+│   │   │
+│   │   │       ├── results/             # metrics & output
+│   │   │       │   ├── AggregatedMetrics.java
+│   │   │       │   ├── MatricAggregator.java
+│   │   │       │   ├── MetricsCalculator.java
+│   │   │       │   ├── ResultExporter.java
+│   │   │       │   └── SimulationMetric.java
+│   │   │	 
+│   │   │       ├── strategy/            # Strategy pattern
+│   │   │       │   ├── attack/
+│   │   │       │   │   ├── LoadModel.java
+│   │   │       │   │   ├── PoissonAttack.java
+│   │   │       │   │   ├── UniformAttack.java
+│   │   │       │   │   └── VulnerabilityAttack.java
+│   │   │       │   │
+│   │   │       │   └── patrol/
+│   │   │       │       ├── AsyncPatrol.java
+│   │   │       │       ├── CounterPhasePatrol.java
+│   │   │       │       ├── Direction.java
+│   │   │       │       ├── PatrolModel.java
+│   │   │       │       ├── PatrolSection.java
+│   │   │       │       ├── PhasePatrol.java
+│   │   │       │       └── RingPatrol.java
+│   │   │
+│   │   │       ├── util/                # helpers
+│   │   │       │   ├── FileUtils.java
+│   │   │       │   ├── IdGenerator.java
+│   │   │       │   ├── MathUtils.java
+│   │   │       │   ├── RandomProvider.java
+│   │   │       │   └── TimeUtils.java
+│   │   │
+│   │   │       └── visualization/       # simulation visualization
+│   │   │           ├── AttackVisualNode.java
+│   │   │           ├── BotVisualNode.java
+│   │   │           ├── ChargingStationVisualNode.java
+│   │   │           ├── PatrolSectionVisualNode.java
+│   │   │           ├── ScaleMapper.java
+│   │   │           └── SimulationVisualizer.java
+│   │   │
+│   │   └── resources/
+│   │       └── configs/                # YAML DSL files
+│   │           ├── robots/
+│	│		 	│	├── drone.yaml
+│	│		 	│	└── turtlebot_pi.yaml
+│	│		 
+│   │           ├── scenarios/
+│	│		 	│	├── base.yaml
+│	│		 	│	├── example.yaml
+│	│		 	│   └── single_robot.yaml
+│	│		 
+│   │           ├── stations/
+│	│		 	│	├── cheap_station.yaml
+│	│		 	│	└── fast_station.yaml
+│	│		 
+│   │           └── templates/
+│	│
+│   └── test/
+│       └── java/
+│           └── bg/uni/sofia/fmi/simulator
+│               └── AppTest.java
 │
 ├── pom.xml                             # Maven config
-├── README.md
-└── .gitignore
+└── README.md
 
 ----------------------------------------------------------------------------------------
 Current flow is actually GOOD:
@@ -120,6 +165,6 @@ World
 // @TODO: Робот да решава да се зарежда като изчислява колко ще му трябва да стигне до станция прямо текущата позиция
 // @TODO: Сега роботите и дроновете са равни. Може би да се направи някакви прeпоркиране
 // @TODO: При кръгов петиметер ботовете да могат да преминават през границата 0-1000, което трябва да се оправи в Navigation.
-
+Преглед utils
 
 // Дали е по-добре лидара и батерията да са отделни конфигурации в YAML и как да се задават, за да може да има различни ботове с различни лидари (мощност и цена)

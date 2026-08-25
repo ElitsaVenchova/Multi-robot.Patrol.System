@@ -48,7 +48,7 @@ public class SimulationVisualizer extends Application {
     };
     
     // Phase 6: Animation loop members
-    private final Map<Bot, RobotVisualNode> robotNodes = new HashMap<>();
+    private final Map<Bot, BotVisualNode> robotNodes = new HashMap<>();
     // Phase 7: Charging stations
     private final Map<ChargingStation, ChargingStationVisualNode> stationNodes = new HashMap<>();
     private final Map<Attack, AttackVisualNode> attackNodes = new HashMap<>();
@@ -149,7 +149,7 @@ public class SimulationVisualizer extends Application {
 
         // Render all robots
         for (Bot bot : world.getBots()) {
-            RobotVisualNode robotNode = new RobotVisualNode(bot, scaleMapper, PERIMETER_Y);
+            BotVisualNode robotNode = new BotVisualNode(bot, scaleMapper, PERIMETER_Y);
             robotNode.updatePosition();
             robotNodes.put(bot, robotNode);
             worldLayer.getChildren().add(robotNode);
@@ -323,7 +323,7 @@ public class SimulationVisualizer extends Application {
         updateAttackSummaryLabel();
 
         for (Bot bot : world.getBots()) {
-            RobotVisualNode robotNode = robotNodes.get(bot);
+            BotVisualNode robotNode = robotNodes.get(bot);
             if (robotNode != null) {
                 robotNode.updateFrame();
             }

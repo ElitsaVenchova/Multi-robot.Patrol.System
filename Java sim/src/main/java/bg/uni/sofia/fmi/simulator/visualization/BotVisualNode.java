@@ -2,7 +2,6 @@ package bg.uni.sofia.fmi.simulator.visualization;
 
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Tooltip;
@@ -29,7 +28,7 @@ import javafx.util.Duration;
  * - Battery level indicator bar shown below robot (Phase 5)
  * - Tooltip shows detailed metadata: battery %, state, position (Phase 5)
  */
-public class RobotVisualNode extends Group {
+public class BotVisualNode extends Group {
     private static final double ROBOT_SIZE = 8;
     private static final double LABEL_FONT_SIZE = 10;
     private static final double BATTERY_BAR_WIDTH = 20;
@@ -40,7 +39,7 @@ public class RobotVisualNode extends Group {
     private final double perimeterY;
     private Rectangle batteryBar;
 
-    public RobotVisualNode(Bot bot, ScaleMapper scaleMapper, double perimeterY) {
+    public BotVisualNode(Bot bot, ScaleMapper scaleMapper, double perimeterY) {
         this.bot = bot;
         this.scaleMapper = scaleMapper;
         this.perimeterY = perimeterY;
