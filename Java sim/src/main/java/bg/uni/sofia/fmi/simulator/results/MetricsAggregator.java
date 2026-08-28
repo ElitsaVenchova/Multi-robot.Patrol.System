@@ -1,5 +1,8 @@
 package bg.uni.sofia.fmi.simulator.results;
 
+import bg.uni.sofia.fmi.simulator.util.MathUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MetricsAggregator {
@@ -13,32 +16,24 @@ public class MetricsAggregator {
 
         if (n == 0) return result;
 
-        // ---- Means ----
-        double sumSuccess = 0.0;
-        double sumDetection = 0.0;
+        List<Double> successRates = new ArrayList<>(n);
+        List<Double> detectionTimes = new ArrayList<>(n);
 
         for (SimulationMetrics m : metricsList) {
-            sumSuccess += m.getSuccessRate();
-            sumDetection += m.getAverageDetectionTime();
+            successRates.add(m.getSuccessRate());
+            detectionTimes.add(m.getAverageDetectionTime());
         }
 
-        double meanSuccess = sumSuccess / n;
-        double meanDetection = sumDetection / n;
+        // ---- Means ----
+        double meanSuccess = MathUtils.mean(successRates);
+        double meanDetection = MathUtils.mean(detectionTimes);
 
         result.setMeanSuccessRate(meanSuccess);
         result.setMeanDetectionTime(meanDetection);
 
         // ---- Standard deviation ----
-        double varSuccess = 0.0;
-        double varDetection = 0.0;
-
-        for (SimulationMetrics m : metricsList) {
-            varSuccess += Math.pow(m.getSuccessRate() - meanSuccess, 2);
-            varDetection += Math.pow(m.getAverageDetectionTime() - meanDetection, 2);
-        }
-
-        double stdSuccess = Math.sqrt(varSuccess / n);
-        double stdDetection = Math.sqrt(varDetection / n);
+        double stdSuccess = MathUtils.std(successRates, meanSuccess);
+        double stdDetection = MathUtils.std(detectionTimes, meanDetection);
 
         result.setStdSuccessRate(stdSuccess);
         result.setStdDetectionTime(stdDetection);

@@ -1,6 +1,7 @@
 package bg.uni.sofia.fmi.simulator.visualization;
 
 import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
+import bg.uni.sofia.fmi.simulator.util.MathUtils;
 import javafx.geometry.Point2D;
 
 /**
@@ -49,7 +50,7 @@ public class ScaleMapper {
             return canvasMinX;
         }
         double ratio = perimeterX / perimeterSize;
-        ratio = Math.max(0, Math.min(1, ratio)); // Clamp to [0, 1]
+        ratio = MathUtils.clamp(ratio, 0, 1); // Clamp to [0, 1]
         return canvasMinX + ratio * (canvasMaxX - canvasMinX);
     }
 
@@ -65,7 +66,7 @@ public class ScaleMapper {
             return 0;
         }
         double ratio = (canvasX - canvasMinX) / canvasRange;
-        ratio = Math.max(0, Math.min(1, ratio)); // Clamp to [0, 1]
+        ratio = MathUtils.clamp(ratio, 0, 1); // Clamp to [0, 1]
         return ratio * perimeterSize;
     }
 
@@ -114,7 +115,7 @@ public class ScaleMapper {
             return -90;
         }
         double ratio = perimeterPosition / perimeterSize;
-        ratio = Math.max(0, Math.min(1, ratio));
+        ratio = MathUtils.clamp(ratio, 0, 1);
         return -90 + ratio * 360;
     }
 

@@ -13,6 +13,8 @@ import bg.uni.sofia.fmi.simulator.results.ResultExporter;
 import bg.uni.sofia.fmi.simulator.results.SimulationMetrics;
 
 // Клас за стартиране на експерименти с различни конфигурации и събиране на резултатите
+// След това с scripts/plot_result.py може да се направят диаграми на резултата от експеримента.
+// В aggregated_results.csv винаги се съдържа резултата само от последният пуснат експертимент
 public class ExperimentRunner {
     private static final String BASE_CONFIG = "configs/scenarios/base.yaml";
 

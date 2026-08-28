@@ -4,6 +4,7 @@ import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.behavior.collisionAvoidance.ObstacleAvoidance;
+import bg.uni.sofia.fmi.simulator.util.MathUtils;
 
 public class Navigation {
     private final ObstacleAvoidance obstacleAvoidance;
@@ -28,13 +29,8 @@ public class Navigation {
         double newX = bot.getPosition().getX() + direction * step;
 
         // clamp
-        newX = Math.max(0, Math.min(newX, world.getPerimeter().getSize()));
+        newX = MathUtils.clamp(newX, 0, world.getPerimeter().getSize());
 
-        if (newX > world.getPerimeter().getSize()) {
-            newX = world.getPerimeter().getSize();
-        } else if (newX < 0) {
-            newX = 0;
-        }
         nextStep = new Position(newX);//Позицията на следващата стъпка на робота
         bot.move(nextStep);//Преместване на робота
     }
