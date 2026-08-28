@@ -24,15 +24,18 @@ public class AsyncPatrol implements PatrolModel {
 
     @Override
     public void initialize(Bot bot, World world) {
-        // Assign patrol section based on bot ID
+        // Изчисляване на секцията спрямо реда на добавяне
         int perimeterSize = world.getPerimeter().getSize();
         int numBots = world.getBots().size();
         double sectionSize = (double) perimeterSize / numBots;
 
-        // Calculate start and end positions for this bot
-        long botId = bot.getId();
-        double startPos = (botId - 1) * sectionSize;
-        double endPos = botId * sectionSize - 1;
+        // Изчисляване на първоначалната и крайната позиция на робота спрямо индексът в света.
+        int botIndex = world.getBots().indexOf(bot);
+        if (botIndex < 0) {
+            throw new IllegalStateException("Bot is not registered in the current world");
+        }
+        double startPos = botIndex * sectionSize;
+        double endPos = (botIndex + 1) * sectionSize - 1;
 
         Position startPosition = new Position(startPos);
         Position endPosition = new Position(endPos);

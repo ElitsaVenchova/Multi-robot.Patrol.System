@@ -1,8 +1,11 @@
 simulation:
   duration: 3600
-  perimeterSize: 100
   seed: 42
-  chargeThreshold: 20.0
+  chargeThreshold: 15.0
+
+perimeter:
+  size: 1000
+  type: CIRCULAR
 
 robots:
   - model: turtlebot_pi

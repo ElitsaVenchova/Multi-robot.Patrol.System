@@ -23,6 +23,7 @@ public class StrategyFactory {
             case "PhasePatrol" -> new PhasePatrol(config);
             case "CounterPhasePatrol" -> new CounterPhasePatrol(config);
             case "AsyncPatrol" -> new AsyncPatrol(config);
+            case "RingPatrol" -> new RingPatrol(config);
             default -> throw new IllegalArgumentException(
                     "Unknown patrol model: " + config.getModel());
         };
