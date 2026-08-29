@@ -37,9 +37,6 @@ public class ExperimentRunner {
                     config.getPatrolModel().setModel(strategy);
                     config.getPatrolModel().setDeviationProbability(config.getPatrolModel().getDeviationProbability());
                     config.getPatrolModel().setMaxDeviationDuration(config.getPatrolModel().getMaxDeviationDuration());
-                    config.getAttackModel().setModel("PoissonAttack");
-                    config.getAttackModel().setLambda(lambda);
-                    config.getSimulation().setSeed(System.currentTimeMillis() + run);
                     // Стартиране на симулацията и събиране на резултатите
                     SimulationRunner runner = new SimulationRunner();
                     SimulationMetrics metrics = runner.runWithResult(config, visualization);

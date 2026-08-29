@@ -4,7 +4,6 @@ import bg.uni.sofia.fmi.simulator.config.AttackConfig;
 import bg.uni.sofia.fmi.simulator.config.PatrolConfig;
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 import bg.uni.sofia.fmi.simulator.strategy.attack.PoissonAttack;
-import bg.uni.sofia.fmi.simulator.strategy.attack.UniformAttack;
 import bg.uni.sofia.fmi.simulator.strategy.attack.VulnerabilityAttack;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.*;
 
