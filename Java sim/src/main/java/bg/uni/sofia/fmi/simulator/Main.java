@@ -7,6 +7,21 @@ import bg.uni.sofia.fmi.simulator.engine.SimulationRunner;
 import bg.uni.sofia.fmi.simulator.experiments.ExperimentRunner;
 
 public class Main {
+    /**
+     * Стартиране на Симулатора за патрулиране. Има създаден CLI paser за подаване на входни аргументи
+     * за режим на изпълнение, дали да има визуализация и път до конфигурация на самата симулация.
+     *   Defaults:
+     *     Execution mode:     experiment
+     *     Visualization:      disabled
+     *     Configuration:      configs/scenarios/example.yaml
+     * @param args
+     *   Examples:
+     *     -r
+     *     -r -v
+     *     -r configs/scenarios/example.yaml
+     *     -e configs/scenarios/experiment.yaml
+     *     -e -v configs/scenarios/experiment.yaml
+     */
     public static void main(String[] args) {
         try {
             // Четене на аргументи от командния ред за конфигурационния файл и режима на изпълнение
