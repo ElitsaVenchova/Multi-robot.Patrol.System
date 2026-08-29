@@ -44,7 +44,6 @@ public class StrategyFactory {
                 yield new PoissonAttack(config.getLambda(),
                         config.getDuration());
             }
-            case "UniformAttack" -> new UniformAttack(config.getLambda(), config.getDuration());
             case "VulnerabilityAttack" -> new VulnerabilityAttack(config.getDuration());
             default -> throw new IllegalArgumentException("Unknown attack model: " + config.getModel());
         };
