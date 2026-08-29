@@ -51,6 +51,14 @@ public class CommandLineParser {
                 }
             }
         }
+
+        // Визуализацията е позволена само при стартиране на единична симулация.
+        if (executionMode == ExecutionMode.EXPERIMENT && visualization) {
+            throw new IllegalArgumentException(
+                    "Visualization is not supported in experiment mode."
+            );
+        }
+
         return new CommandLineOptions(executionMode,visualization,configPath);
     }
 
@@ -65,7 +73,7 @@ public class CommandLineParser {
             Options:
               -r, --run           Run simulation
               -e, --experiment    Run experiments
-              -v, --visualize     Enable visualization
+              -v, --visualize     Enable visualization (run mode only)
               -h, --help          Show this help message
             
             Defaults:
@@ -77,12 +85,12 @@ public class CommandLineParser {
               -r
               -r -v
               -r configs/scenarios/example.yaml
-              -e configs/scenarios/experiment.yaml
-              -e -v configs/scenarios/experiment.yaml
+              -e configs/scenarios/base.yaml
             
             Notes:
               Only one execution mode (-r or -e) can be specified.
               Only one configuration path can be specified.
+              Visualization is not supported in experiment mode.
             """);
     }
 }
