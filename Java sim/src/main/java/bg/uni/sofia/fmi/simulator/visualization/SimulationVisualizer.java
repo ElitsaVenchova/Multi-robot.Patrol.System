@@ -29,6 +29,7 @@ import java.util.Map;
 public class SimulationVisualizer extends Application {
     private static World world;
     private static int duration;
+    private static Runnable onComplete;
     private static final double CANVAS_PADDING_X = 50;
     private static final double CANVAS_WIDTH = 900;
     private static final double PERIMETER_Y = 300;
@@ -312,6 +313,10 @@ public class SimulationVisualizer extends Application {
         if (currentTick >= duration) {
             paused = true;
             animationTimer.stop();
+
+            if (onComplete != null) {
+                onComplete.run();
+            }
         }
         updatePlaybackControls();
     }
@@ -421,8 +426,13 @@ public class SimulationVisualizer extends Application {
      * @param simulationDuration Number of ticks to simulate
      */
     public static void launch(World simulationWorld, int simulationDuration) {
+        launch(simulationWorld, simulationDuration, null);
+    }
+
+    public static void launch(World simulationWorld, int simulationDuration, Runnable completionCallback) {
         world = simulationWorld;
         duration = simulationDuration;
+        onComplete = completionCallback;
         // Launch JavaFX application in a separate thread to avoid blocking
         new Thread(() -> Application.launch(SimulationVisualizer.class)).start();
     }
