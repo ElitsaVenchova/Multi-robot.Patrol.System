@@ -14,9 +14,7 @@ import bg.uni.sofia.fmi.simulator.results.SimulationMetrics;
 
 // Клас за стартиране на експерименти с различни конфигурации и събиране на резултатите
 public class ExperimentRunner {
-    private static final String BASE_CONFIG = "configs/scenarios/base.yaml";
-
-    public void runExperiments(boolean visualization) {
+    public void runExperiments(String configPath, boolean visualization) {
         ConfigLoader loader = new ConfigLoader();
         ResultExporter exporter = new ResultExporter();
         MetricsAggregator aggregator = new MetricsAggregator();
@@ -34,7 +32,7 @@ public class ExperimentRunner {
             for (Double lambda : lambdas) {
                 List<SimulationMetrics> results = new ArrayList<>();
                 for (int run = 0; run < runsPerConfig; run++) {
-                    SimulationConfig config = loader.load(BASE_CONFIG);
+                    SimulationConfig config = loader.load(configPath);
                     // Модифициране на конфигурацията според текущия експеримент
                     config.getPatrolModel().setModel(strategy);
                     config.getPatrolModel().setDeviationProbability(config.getPatrolModel().getDeviationProbability());
