@@ -237,7 +237,7 @@ public class SimulationVisualizer extends Application {
         panDownButton.setOnAction(event -> panViewport(0, PAN_STEP));
         panRightButton.setOnAction(event -> panViewport(PAN_STEP, 0));
 
-        viewportControls = new VBox(new HBox(6, zoomInButton, zoomOutButton, resetViewButton),
+        viewportControls = new VBox(6, new HBox(6, zoomInButton, zoomOutButton, resetViewButton),
                 new HBox(6, panLeftButton, panUpButton, panDownButton, panRightButton));
         viewportControls.setLayoutY(50);
         return viewportControls;

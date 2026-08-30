@@ -16,7 +16,7 @@ import javafx.util.Duration;
 /**
  * Visual representation of a robot on the perimeter.
  * - GROUND robots are drawn as circles
- * - DRONE robots are drawn as triangles (pointing up)
+ * - DRONE robots are drawn as triangles (pointing down)
  * - Color indicates robot state:
  *   - Green (PATROLLING)
  *   - Blue (GOING_TO_PATROL)
@@ -72,16 +72,16 @@ public class BotVisualNode extends Group {
 
     //Създаване на въздушен робот като триъгълник
     private void createDroneShape() {
-        // Triangle pointing up (drone shape)
+        // Triangle pointing down (drone shape)
         double baseX = 0;
-        double baseY = ROBOT_SIZE;
-        double topY = -ROBOT_SIZE;
-        
+        double baseY = -ROBOT_SIZE;
+
         Polygon triangle = new Polygon(
-                baseX, baseY,                              // bottom left
-                baseX + ROBOT_SIZE, baseY,               // bottom right
-                baseX + ROBOT_SIZE / 2.0, topY           // top center
+                baseX, baseY,                              // top left
+                baseX + ROBOT_SIZE, baseY,                // top right
+                baseX + ROBOT_SIZE / 2.0, ROBOT_SIZE         // bottom center
         );
+
         triangle.setFill(getStateColor());
         triangle.setStroke(Color.BLACK);
         triangle.setStrokeWidth(1);
