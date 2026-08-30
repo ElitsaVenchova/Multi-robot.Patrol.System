@@ -26,10 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// Основният клас стартиращ визуализацията.
+// КОгато е пусната, тук се управляват ticks в World, за да може да се рисуват на екрана.
 public class SimulationVisualizer extends Application {
-    private static World world;
-    private static int duration;
-    private static Runnable onComplete;
+    private static World world; //Светът като от него се пускат ticks и се рисува състоянието
+    private static int duration; //Продължителност на симулацията (от конфигурацията)
+    private static Runnable onComplete; // Callback to execute when the simulation reaches its end
     private static final double CANVAS_PADDING_X = 50;
     private static final double CANVAS_WIDTH = 900;
     private static final double PERIMETER_Y = 300;
@@ -39,14 +41,14 @@ public class SimulationVisualizer extends Application {
     private static final double CIRCULAR_CENTER_X = 500;
     private static final double CIRCULAR_CENTER_Y = SCENE_HEIGHT / 2;
     private static final double CIRCULAR_RADIUS = 220;
-    private static final double MIN_ZOOM = 0.5;
-    private static final double MAX_ZOOM = 3.0;
-    private static final double ZOOM_FACTOR = 1.25;
-    private static final double PAN_STEP = 50;
+    private static final double MIN_ZOOM = 0.5; //Минимално стойност на zoom
+    private static final double MAX_ZOOM = 3.0; //Максимална стойност на zoom
+    private static final double ZOOM_FACTOR = 1.25; //Стъпка на zoom
+    private static final double PAN_STEP = 50; //Стъпка на преместване на визуализацията на периметъра
+    //Цветовете на секциите за патрулиране, за да се отличават една от друга
     private static final Color[] PATROL_SECTION_COLORS = {
             Color.DODGERBLUE, Color.MEDIUMSEAGREEN, Color.DARKORANGE,
-            Color.MEDIUMPURPLE, Color.DEEPSKYBLUE, Color.HOTPINK
-    };
+            Color.MEDIUMPURPLE, Color.DEEPSKYBLUE, Color.HOTPINK};
     
     // Phase 6: Animation loop members
     private final Map<Bot, BotVisualNode> robotNodes = new HashMap<>();
@@ -171,13 +173,11 @@ public class SimulationVisualizer extends Application {
     }
 
     /**
-     * Phase 6 (Refactored): Start animation timer that drives simulation ticks.
-     * 
+     * Phase 6 (Refactored): Start an animation timer that drives simulation ticks.
      * The timer controls the simulation tick rate:
      * - Calls world.tick(currentTick) to advance simulation
      * - Updates robot visuals after each tick
      * - Runs at ~60 FPS or controlled animation speed
-     * 
      * This synchronizes visualization with simulation for real-time animation.
      */
     private void startAnimationLoop() {
@@ -300,16 +300,17 @@ public class SimulationVisualizer extends Application {
 
     /** Advance exactly one simulation tick and then refresh every visual element. */
     private void advanceSimulation() {
-        if (currentTick >= duration) {
+        if (currentTick >= duration) {//Защитна проверка (най-вече за step бутона)
             paused = true;
             updatePlaybackControls();
             return;
         }
-
+        //Извикване на следващата стъпка в света
         world.tick(currentTick);
         currentTick++;
         refreshVisuals();
 
+        //Ако симулацията е приключила, анимацията се спира и се извиква callback, ако има
         if (currentTick >= duration) {
             paused = true;
             animationTimer.stop();
@@ -342,6 +343,7 @@ public class SimulationVisualizer extends Application {
         }
     }
 
+    //Обновява контролите на симулацията спрямо това дали е на пауза и дали е приключила
     private void updatePlaybackControls() {
         boolean complete = currentTick >= duration;
         pauseButton.setDisable(paused || complete);
@@ -349,22 +351,21 @@ public class SimulationVisualizer extends Application {
         stepButton.setDisable(!paused || complete);
     }
 
+    //Обновяване на надписа за текущия tick
     private void updateTickLabel() {
         tickLabel.setText("Tick: " + currentTick + " / " + duration);
     }
 
+    //Обновяване на статистиката за хванати, пропусната и общо атаки
     private void updateAttackSummaryLabel() {
         List<Attack> attacks = world.getPerimeter().streamAttacks().toList();
-        long intercepted = attacks.stream()
-                .filter(attack -> attack.getStatus() == AttackStatus.INTERCEPTED)
-                .count();
+        long intercepted = attacks.stream().filter(attack -> attack.getStatus() == AttackStatus.INTERCEPTED).count();
+        long missed = attacks.stream().filter(attack -> attack.getStatus() == AttackStatus.MISSED).count();
         double successRate = attacks.isEmpty() ? 0.0 : intercepted * 100.0 / attacks.size();
 
         attackSummaryLabel.setText(String.format(
-                "Intercepted: %d / %d (Success rate: %.1f%%)",
-                intercepted,
-                attacks.size(),
-                successRate
+                "Attacks: %d  |  Intercepted: %d  |  Missed: %d  |  Success: %.1f%%",
+                attacks.size(), intercepted, missed, successRate
         ));
     }
 
@@ -376,12 +377,7 @@ public class SimulationVisualizer extends Application {
 
             if (bot.getState() == BotState.PATROLLING && patrolSection != null) {
                 if (sectionNode == null) {
-                    sectionNode = new PatrolSectionVisualNode(
-                            patrolSection,
-                            scaleMapper,
-                            PERIMETER_Y,
-                            getPatrolSectionColor(bot)
-                    );
+                    sectionNode = new PatrolSectionVisualNode(patrolSection, scaleMapper, PERIMETER_Y, getPatrolSectionColor(bot));
                     patrolSectionNodes.put(bot, sectionNode);
                     patrolSectionLayer.getChildren().add(sectionNode);
                 }
@@ -392,6 +388,7 @@ public class SimulationVisualizer extends Application {
         }
     }
 
+    //Избор на случаен цвят за секция за патрулиране
     private Color getPatrolSectionColor(Bot bot) {
         return PATROL_SECTION_COLORS[Math.floorMod(bot.getId(), PATROL_SECTION_COLORS.length)];
     }
@@ -429,6 +426,7 @@ public class SimulationVisualizer extends Application {
         launch(simulationWorld, simulationDuration, null);
     }
 
+    // Стартиране на визуализацията с callback функция
     public static void launch(World simulationWorld, int simulationDuration, Runnable completionCallback) {
         world = simulationWorld;
         duration = simulationDuration;
