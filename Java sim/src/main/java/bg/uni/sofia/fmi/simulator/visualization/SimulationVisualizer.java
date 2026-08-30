@@ -36,8 +36,8 @@ public class SimulationVisualizer extends Application {
     private static final double CANVAS_WIDTH = 900;
     private static final double PERIMETER_Y = 300;
     private static final double LABEL_OFFSET_Y = 5;
-    private static final double SCENE_WIDTH = 1000;
-    private static final double SCENE_HEIGHT = 600;
+    private static final double SCENE_WIDTH = 1000;//Първоначален размер на прозореца и симулацията пасва в него. После се изчислва трансформацията спрямо него.
+    private static final double SCENE_HEIGHT = 600; //Първоначален размер на прозореца и симулацията пасва в него. После се изчислва трансформацията спрямо него.
     private static final double CIRCULAR_CENTER_X = 500;
     private static final double CIRCULAR_CENTER_Y = SCENE_HEIGHT / 2;
     private static final double CIRCULAR_RADIUS = 220;
@@ -49,33 +49,31 @@ public class SimulationVisualizer extends Application {
     private static final Color[] PATROL_SECTION_COLORS = {
             Color.DODGERBLUE, Color.MEDIUMSEAGREEN, Color.DARKORANGE,
             Color.MEDIUMPURPLE, Color.DEEPSKYBLUE, Color.HOTPINK};
-    
-    // Phase 6: Animation loop members
-    private final Map<Bot, BotVisualNode> robotNodes = new HashMap<>();
+    private final Map<Bot, BotVisualNode> robotNodes = new HashMap<>(); //Визуалните nodes на роботите
     // Phase 7: Charging stations
-    private final Map<ChargingStation, ChargingStationVisualNode> stationNodes = new HashMap<>();
-    private final Map<Attack, AttackVisualNode> attackNodes = new HashMap<>();
-    private final Map<Bot, PatrolSectionVisualNode> patrolSectionNodes = new HashMap<>();
+    private final Map<ChargingStation, ChargingStationVisualNode> stationNodes = new HashMap<>(); //Визуалните nodes на станциите
+    private final Map<Attack, AttackVisualNode> attackNodes = new HashMap<>(); //Визуалните nodes на атаките
+    private final Map<Bot, PatrolSectionVisualNode> patrolSectionNodes = new HashMap<>();//Визуалните nodes на секциите за патрулиране
     private final Group worldLayer = new Group();
     private final Scale worldScale = new Scale(1, 1, 0, 0);
     private final Translate worldTranslation = new Translate();
     private final Group patrolSectionLayer = new Group();
     private final Group attackLayer = new Group();
     private ScaleMapper scaleMapper;
-    private Label tickLabel;
-    private Label attackSummaryLabel;
-    private HBox playbackControls;
-    private VBox viewportControls;
-    private Button pauseButton;
-    private Button resumeButton;
-    private Button stepButton;
+    private Label tickLabel;//Надписа с информация за tick и общия брой
+    private Label attackSummaryLabel;//Надпис с обобщна информация за атакаите (хванати, пропусанти, общо, succ rate)
+    private HBox playbackControls;//Бутони за управление на симулацията (start, stop, next step)
+    private VBox viewportControls;//Бутони за управление на показването на симулацията (zoom, pan)
+    private Button pauseButton;//Бутонът за пауза на симулацията
+    private Button resumeButton;//Бутонът за пускане на симулацията
+    private Button stepButton;//Бутонът за изпълнение на следващата стъпка, когато симулацията е на пауза
     private AnimationTimer animationTimer;
-    private int currentTick = 0;
-    private boolean paused;
-    private double zoom = 1.0;
-    private double panX;
-    private double panY;
-    private Scene scene;
+    private int currentTick = 0;//текущият tick на симулацията
+    private boolean paused;//флаг дали симулацията е на пауза
+    private double zoom = 1.0;//текущия zoom на симулацията. По подразбиране 1.
+    private double panX;//Отместване визуализацията на симулацията по X
+    private double panY;//Отместване визуализацията на симулацията по Y
+    private Scene scene;//Цялата сцената на симулацията с всички видими елементи.
 
     public SimulationVisualizer() {
         worldLayer.getTransforms().addAll(worldTranslation, worldScale);
@@ -92,9 +90,7 @@ public class SimulationVisualizer extends Application {
         Shape perimeter;
         List<Label> perimeterLabels = new java.util.ArrayList<>();
         if (perimeterType == PerimeterType.CIRCULAR) {
-            scaleMapper = ScaleMapper.circular(
-                    perimeterSize, CIRCULAR_CENTER_X, CIRCULAR_CENTER_Y, CIRCULAR_RADIUS
-            );
+            scaleMapper = ScaleMapper.circular(perimeterSize, CIRCULAR_CENTER_X, CIRCULAR_CENTER_Y, CIRCULAR_RADIUS);
             perimeter = new Circle(CIRCULAR_CENTER_X, CIRCULAR_CENTER_Y, CIRCULAR_RADIUS);
             perimeter.setFill(Color.TRANSPARENT);
             perimeter.setStroke(Color.LIGHTGRAY);
@@ -105,15 +101,8 @@ public class SimulationVisualizer extends Application {
             circularLabel.setLayoutY(CIRCULAR_CENTER_Y - CIRCULAR_RADIUS - 10);
             perimeterLabels.add(circularLabel);
         } else {
-            scaleMapper = new ScaleMapper(
-                    perimeterSize,
-                    CANVAS_PADDING_X,
-                    CANVAS_PADDING_X + CANVAS_WIDTH
-            );
-            perimeter = new Line(
-                    CANVAS_PADDING_X, PERIMETER_Y,
-                    CANVAS_PADDING_X + CANVAS_WIDTH, PERIMETER_Y
-            );
+            scaleMapper = new ScaleMapper(perimeterSize, CANVAS_PADDING_X, CANVAS_PADDING_X + CANVAS_WIDTH);
+            perimeter = new Line(CANVAS_PADDING_X, PERIMETER_Y, CANVAS_PADDING_X + CANVAS_WIDTH, PERIMETER_Y);
 
             Label startLabel = new Label("0");
             startLabel.setLayoutX(CANVAS_PADDING_X - 5);
@@ -159,21 +148,24 @@ public class SimulationVisualizer extends Application {
         }
 
         scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
-        scene.widthProperty().addListener((observable, oldWidth, newWidth) -> updateViewportLayout());
-        scene.heightProperty().addListener((observable, oldHeight, newHeight) -> updateViewportLayout());
+        scene.widthProperty().addListener((observable, oldWidth, newWidth)
+                -> updateViewportLayout());
+        scene.heightProperty().addListener((observable, oldHeight, newHeight)
+                -> updateViewportLayout());
         updateViewportLayout();
 
+        //Put everything on the screen
         stage.setTitle("Perimeter Surveillance Simulator");
         stage.setScene(scene);
         stage.show();
         Platform.runLater(this::updateViewportLayout);
         
-        // Phase 6: Start animation loop that drives simulation ticks
+        // Start animation loop that drives simulation ticks
         startAnimationLoop();
     }
 
     /**
-     * Phase 6 (Refactored): Start an animation timer that drives simulation ticks.
+     * Start an animation timer that drives simulation ticks.
      * The timer controls the simulation tick rate:
      * - Calls world.tick(currentTick) to advance simulation
      * - Updates robot visuals after each tick
@@ -202,6 +194,7 @@ public class SimulationVisualizer extends Application {
         animationTimer.start();
     }
 
+    //Добавяне на бутоните за пускане, спиране и преместване на следваща стъпка
     private HBox createPlaybackControls() {
         pauseButton = new Button("Pause");
         resumeButton = new Button("Resume");
@@ -226,6 +219,7 @@ public class SimulationVisualizer extends Application {
         return playbackControls;
     }
 
+    //Добавяне на контролите на zoom и преместване на симулацията
     private VBox createViewportControls() {
         Button zoomInButton = new Button("Zoom +");
         Button zoomOutButton = new Button("Zoom -");
@@ -243,20 +237,19 @@ public class SimulationVisualizer extends Application {
         panDownButton.setOnAction(event -> panViewport(0, PAN_STEP));
         panRightButton.setOnAction(event -> panViewport(PAN_STEP, 0));
 
-        viewportControls = new VBox(
-                6,
-                new HBox(6, zoomInButton, zoomOutButton, resetViewButton),
-                new HBox(6, panLeftButton, panUpButton, panDownButton, panRightButton)
-        );
+        viewportControls = new VBox(new HBox(6, zoomInButton, zoomOutButton, resetViewButton),
+                new HBox(6, panLeftButton, panUpButton, panDownButton, panRightButton));
         viewportControls.setLayoutY(50);
         return viewportControls;
     }
 
+    //Промяна на zoom-а на симулацията
     private void changeZoom(double factor) {
         zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom * factor));
         updateViewportTransform();
     }
 
+    //Рестартиране на позицията на симулацията в първоначалния вид (без pan и zoom)
     private void resetViewport() {
         zoom = 1.0;
         panX = 0;
@@ -264,6 +257,7 @@ public class SimulationVisualizer extends Application {
         updateViewportTransform();
     }
 
+    //Преместване позицията на симулацията с контролите
     private void panViewport(double deltaX, double deltaY) {
         panX += deltaX;
         panY += deltaY;
@@ -275,7 +269,8 @@ public class SimulationVisualizer extends Application {
         if (scene == null) {
             return;
         }
-
+        // Взимане на ширината и височината на прозореца, изчислява размера,за да пасне сцената в прозореца
+        // и накрая изчислява реалния размер според зададения zoom
         double sceneWidth = scene.getWidth();
         double sceneHeight = scene.getHeight();
         double fitScale = Math.min(sceneWidth / SCENE_WIDTH, sceneHeight / SCENE_HEIGHT);
@@ -322,6 +317,8 @@ public class SimulationVisualizer extends Application {
         updatePlaybackControls();
     }
 
+    //Обновяване на визуалните елементи в симулацията - tick labes, patrol sections, attacks, attacks stats,
+    // bots и charging stations
     private void refreshVisuals() {
         updateTickLabel();
         updatePatrolSectionVisuals();
@@ -388,7 +385,7 @@ public class SimulationVisualizer extends Application {
         }
     }
 
-    //Избор на случаен цвят за секция за патрулиране
+    //Избор на цвят за секция за патрулиране според id-то на робота, за да не се повтарят две съседни секции
     private Color getPatrolSectionColor(Bot bot) {
         return PATROL_SECTION_COLORS[Math.floorMod(bot.getId(), PATROL_SECTION_COLORS.length)];
     }

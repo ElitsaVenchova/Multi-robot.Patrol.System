@@ -1,7 +1,6 @@
 package bg.uni.sofia.fmi.simulator.visualization;
 
 import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
-import bg.uni.sofia.fmi.simulator.domain.enums.ChargingStationStatus;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Tooltip;
@@ -13,19 +12,18 @@ import javafx.util.Duration;
 
 /**
  * Visual representation of a charging station on the perimeter.
- * 
  * - Drawn as a rectangle on the perimeter
  * - Color indicates station status:
  *   - Green (AVAILABLE)
  *   - Yellow (OCCUPIED)
  *   - Red (FAIL)
- * - Queue size displayed as number
+ * - Queue size displayed as a number
  * - Tooltip shows detailed metadata on hover
  */
 public class ChargingStationVisualNode extends Group {
-    private static final double STATION_WIDTH = 20;
-    private static final double STATION_HEIGHT = 10;
-    private static final double LABEL_FONT_SIZE = 9;
+    private static final double STATION_WIDTH = 20;//размери на станцията
+    private static final double STATION_HEIGHT = 10;//размери на станцията
+    private static final double LABEL_FONT_SIZE = 9;//размер на label-а (брой свободни слотове)
 
     private final ChargingStation station;
     private final ScaleMapper scaleMapper;
@@ -51,6 +49,7 @@ public class ChargingStationVisualNode extends Group {
         updatePosition();
     }
 
+    //Създаване на правоъгълник за представяне на станцията
     private void createStationShape() {
         stationRect = new Rectangle(STATION_WIDTH, STATION_HEIGHT);
         stationRect.setStroke(Color.BLACK);
@@ -60,6 +59,7 @@ public class ChargingStationVisualNode extends Group {
         this.getChildren().add(stationRect);
     }
 
+    //Добавяне на надпис с размера на опашката за станцията
     private void addQueueLabel() {
         queueLabel = new Text(String.valueOf(station.getQueueSize()));
         queueLabel.setFont(new Font(LABEL_FONT_SIZE));
@@ -72,19 +72,12 @@ public class ChargingStationVisualNode extends Group {
         this.getChildren().add(queueLabel);
     }
 
-    /**
-     * Phase 7: Add tooltip showing detailed station metadata.
-     */
+    /// Add a tooltip showing detailed station metadata.
     private void addMetadataTooltip() {
         String tooltipText = String.format(
                 "Charging Station #%d\nStatus: %s\nQueue: %d/%d\nLocation: %.1f\nPower: %.1f",
-                station.getId(),
-                station.getStatus().toString(),
-                station.getQueueSize(),
-                station.getTotalSlots(),
-                station.getLocation().getX(),
-                station.getPower()
-        );
+                station.getId(), station.getStatus().toString(), station.getQueueSize(),
+                station.getTotalSlots(), station.getLocation().getX(), station.getPower());
 
         Tooltip tooltip = new Tooltip(tooltipText);
         tooltip.setShowDelay(Duration.millis(300));
@@ -92,9 +85,7 @@ public class ChargingStationVisualNode extends Group {
         Tooltip.install(this, tooltip);
     }
 
-    /**
-     * Update station rectangle position based on its X coordinate.
-     */
+    /// Update the station rectangle position based on its X coordinate.
     public void updatePosition() {
         if (scaleMapper.isCircular()) {
             Point2D canvasPosition = scaleMapper.toCanvasPoint(station.getLocation().getX(), perimeterY, 15);
@@ -107,7 +98,7 @@ public class ChargingStationVisualNode extends Group {
     }
 
     /**
-     * Update visual representation based on current station state.
+     * Update visual representation based on the current station state.
      * Called each frame to reflect queue size and status changes.
      */
     public void updateFrame() {
@@ -125,9 +116,5 @@ public class ChargingStationVisualNode extends Group {
             case FAIL -> Color.RED;
         };
         stationRect.setFill(stationColor);
-    }
-
-    public ChargingStation getStation() {
-        return station;
     }
 }
