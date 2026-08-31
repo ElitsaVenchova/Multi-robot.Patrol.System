@@ -11,8 +11,8 @@ import javafx.scene.transform.Rotate;
 
 /** Visual tick mark for an attack at its position on the perimeter. */
 public class AttackVisualNode extends Group {
-    private static final double POINT_RADIUS = 6;
-    private static final double MARKER_LENGTH = 14;
+    private static final double POINT_RADIUS = 6;//Размер на точката на атаката
+    private static final double MARKER_LENGTH = 14;//дължина на линейния маркер
 
     private final Attack attack;
     private final Line marker;
@@ -20,23 +20,18 @@ public class AttackVisualNode extends Group {
 
     public AttackVisualNode(Attack attack, ScaleMapper scaleMapper, double perimeterY) {
         this.attack = attack;
-        this.marker = new Line(
-                0, -(POINT_RADIUS + MARKER_LENGTH),
-                0, -(POINT_RADIUS + 1)
-        );
+        this.marker = new Line(0, -(POINT_RADIUS + MARKER_LENGTH), 0, -(POINT_RADIUS + 1));
         this.point = new Circle(0, 0, POINT_RADIUS);
 
         getChildren().addAll(marker, point);
         Point2D canvasPosition = scaleMapper.toCanvasPoint(attack.getPosition().getX(), perimeterY);
         setLayoutX(canvasPosition.getX());
         setLayoutY(canvasPosition.getY());
-        getTransforms().add(new Rotate(
-                scaleMapper.toMarkerRotationDegrees(attack.getPosition().getX()), 0, 0
-        ));
+        getTransforms().add(new Rotate(scaleMapper.toMarkerRotationDegrees(attack.getPosition().getX()), 0, 0));
         updateFrame();
     }
 
-    /** Refresh the mark's colour after the attack status changes. */
+    /** Refresh the mark's color after the attack status changes. */
     public void updateFrame() {
         Color color = switch (attack.getStatus()) {
             case ACTIVE -> Color.CRIMSON;

@@ -49,12 +49,19 @@ public class ResultExporter {
         try (FileWriter writer = new FileWriter(file, true)) {
 
             if (!fileExists) {
+                writer.append("patrol_model,patrol_deviation_probability,patrol_deviation_duration,");
+                writer.append("attack_model,attack_lambda,attack_duration,");
                 writer.append("total_attacks,intercepted,missed,success_rate,avg_detection_time,avg_response_time\n");
             }
 
+            writer.append(String.valueOf(config.getPatrolModel().getModel())).append(",");
             writer.append(String.valueOf(config.getPatrolModel().getDeviationProbability())).append(",");
             writer.append(String.valueOf(config.getPatrolModel().getMaxDeviationDuration())).append(",");
+
+            writer.append(String.valueOf(config.getAttackModel().getModel())).append(",");
             writer.append(String.valueOf(config.getAttackModel().getLambda())).append(",");
+            writer.append(String.valueOf(config.getAttackModel().getDuration())).append(",");
+
             writer.append(String.valueOf(metrics.getTotalAttacks())).append(",");
             writer.append(String.valueOf(metrics.getInterceptedAttacks())).append(",");
             writer.append(String.valueOf(metrics.getMissedAttacks())).append(",");

@@ -16,9 +16,7 @@ import bg.uni.sofia.fmi.simulator.results.SimulationMetrics;
 // След това с scripts/plot_result.py може да се направят диаграми на резултата от експеримента.
 // В aggregated_results.csv винаги се съдържа резултата само от последният пуснат експертимент
 public class ExperimentRunner {
-    private static final String BASE_CONFIG = "configs/scenarios/base.yaml";
-
-    public void runExperiments(boolean visualization) {
+    public void runExperiments(String configPath, boolean visualization) {
         ConfigLoader loader = new ConfigLoader();
         ResultExporter exporter = new ResultExporter();
         MetricsAggregator aggregator = new MetricsAggregator();
@@ -36,14 +34,11 @@ public class ExperimentRunner {
             for (Double lambda : lambdas) {
                 List<SimulationMetrics> results = new ArrayList<>();
                 for (int run = 0; run < runsPerConfig; run++) {
-                    SimulationConfig config = loader.load(BASE_CONFIG);
+                    SimulationConfig config = loader.load(configPath);
                     // Модифициране на конфигурацията според текущия експеримент
                     config.getPatrolModel().setModel(strategy);
                     config.getPatrolModel().setDeviationProbability(config.getPatrolModel().getDeviationProbability());
                     config.getPatrolModel().setMaxDeviationDuration(config.getPatrolModel().getMaxDeviationDuration());
-                    config.getAttackModel().setModel("PoissonAttack");
-                    config.getAttackModel().setLambda(lambda);
-                    config.getSimulation().setSeed(System.currentTimeMillis() + run);
                     // Стартиране на симулацията и събиране на резултатите
                     SimulationRunner runner = new SimulationRunner();
                     SimulationMetrics metrics = runner.runWithResult(config, visualization);

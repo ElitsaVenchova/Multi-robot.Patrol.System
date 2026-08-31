@@ -31,3 +31,4 @@ patrol:
 attackModel:
   model: PoissonAttack
   lambda: 0.3
+  duration: 80

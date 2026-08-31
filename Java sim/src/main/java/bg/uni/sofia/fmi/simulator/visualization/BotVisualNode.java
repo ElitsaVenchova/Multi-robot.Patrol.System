@@ -15,24 +15,23 @@ import javafx.util.Duration;
 
 /**
  * Visual representation of a robot on the perimeter.
- * 
  * - GROUND robots are drawn as circles
- * - DRONE robots are drawn as triangles (pointing up)
+ * - DRONE robots are drawn as triangles (pointing down)
  * - Color indicates robot state:
  *   - Green (PATROLLING)
  *   - Blue (GOING_TO_PATROL)
  *   - Yellow (GOING_TO_CHARGE)
  *   - Orange (CHARGING)
  *   - Red (ERROR)
- * - Robot ID is displayed as label
- * - Battery level indicator bar shown below robot (Phase 5)
- * - Tooltip shows detailed metadata: battery %, state, position (Phase 5)
+ * - Robot ID is displayed as a label
+ * - Battery level indicator bar shown below robot
+ * - Tooltip shows detailed metadata: battery %, state, position
  */
 public class BotVisualNode extends Group {
-    private static final double ROBOT_SIZE = 8;
-    private static final double LABEL_FONT_SIZE = 10;
-    private static final double BATTERY_BAR_WIDTH = 20;
-    private static final double BATTERY_BAR_HEIGHT = 3;
+    private static final double ROBOT_SIZE = 8;//размера на робота
+    private static final double LABEL_FONT_SIZE = 10;//размера на label-а (id-то на робота)
+    private static final double BATTERY_BAR_WIDTH = 20;//размер на полето за батерия
+    private static final double BATTERY_BAR_HEIGHT = 3;//размер на полето за батерия
 
     private final Bot bot;
     private final ScaleMapper scaleMapper;
@@ -61,6 +60,7 @@ public class BotVisualNode extends Group {
         addMetadataTooltip();
     }
 
+    //Създаване на наземен робот като кръг
     private void createGroundRobotShape() {
         Circle circle = new Circle(ROBOT_SIZE);
         circle.setFill(getStateColor());
@@ -70,17 +70,18 @@ public class BotVisualNode extends Group {
         this.getChildren().add(circle);
     }
 
+    //Създаване на въздушен робот като триъгълник
     private void createDroneShape() {
-        // Triangle pointing up (drone shape)
+        // Triangle pointing down (drone shape)
         double baseX = 0;
-        double baseY = ROBOT_SIZE;
-        double topY = -ROBOT_SIZE;
-        
+        double baseY = -ROBOT_SIZE;
+
         Polygon triangle = new Polygon(
-                baseX, baseY,                              // bottom left
-                baseX + ROBOT_SIZE, baseY,               // bottom right
-                baseX + ROBOT_SIZE / 2.0, topY           // top center
+                baseX, baseY,                              // top left
+                baseX + ROBOT_SIZE, baseY,                // top right
+                baseX + ROBOT_SIZE / 2.0, ROBOT_SIZE         // bottom center
         );
+
         triangle.setFill(getStateColor());
         triangle.setStroke(Color.BLACK);
         triangle.setStrokeWidth(1);
@@ -88,6 +89,7 @@ public class BotVisualNode extends Group {
         this.getChildren().add(triangle);
     }
 
+    //Добавяне id-то на робота като label
     private void addRobotLabel() {
         Text label = new Text(String.valueOf(bot.getId()));
         label.setFont(new Font(LABEL_FONT_SIZE));
@@ -101,7 +103,7 @@ public class BotVisualNode extends Group {
     }
 
     /**
-     * Phase 5: Add battery level indicator bar below the robot.
+     * Add a battery level indicator bar below the robot.
      * Bar color represents battery level:
      * - Green (>60%) → Yellow (30-60%) → Red (<30%)
      */
@@ -119,13 +121,10 @@ public class BotVisualNode extends Group {
         this.getChildren().add(batteryBar);
     }
 
-    /**
-     * Update battery bar fill color and width based on current battery level.
-     */
+    /// Update battery bar fill color and width based on the current battery level.
     private void updateBatteryBar() {
         double currentLevel = bot.getBattery().getCurrentLevel();
-        double capacity = bot.getBattery().getCurrentLevel() + 
-                         (100 - bot.getBattery().getCurrentLevel()); // Estimate max
+        double capacity = bot.getBattery().getCurrentLevel() +   (100 - bot.getBattery().getCurrentLevel()); // Estimate max
         
         // Use actual battery capacity if available, else estimate
         double batteryPercent = currentLevel / capacity;
@@ -146,9 +145,7 @@ public class BotVisualNode extends Group {
         batteryBar.setFill(batteryColor);
     }
 
-    /**
-     * Phase 5: Add tooltip showing detailed robot metadata.
-     */
+    /// Add a tooltip showing detailed robot metadata.
     private void addMetadataTooltip() {
         String tooltipText = String.format(
                 "Robot #%d\nType: %s\nState: %s\nBattery: %.1f%%\nPosition: %.1f",
@@ -165,15 +162,11 @@ public class BotVisualNode extends Group {
         Tooltip.install(this, tooltip);
     }
 
-    /**
-     * Calculate battery percentage for display.
-     */
+    /// Calculate battery percentage for display.
     private double getBatteryPercent() {
         double current = bot.getBattery().getCurrentLevel();
-        // Estimate capacity - in real implementation, Bot should expose maxCapacity
-        // For now, we use a rough estimate based on current level
-        double estimated = current * 1.5; // Rough estimate
-        return Math.min(100, (current / estimated) * 100);
+        double capacity = bot.getBattery().getCapacity();
+        return Math.min(100, (current / capacity) * 100);
     }
 
     /**
@@ -187,7 +180,7 @@ public class BotVisualNode extends Group {
     }
 
     /**
-     * Update the robot's visual representation based on current state and battery.
+     * Update the robot's visual representation based on the current state and battery.
      * Should be called at each simulation tick.
      */
     public void updateFrame() {
@@ -210,7 +203,7 @@ public class BotVisualNode extends Group {
     }
 
     /**
-     * Update the robot's visual color based on current state.
+     * Update the robot's visual color based on the current state.
      * Should be called whenever the bot's state changes.
      */
     public void updateState() {
@@ -236,9 +229,5 @@ public class BotVisualNode extends Group {
             case CHARGING -> Color.ORANGE;
             case ERROR -> Color.RED;
         };
-    }
-
-    public Bot getBot() {
-        return bot;
     }
 }

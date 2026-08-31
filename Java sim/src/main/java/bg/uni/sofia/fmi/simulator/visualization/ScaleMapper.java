@@ -7,7 +7,6 @@ import javafx.geometry.Point2D;
 /**
  * Helper class for mapping between simulation coordinates (perimeter position)
  * and canvas coordinates (pixels).
- * 
  * The perimeter is represented as a 1D line segment on the canvas.
  * Perimeter position [0, perimeterSize) maps to canvas X [canvasMinX, canvasMaxX]
  */
@@ -55,7 +54,7 @@ public class ScaleMapper {
     }
 
     /**
-     * Convert canvas X coordinate back to perimeter position.
+     * Convert canvas X coordinate back to the perimeter position.
      */
     public double toPerimeterX(double canvasX) {
         if (isCircular()) {
@@ -68,22 +67,6 @@ public class ScaleMapper {
         double ratio = (canvasX - canvasMinX) / canvasRange;
         ratio = MathUtils.clamp(ratio, 0, 1); // Clamp to [0, 1]
         return ratio * perimeterSize;
-    }
-
-    public int getPerimeterSize() {
-        return perimeterSize;
-    }
-
-    public double getCanvasMinX() {
-        return canvasMinX;
-    }
-
-    public double getCanvasMaxX() {
-        return canvasMaxX;
-    }
-
-    public double getCanvasRangeX() {
-        return canvasMaxX - canvasMinX;
     }
 
     public boolean isCircular() {
@@ -103,9 +86,8 @@ public class ScaleMapper {
 
         double angleRadians = Math.toRadians(toAngleDegrees(perimeterPosition));
         double effectiveRadius = radius + radialOffset;
-        return new Point2D(
-                centerX + effectiveRadius * Math.cos(angleRadians),
-                centerY + effectiveRadius * Math.sin(angleRadians)
+        return new Point2D(centerX + effectiveRadius * Math.cos(angleRadians),
+                        centerY + effectiveRadius * Math.sin(angleRadians)
         );
     }
 

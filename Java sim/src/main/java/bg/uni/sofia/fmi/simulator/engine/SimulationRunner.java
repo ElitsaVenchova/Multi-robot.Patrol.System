@@ -27,7 +27,11 @@ public class SimulationRunner {
         World world = run(config, visualization);
 
         // След края на симулацията, събиране и отпечатване на резултатите
-        printResults(world);
+        // Ако има визуализацуя, то има отделно извикване на printResult,
+        // когато симулацията приключи.
+        if (!visualization) {
+            printResults(world);
+        }
     }
 
     // Метод за стартиране на симулацията и връщане на резултатите
@@ -47,12 +51,13 @@ public class SimulationRunner {
         int duration = config.getSimulation().getDuration();
         
         if (visualization) {
-            // Phase 6: Visualizer drives the simulation via callback
-            SimulationVisualizer.launch(world, duration);
+            // Визуализаторът управлява симулацията и извиква callback за отпечатване на резултатите при приключването ѝ.
+            SimulationVisualizer.launch(world, config.getSimulation().getDuration(), () -> printResults(world));
         } else {
-            // Non-visualization: Fast execution
-            Simulator simulator = new Simulator();
-            simulator.run(world, duration, null);
+            // Без визуализация. Бързо изпълнение
+            for (int t = 0; t < duration; t++) {
+                world.tick(t);
+            }
         }
 
         return world;
