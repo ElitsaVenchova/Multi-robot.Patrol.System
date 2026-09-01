@@ -30,12 +30,8 @@ public class AsyncPatrol implements PatrolModel {
         double sectionSize = (double) perimeterSize / numBots;
 
         // Изчисляване на първоначалната и крайната позиция на робота спрямо индексът в света.
-        int botIndex = world.getBots().indexOf(bot);
-        if (botIndex < 0) {
-            throw new IllegalStateException("Bot is not registered in the current world");
-        }
-        double startPos = botIndex * sectionSize;
-        double endPos = (botIndex + 1) * sectionSize - 1;
+        double startPos = bot.getId() * sectionSize;
+        double endPos = (bot.getId() + 1) * sectionSize - 1;
 
         Position startPosition = new Position(startPos);
         Position endPosition = new Position(endPos);

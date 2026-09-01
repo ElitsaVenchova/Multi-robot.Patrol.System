@@ -7,6 +7,7 @@ import bg.uni.sofia.fmi.simulator.factory.DomainFactory;
 import bg.uni.sofia.fmi.simulator.results.MetricsCalculator;
 import bg.uni.sofia.fmi.simulator.results.ResultExporter;
 import bg.uni.sofia.fmi.simulator.results.SimulationMetrics;
+import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 import bg.uni.sofia.fmi.simulator.visualization.SimulationVisualizer;
 
@@ -45,7 +46,8 @@ public class SimulationRunner {
 
     // Метод за стартиране на симулацията и връщане на света (за по-нататъшен анализ)
     private World run(SimulationConfig config, boolean visualization) {
-        RandomProvider.setSeed(config.getSimulation().getSeed()); 
+        RandomProvider.setSeed(config.getSimulation().getSeed());
+        IdGenerator.reset();
         // Създаване на света от конфигурацията
         World world = DomainFactory.createWorld(config);
         int duration = config.getSimulation().getDuration();

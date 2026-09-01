@@ -1,7 +1,5 @@
 package bg.uni.sofia.fmi.simulator.util;
 
-import java.util.Objects;
-
 /**
  * Помощен клас за валидиране на параметри и състояния в симулацията.
  */

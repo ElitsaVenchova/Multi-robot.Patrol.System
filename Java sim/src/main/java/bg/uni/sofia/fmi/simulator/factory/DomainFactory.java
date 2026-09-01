@@ -53,15 +53,15 @@ public class DomainFactory {
                 PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
                 // Геометричната начална позиция е локална за този свят;
                 // глобалният ID служи само за идентификация и логване.
-                bots.add(createBot(id, bots.size() + 1, model, world, energyThreshold, patrolModel));
+                bots.add(createBot(id, model, world, energyThreshold, patrolModel));
             }
         }
         return bots;
     }
     //Създаване на бот от конфигурацията
-    private static Bot createBot(long id, int initialX, RobotModelConfig model, World world, double energyThreshold, PatrolModel patrolModel) {
+    private static Bot createBot(long id, RobotModelConfig model, World world, double energyThreshold, PatrolModel patrolModel) {
         // Начална позиция на робота спрямо реда на въвеждане
-        Position position = new Position(initialX);
+        Position position = new Position(id);
         // Батерията на бота
         Battery battery = new Battery(model.getBatteryCapacity());
         // Лидарът на бота
