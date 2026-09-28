@@ -5,6 +5,8 @@ import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
+import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
+import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
 //Патрулиране по секции като всеко робот се вдижи независимо в своята секция
@@ -25,9 +27,8 @@ public class AsyncPatrol implements PatrolModel {
     @Override
     public void initialize(Bot bot, World world) {
         // Изчисляване на секцията спрямо реда на добавяне
-        int perimeterSize = world.getPerimeter().getSize();
         int numBots = world.getBots().size();
-        double sectionSize = (double) perimeterSize / numBots;
+        double sectionSize = (double) World.getPerimeter().getSize() / numBots;
 
         // Изчисляване на първоначалната и крайната позиция на робота спрямо индексът в света.
         double startPos = bot.getId() * sectionSize;
@@ -50,7 +51,7 @@ public class AsyncPatrol implements PatrolModel {
         if(patrolSection == null) {
             initialize(bot, world);
         }
-        Position goalPosition = null;//Някой от крайщатата на patrolSection като цел на робота
+        Position goalPosition;//Някой от крайщатата на patrolSection като цел на робота
         //Ако роботът не е в секцията за патрулиране, то трябва да се предвижи до нея.
         if(!bot.isInPatrolSection(patrolSection)) {
             bot.setState(BotState.GOING_TO_PATROL);
@@ -72,11 +73,11 @@ public class AsyncPatrol implements PatrolModel {
         double sectionStart = patrolSection.getStartPosition().getX();
         double sectionEnd = patrolSection.getEndPosition().getX();
         //Промяна на посоката на движение, когато е достигнат края на секцията
-        if (currentX >= sectionEnd) {
+        if (patrolDirection == Direction.RIGHT && atBoundary(currentX, sectionEnd)) {
             patrolDirection = Direction.LEFT;
             movementDirection = patrolDirection;
             remainingDeviationTicks = 0;
-        } else if (currentX <= sectionStart) {
+        } else if (patrolDirection == Direction.LEFT && atBoundary(currentX, sectionStart)) {
             patrolDirection = Direction.RIGHT;
             movementDirection = patrolDirection;
             remainingDeviationTicks = 0;
@@ -95,6 +96,13 @@ public class AsyncPatrol implements PatrolModel {
             }
         }
         return new Position(targetX);
+    }
+
+    private boolean atBoundary(double currentX, double boundary) {
+        if (World.getPerimeter().getType() == PerimeterType.CIRCULAR) {
+            return GeometryUtils.ringDistance(currentX, boundary) < 0.001;
+        }
+        return Math.abs(currentX - boundary) < 0.001;
     }
 
     @Override

@@ -38,39 +38,39 @@ public class GeometryUtilsTest {
     @Test
     public void testNormalizePosition() {
         double perimeter = 100.0;
-        assertEquals(25.0, GeometryUtils.normalizePosition(25.0, perimeter), EPSILON);
-        assertEquals(25.0, GeometryUtils.normalizePosition(125.0, perimeter), EPSILON);
-        assertEquals(75.0, GeometryUtils.normalizePosition(-25.0, perimeter), EPSILON);
-        assertEquals(0.0, GeometryUtils.normalizePosition(100.0, perimeter), EPSILON);
-        assertEquals(0.0, GeometryUtils.normalizePosition(0.0, perimeter), EPSILON);
+        assertEquals(25.0, GeometryUtils.normalizePosition(25.0), EPSILON);
+        assertEquals(25.0, GeometryUtils.normalizePosition(125.0), EPSILON);
+        assertEquals(75.0, GeometryUtils.normalizePosition(-25.0), EPSILON);
+        assertEquals(0.0, GeometryUtils.normalizePosition(100.0), EPSILON);
+        assertEquals(0.0, GeometryUtils.normalizePosition(0.0), EPSILON);
     }
 
     @Test
     public void testRingDistance() {
         double perimeter = 100.0;
         // Direct arc is 20
-        assertEquals(20.0, GeometryUtils.ringDistance(10.0, 30.0, perimeter), EPSILON);
+        assertEquals(20.0, GeometryUtils.ringDistance(10.0, 30.0), EPSILON);
         // Shortest arc wrapping around boundary (95 to 5 is 10)
-        assertEquals(10.0, GeometryUtils.ringDistance(95.0, 5.0, perimeter), EPSILON);
-        assertEquals(10.0, GeometryUtils.ringDistance(5.0, 95.0, perimeter), EPSILON);
+        assertEquals(10.0, GeometryUtils.ringDistance(95.0, 5.0), EPSILON);
+        assertEquals(10.0, GeometryUtils.ringDistance(5.0, 95.0), EPSILON);
         // Exact half ring
-        assertEquals(50.0, GeometryUtils.ringDistance(0.0, 50.0, perimeter), EPSILON);
+        assertEquals(50.0, GeometryUtils.ringDistance(0.0, 50.0), EPSILON);
         // Same position
-        assertEquals(0.0, GeometryUtils.ringDistance(30.0, 30.0, perimeter), EPSILON);
+        assertEquals(0.0, GeometryUtils.ringDistance(30.0, 30.0), EPSILON);
     }
 
     @Test
     public void testShortestRingDirection() {
         double perimeter = 100.0;
         // 10 to 30 -> shortest is forward (+1)
-        assertEquals(1, GeometryUtils.shortestRingDirection(10.0, 30.0, perimeter));
+        assertEquals(1, GeometryUtils.shortestRingDirection(10.0, 30.0));
         // 30 to 10 -> shortest is backward (-1)
-        assertEquals(-1, GeometryUtils.shortestRingDirection(30.0, 10.0, perimeter));
+        assertEquals(-1, GeometryUtils.shortestRingDirection(30.0, 10.0));
         // 95 to 5 -> shortest is wrapping forward (+1)
-        assertEquals(1, GeometryUtils.shortestRingDirection(95.0, 5.0, perimeter));
+        assertEquals(1, GeometryUtils.shortestRingDirection(95.0, 5.0));
         // 5 to 95 -> shortest is wrapping backward (-1)
-        assertEquals(-1, GeometryUtils.shortestRingDirection(5.0, 95.0, perimeter));
+        assertEquals(-1, GeometryUtils.shortestRingDirection(5.0, 95.0));
         // 20 to 20 -> same position (0)
-        assertEquals(0, GeometryUtils.shortestRingDirection(20.0, 20.0, perimeter));
+        assertEquals(0, GeometryUtils.shortestRingDirection(20.0, 20.0));
     }
 }

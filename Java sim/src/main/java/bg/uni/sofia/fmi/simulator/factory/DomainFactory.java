@@ -28,12 +28,13 @@ public class DomainFactory {
         // Създаване на света от конфигурацията
         int perimeterSize = config.getPerimeter().getSize();
         PerimeterType perimeterType = PerimeterType.valueOf(config.getPerimeter().getType().toUpperCase());
-        World world = new World(new Perimeter(perimeterSize, perimeterType));
+        World world = new World();
+        World.setPerimeter(new Perimeter(perimeterSize, perimeterType));
         // Ботове
         List<Bot> bots = createBots(config, world, config.getSimulation().getChargeThreshold());
         world.addBots(bots);
         // Зарядни станции
-        List<ChargingStation> stations = createStations(config.getChargingStations(), world);
+        List<ChargingStation> stations = createStations(config.getChargingStations());
         world.addChargingStations(stations);
         //генериране на атаки
         LoadModel attackModel = StrategyFactory.createAttack(config.getAttackModel());
@@ -82,14 +83,14 @@ public class DomainFactory {
                 model.getPrice(), model.getBatteryConsumptionRate(), planningModule);
     }
     // Създаване на зарядни станции от конфигурацията
-    private static List<ChargingStation> createStations(List<ChargingStationConfig> configs, World world) {
+    private static List<ChargingStation> createStations(List<ChargingStationConfig> configs) {
         List<ChargingStation> stations = new ArrayList<>();
         ChargingStationModelLoader loader = new ChargingStationModelLoader();
         for (ChargingStationConfig config : configs) {
             ChargingStationModelConfig model = loader.load(config.getModel());
             // Проверка дали позицията на станцията е в рамките на периметъра
-            if (config.getX() < 0 || config.getX() > world.getPerimeter().getSize()) {
-                throw new RuntimeException("Station X out of bounds. x=" + config.getX() + ", perimeter=" + world.getPerimeter());
+            if (config.getX() < 0 || config.getX() > World.getPerimeter().getSize()) {
+                throw new RuntimeException("Station X out of bounds. x=" + config.getX() + ", perimeter=" + World.getPerimeter());
             }
             // Създаване на позиция за станцията
             Position position = new Position(config.getX(), config.getY(), 0.0); // stations are on ground

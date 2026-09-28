@@ -5,6 +5,7 @@ import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
+import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 import bg.uni.sofia.fmi.simulator.behavior.energyManagment.EnergyManager;
 import bg.uni.sofia.fmi.simulator.behavior.navigation.Navigation;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
@@ -43,7 +44,7 @@ public class SimplePlanningController implements PlanningModule {
             goalPosition = patrolModel.execute(bot, world, currentTime);
         }
         if(goalPosition != null){
-            navigation.moveTowards(bot, world, goalPosition);
+            navigation.moveTowards(bot, goalPosition);
         }
         if(currentTime < 2500) { System.out.println(goalPosition != null ? " " + goalPosition : ""); }
     }
@@ -71,7 +72,7 @@ public class SimplePlanningController implements PlanningModule {
         bot.setState(BotState.GOING_TO_CHARGE);
         Position goalPosition = best.getLocation();
 
-        double distX = distanceX(bot.getPosition(), goalPosition);
+        double distX = GeometryUtils.perimeterDistance(bot.getPosition(), goalPosition);
         if (distX < 1.0) {
             boolean canCharge = best.tryOccupySlot(bot);
             if (canCharge) {
@@ -86,10 +87,6 @@ public class SimplePlanningController implements PlanningModule {
             // Насочваме се към станцията
             return goalPosition;
         }
-    }
-
-    private double distanceX(Position a, Position b) {
-        return Math.abs(a.getX() - b.getX());
     }
 
     @Override

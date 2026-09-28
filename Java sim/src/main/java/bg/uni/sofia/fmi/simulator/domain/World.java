@@ -12,11 +12,7 @@ public class World {
 
     private final List<Bot> bots = new ArrayList<>(); // Списък с всички роботи
     private List<ChargingStation> chargingStations; // Списък с всички зарядни станции
-    private final Perimeter perimeter; // Периметърът, който трябва да се патрулира
-
-    public World(Perimeter perimeter) {
-        this.perimeter = perimeter;
-    }
+    private static Perimeter perimeter = null; // Периметърът, който трябва да се патрулира
 
     public void addBots(List<Bot> bots) {
         this.bots.addAll(bots);
@@ -33,7 +29,9 @@ public class World {
         // Генериране на нови атаки според модела
         List<Attack> newAttacks = attackModel.generateAttacks(this, currentTime);
         for (Attack attack : newAttacks) {
-             this.perimeter.addAttack(attack);
+            if(perimeter != null){
+                perimeter.addAttack(attack);
+            }
         }
 
         // Обновяване на състоянието на всеки бот
@@ -42,7 +40,7 @@ public class World {
         }
     }
 
-    public Perimeter getPerimeter() {
+    public static Perimeter getPerimeter() {
         return perimeter;
     }
 
@@ -57,4 +55,6 @@ public class World {
     public void setAttackModel(LoadModel attackModel) {
         this.attackModel = attackModel;
     }
+
+    public static void setPerimeter(Perimeter perimeter) { World.perimeter = perimeter;}
 }

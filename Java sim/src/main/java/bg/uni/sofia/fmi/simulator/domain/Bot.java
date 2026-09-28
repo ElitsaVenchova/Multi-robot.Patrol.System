@@ -1,12 +1,13 @@
 package bg.uni.sofia.fmi.simulator.domain;
 
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
+import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import bg.uni.sofia.fmi.simulator.behavior.planning.PlanningModule;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolSection;
+import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 
 // Клас, представляващ бот в симулацията
-//[TODO] Да се добави секция, която се охранява
 public class Bot {
     private final String name; // име на бота, за по-лесно логване и идентификация
     private final Battery battery; // батерията на бота
@@ -34,7 +35,6 @@ public class Bot {
         this.failureProbability = failureProbability;
         this.price = price;
         this.batteryConsumptionRate = batteryConsumptionRate;
-
         this.planningModule = planningModule;
         this.state = BotState.PATROLLING;
     }
@@ -43,19 +43,16 @@ public class Bot {
     public void update(int currentTime) {
         // Взима се решение за действие и се определя състоянието
         planningModule.update(this, currentTime);
-
         // консумация по подразбиране, за да може да се изтощава с времето дори да не прави нищо
         battery.consume(0.01);
     }
 
     // Движение на бота
     public void move(Position target) {
-        double dx = target.getX() - position.getX();
-        double distance = Math.abs(dx);
+        double distance = GeometryUtils.perimeterDistance(position, target);
         if(distance > maxSpeed){
             throw new RuntimeException("Разстоянието до следващата стъпка е по-голоямо от възможностите на робота!");
         }
-
         position.setX(target.getX());
         // Засега 1D движение
         if (type == RobotType.GROUND) {
@@ -64,7 +61,6 @@ public class Bot {
             position.setY(100);
             position.setZ(0.0);
         }
-
         battery.consume(distance * batteryConsumptionRate);
     }
 
@@ -73,13 +69,35 @@ public class Bot {
         if (patrolSection == null) {
             return false;
         }
-        double minX = Math.min(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
-        double maxX = Math.max(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
-        return position.getX() >= minX && position.getX() <= maxX;
+        if (World.getPerimeter().getType() == PerimeterType.LINEAR) {
+            double minX = Math.min(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
+            double maxX = Math.max(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
+            return position.getX() >= minX && position.getX() <= maxX;
+        } else {
+            double x = GeometryUtils.normalizePosition(position.getX());
+            double start = GeometryUtils.normalizePosition(patrolSection.getStartPosition().getX());
+            double rawEnd = patrolSection.getEndPosition().getX();
+            double end = GeometryUtils.normalizePosition(rawEnd);
+            // Секцията завършва точно в края на периметъра,  който е физически същата точка като 0.
+            boolean endsAtSeam = rawEnd > 0 && end == 0;
+            if (endsAtSeam) {
+                return x >= start;
+            }
+            if (start <= end) { // Обикновена секция: например 20 → 60
+                return x >= start && x <= end;
+            }
+            return x >= start || x <= end; // Секция, която преминава през 0: например 80 → 20
+        }
     }
 
     //Връща по-близкия край на секцията за патрулиране
     public Position getTargetToPatrolSection(PatrolSection patrolSection) {
+        if (World.getPerimeter().getType() == PerimeterType.CIRCULAR) {
+            Position start = patrolSection.getStartPosition();
+            Position end = patrolSection.getEndPosition();
+            return GeometryUtils.perimeterDistance(position, start) <= GeometryUtils.perimeterDistance(position, end)
+                    ? start : end;
+        }
         double minX = Math.min(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
         double maxX = Math.max(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
 

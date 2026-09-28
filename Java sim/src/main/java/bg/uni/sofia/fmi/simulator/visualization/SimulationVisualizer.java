@@ -84,9 +84,9 @@ public class SimulationVisualizer extends Application {
         Pane root = new Pane();
 
         // Get perimeter size from world
-        int perimeterSize = world.getPerimeter().getSize();
+        int perimeterSize = World.getPerimeter().getSize();
         
-        PerimeterType perimeterType = world.getPerimeter().getType();
+        PerimeterType perimeterType = World.getPerimeter().getType();
         Shape perimeter;
         List<Label> perimeterLabels = new java.util.ArrayList<>();
         if (perimeterType == PerimeterType.CIRCULAR) {
@@ -355,7 +355,7 @@ public class SimulationVisualizer extends Application {
 
     //Обновяване на статистиката за хванати, пропусната и общо атаки
     private void updateAttackSummaryLabel() {
-        List<Attack> attacks = world.getPerimeter().streamAttacks().toList();
+        List<Attack> attacks = World.getPerimeter().streamAttacks().toList();
         long intercepted = attacks.stream().filter(attack -> attack.getStatus() == AttackStatus.INTERCEPTED).count();
         long missed = attacks.stream().filter(attack -> attack.getStatus() == AttackStatus.MISSED).count();
         double successRate = attacks.isEmpty() ? 0.0 : intercepted * 100.0 / attacks.size();
@@ -392,7 +392,7 @@ public class SimulationVisualizer extends Application {
 
     /** Add marks for newly generated attacks and refresh their current status. */
     private void updateAttackVisuals() {
-        world.getPerimeter().streamAttacks().forEach(attack -> {
+        World.getPerimeter().streamAttacks().forEach(attack -> {
             AttackVisualNode attackNode = attackNodes.get(attack);
             if (attackNode == null) {
                 attackNode = new AttackVisualNode(attack, scaleMapper, PERIMETER_Y);
@@ -434,7 +434,8 @@ public class SimulationVisualizer extends Application {
 
     public static void main(String[] args) {
         // Test launcher - creates a dummy world for testing
-        World testWorld = new World(new Perimeter(1000, PerimeterType.CIRCULAR));
+        World testWorld = new World();
+        World.setPerimeter(new Perimeter(1000, PerimeterType.CIRCULAR));
         launch(testWorld, 1000);
     }
 }

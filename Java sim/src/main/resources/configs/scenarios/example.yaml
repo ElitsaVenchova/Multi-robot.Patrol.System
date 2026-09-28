@@ -17,11 +17,9 @@ robots:
 chargingStations:
   - model: fast_station
     x: 333.0
-    y: 5.0
 
   - model: fast_station
     x: 666.0
-    y: 5.0
 
 patrol:
   model: AsyncPatrol
