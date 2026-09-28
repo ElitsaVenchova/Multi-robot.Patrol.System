@@ -81,7 +81,7 @@ public class Bot {
             // Секцията завършва точно в края на периметъра,  който е физически същата точка като 0.
             boolean endsAtSeam = rawEnd > 0 && end == 0;
             if (endsAtSeam) {
-                return x >= start;
+                return x >= start || x < 0.001;
             }
             if (start <= end) { // Обикновена секция: например 20 → 60
                 return x >= start && x <= end;

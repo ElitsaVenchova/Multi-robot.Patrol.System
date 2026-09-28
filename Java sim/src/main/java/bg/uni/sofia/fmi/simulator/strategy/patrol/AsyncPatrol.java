@@ -26,13 +26,11 @@ public class AsyncPatrol implements PatrolModel {
 
     @Override
     public void initialize(Bot bot, World world) {
-        // Изчисляване на секцията спрямо реда на добавяне
         int numBots = world.getBots().size();
         double sectionSize = (double) World.getPerimeter().getSize() / numBots;
 
-        // Изчисляване на първоначалната и крайната позиция на робота спрямо индексът в света.
-        double startPos = bot.getId() * sectionSize;
-        double endPos = (bot.getId() + 1) * sectionSize - 1;
+        double startPos = (bot.getId() - 1) * sectionSize;
+        double endPos = bot.getId() * sectionSize;
 
         Position startPosition = new Position(startPos);
         Position endPosition = new Position(endPos);
