@@ -16,7 +16,7 @@ import bg.uni.sofia.fmi.simulator.results.SimulationMetrics;
 // След това с scripts/plot_result.py може да се направят диаграми на резултата от експеримента.
 // В aggregated_results.csv винаги се съдържа резултата само от последният пуснат експертимент
 public class ExperimentRunner {
-    public void runExperiments(String configPath, boolean visualization) {
+    public void runExperiments(String configPath) {
         ConfigLoader loader = new ConfigLoader();
         ResultExporter exporter = new ResultExporter();
         MetricsAggregator aggregator = new MetricsAggregator();
@@ -41,7 +41,7 @@ public class ExperimentRunner {
                     config.getPatrolModel().setMaxDeviationDuration(config.getPatrolModel().getMaxDeviationDuration());
                     // Стартиране на симулацията и събиране на резултатите
                     SimulationRunner runner = new SimulationRunner();
-                    SimulationMetrics metrics = runner.runWithResult(config, visualization);
+                    SimulationMetrics metrics = runner.runWithResult();
                     // Съхраняване на резултатите от текущия експеримент
                     results.add(metrics);
                 }

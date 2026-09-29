@@ -21,31 +21,29 @@ import bg.uni.sofia.fmi.simulator.visualization.SimulationVisualizer;
 public class SimulationRunner {
     // Метод за стартиране на симулацията с даден конфигурационен файл
     // (за бързо стартиране от main метода)
-    public void run(String configPath, boolean visualization) {
-        // Зареждане на конфигурацията
+    public void run(String configPath, boolean visualization) {// Зареждане на конфигурацията
         ConfigLoader loader = new ConfigLoader();
         SimulationConfig config = loader.load(configPath);
-        World world = run(config, visualization);
+        run(config, visualization);
 
         // След края на симулацията, събиране и отпечатване на резултатите
         // Ако има визуализацуя, то има отделно извикване на printResult,
         // когато симулацията приключи.
         if (!visualization) {
-            printResults(world);
+            printResults();
         }
     }
 
     // Метод за стартиране на симулацията и връщане на резултатите
     // (за експерименти и анализ)
-    public SimulationMetrics runWithResult(SimulationConfig config, boolean visualization) {
-        World world = run(config, visualization);
+    public SimulationMetrics runWithResult() {
         // Събиране на резултатите
         MetricsCalculator calculator = new MetricsCalculator();
-        return calculator.calculate(world);
+        return calculator.calculate();
     }
 
     // Метод за стартиране на симулацията и връщане на света (за по-нататъшен анализ)
-    private World run(SimulationConfig config, boolean visualization) {
+    private void run(SimulationConfig config, boolean visualization) {
         RandomProvider.setSeed(config.getSimulation().getSeed());
         IdGenerator.reset();
         // Създаване на света от конфигурацията
@@ -54,21 +52,19 @@ public class SimulationRunner {
         
         if (visualization) {
             // Визуализаторът управлява симулацията и извиква callback за отпечатване на резултатите при приключването ѝ.
-            SimulationVisualizer.launch(world, config.getSimulation().getDuration(), () -> printResults(world));
+            SimulationVisualizer.launch(world, config.getSimulation().getDuration(), this::printResults);
         } else {
             // Без визуализация. Бързо изпълнение
             for (int t = 0; t < duration; t++) {
                 world.tick(t);
             }
         }
-
-        return world;
     }
 
     // Метод за събиране и отпечатване на резултатите от симулацията
-    private void printResults(World world) {
+    private void printResults() {
         MetricsCalculator calculator = new MetricsCalculator();
-        SimulationMetrics metrics = calculator.calculate(world);
+        SimulationMetrics metrics = calculator.calculate();
 
         // Print (optional)
         System.out.println("===== Simulation Results =====");

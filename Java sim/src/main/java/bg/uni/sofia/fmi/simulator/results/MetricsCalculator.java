@@ -7,18 +7,18 @@ import bg.uni.sofia.fmi.simulator.domain.enums.AttackStatus;
 // This class will calculate all the metrics after the simulation run
 public class MetricsCalculator {
 
-    public SimulationMetrics calculate(World world) {
+    public SimulationMetrics calculate() {
 
         SimulationMetrics metrics = new SimulationMetrics();
 
-        long total = world.getPerimeter().streamAttacks().count();
+        long total = World.getPerimeter().streamAttacks().count();
         int intercepted = 0;
         int missed = 0;
 
         double totalDetectionTime = 0.0;
         int detectedCount = 0;
 
-        for (Attack attack : world.getPerimeter().streamAttacks().toList()) {
+        for (Attack attack : World.getPerimeter().streamAttacks().toList()) {
 
             if (attack.getStatus() == AttackStatus.INTERCEPTED) {
                 intercepted++;

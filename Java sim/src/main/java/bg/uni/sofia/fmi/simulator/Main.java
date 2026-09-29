@@ -28,15 +28,9 @@ public class Main {
             CommandLineOptions options = CommandLineParser.parse(args);
             // В зависимост от режима на изпълнение, стартиране на симулация или експерименти
             if (options.executionMode() == ExecutionMode.RUN) {
-                new SimulationRunner().run(
-                        options.configPath(),
-                        options.visualization()
-                );
+                new SimulationRunner().run(options.configPath(), options.visualization());
             } else {
-                new ExperimentRunner().runExperiments(
-                        options.configPath(),
-                        options.visualization()
-                );
+                new ExperimentRunner().runExperiments(options.configPath());
             }
 
         } catch (IllegalArgumentException e) {
