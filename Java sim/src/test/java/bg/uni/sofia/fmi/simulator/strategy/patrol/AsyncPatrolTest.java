@@ -3,12 +3,7 @@ package bg.uni.sofia.fmi.simulator.strategy.patrol;
 import bg.uni.sofia.fmi.simulator.behavior.collisionAvoidance.ObstacleAvoidance;
 import bg.uni.sofia.fmi.simulator.behavior.navigation.Navigation;
 import bg.uni.sofia.fmi.simulator.config.PatrolConfig;
-import bg.uni.sofia.fmi.simulator.domain.Battery;
-import bg.uni.sofia.fmi.simulator.domain.Bot;
-import bg.uni.sofia.fmi.simulator.domain.Lidar;
-import bg.uni.sofia.fmi.simulator.domain.Perimeter;
-import bg.uni.sofia.fmi.simulator.domain.Position;
-import bg.uni.sofia.fmi.simulator.domain.World;
+import bg.uni.sofia.fmi.simulator.domain.*;
 import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import org.junit.Test;
@@ -29,11 +24,11 @@ public class AsyncPatrolTest {
         AsyncPatrol patrol = new AsyncPatrol(config);
 
         World world = new World();
-        World.perimeter = new Perimeter(1000, PerimeterType.CIRCULAR);
+        World.setPerimeter(new Perimeter(1000, PerimeterType.CIRCULAR));
         List<Bot> bots = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             bots.add(new Bot(100 + i, new Position(i), new Battery(1000), new Lidar(0, 0),
-                    10, RobotType.GROUND, "bot-" + i, 0, 0, 0, null));
+                    new CommunicationModule(10),10, RobotType.GROUND, "bot-" + i, 0, 0, 0, null));
         }
         world.addBots(bots);
 
