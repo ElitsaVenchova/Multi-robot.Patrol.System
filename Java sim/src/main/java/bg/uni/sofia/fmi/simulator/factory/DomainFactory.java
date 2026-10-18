@@ -66,7 +66,9 @@ public class DomainFactory {
         // Батерията на бота
         Battery battery = new Battery(model.getBatteryCapacity());
         // Лидарът на бота
-        Lidar lidar = new Lidar(model.getLidarRange(), model.getBatteryConsumptionRate());
+        Lidar lidar = new Lidar(model.getLidarRange(), model.getLidarBatteryConsumptionRate());
+        // Модул за комуникация на бота
+        CommunicationModule communicationModule = new CommunicationModule(model.getCommunicationRange());
         RobotType type;
         // Модул за управление на енергията, който ще се използва от поведението на бота
         EnergyManager energyManager = new EnergyManager(energyThreshold);
@@ -79,8 +81,8 @@ public class DomainFactory {
         ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance();
         Navigation navigation = new Navigation(obstacleAvoidance);
         PlanningModule planningModule = new SimplePlanningController(energyManager, patrolModel, navigation, world);
-        return new Bot(id, position, battery, lidar, model.getMaxSpeed(), type, model.getName(), model.getFailureProbability(),
-                model.getPrice(), model.getBatteryConsumptionRate(), planningModule);
+        return new Bot(id, position, battery, lidar, communicationModule, model.getMaxSpeed(), type, model.getName(),
+                model.getFailureProbability(), model.getPrice(), model.getBatteryConsumptionRate(), planningModule);
     }
     // Създаване на зарядни станции от конфигурацията
     private static List<ChargingStation> createStations(List<ChargingStationConfig> configs) {

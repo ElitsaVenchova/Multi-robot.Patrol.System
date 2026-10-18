@@ -12,6 +12,7 @@ public class Bot {
     private final String name; // име на бота, за по-лесно логване и идентификация
     private final Battery battery; // батерията на бота
     private final Lidar lidar; // сензор за засичане на атаки
+    private final CommunicationModule communicationModule; // модула за комуникация
     private final double maxSpeed; // максимална скорост на бота
     private final RobotType type; // тип на бота (наземен, дрон и т.н.)
     private final double failureProbability; // вероятност за повреда при всяко действие
@@ -23,8 +24,9 @@ public class Bot {
     private final PlanningModule planningModule; // модул за вземане на решения и планиране на действията
     private BotState state; // текущо състояние на бота (патрулиране, зареждане, грешка и т.н.)
 
-    public Bot(long id, Position position, Battery battery, Lidar lidar, double speed, RobotType type, String name,
-            double failureProbability, double price, double batteryConsumptionRate, PlanningModule planningModule) {
+    public Bot(long id, Position position, Battery battery, Lidar lidar, CommunicationModule communicationModule,
+               double speed, RobotType type, String name, double failureProbability, double price, double batteryConsumptionRate,
+               PlanningModule planningModule) {
         this.id = id;
         this.position = position;
         this.battery = battery;
@@ -35,6 +37,7 @@ public class Bot {
         this.failureProbability = failureProbability;
         this.price = price;
         this.batteryConsumptionRate = batteryConsumptionRate;
+        this.communicationModule = communicationModule;
         this.planningModule = planningModule;
         this.state = BotState.PATROLLING;
     }
@@ -118,6 +121,10 @@ public class Bot {
         return lidar;
     }
 
+    public CommunicationModule getCommunicationModule() {
+        return communicationModule;
+    }
+
     public RobotType getType() {
         return type;
     }
@@ -126,9 +133,7 @@ public class Bot {
         return name;
     }
 
-    public double getFailureProbability() {
-        return failureProbability;
-    }
+    public double getFailureProbability() { return failureProbability;}
 
     public double getPrice() {
         return price;

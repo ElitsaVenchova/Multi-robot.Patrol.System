@@ -14,6 +14,8 @@ public class RobotModelConfig {
     private double lidarRange; // в метри, обхват на LiDAR сензора
     private double lidarBatteryConsumptionRate; // в единици на консумация, например mAh/s, когато LiDAR е активен
 
+    private double communicationRange; // в метри, обхват на модула за комуникация да предава информация
+
     public double getBatteryCapacity() {
         return batteryCapacity;
     }
@@ -84,5 +86,11 @@ public class RobotModelConfig {
 
     public void setLidarBatteryConsumptionRate(double lidarBatteryConsumptionRate) {
         this.lidarBatteryConsumptionRate = lidarBatteryConsumptionRate;
+    }
+
+    public double getCommunicationRange() { return communicationRange; }
+
+    public void setCommunicationRange(double communicationRange) {
+        this.communicationRange = communicationRange;
     }
 }
