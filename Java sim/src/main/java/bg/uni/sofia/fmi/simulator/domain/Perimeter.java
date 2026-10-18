@@ -27,7 +27,7 @@ public class Perimeter {
     public void addAttack(Attack attack) {
         int index = (int) attack.getPosition().getX();
 
-        index = clamp(index);
+        index = type == PerimeterType.CIRCULAR ? Math.floorMod(index, size) : clamp(index);
 
         cells[index].add(attack);
     }
@@ -38,6 +38,25 @@ public class Perimeter {
 
         int center = (int) x;
         int r = (int) Math.ceil(range);
+
+        if (type == PerimeterType.CIRCULAR) {
+            if (r < 0) {
+                return result;
+            }
+
+            int normalizedCenter = Math.floorMod(center, size);
+            if (r >= size / 2) {
+                for (List<Attack> cell : cells) {
+                    result.addAll(cell);
+                }
+                return result;
+            }
+
+            for (int offset = -r; offset <= r; offset++) {
+                result.addAll(cells[Math.floorMod(normalizedCenter + offset, size)]);
+            }
+            return result;
+        }
 
         int min = clamp(center - r);
         int max = clamp(center + r);

@@ -148,12 +148,10 @@ public class BotVisualNode extends Group {
     /// Add a tooltip showing detailed robot metadata.
     private void addMetadataTooltip() {
         String tooltipText = String.format(
-                "Robot #%d\nType: %s\nState: %s\nBattery: %.1f%%\nPosition: %.1f",
-                bot.getId(),
-                bot.getType().toString(),
-                bot.getState().toString(),
+                "Robot #%d\nType: %s\nState: %s\nBattery: %.1f%%\nPosition: (%.1f, %.1f, %.1f)",
+                bot.getId(), bot.getType().toString(), bot.getState().toString(),
                 getBatteryPercent(),
-                bot.getPosition().getX()
+                bot.getPosition().getX(), bot.getPosition().getY(), bot.getPosition().getZ()
         );
 
         Tooltip tooltip = new Tooltip(tooltipText);

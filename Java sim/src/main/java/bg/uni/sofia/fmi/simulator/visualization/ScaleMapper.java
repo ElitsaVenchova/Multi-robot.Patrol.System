@@ -73,6 +73,21 @@ public class ScaleMapper {
         return perimeterType == PerimeterType.CIRCULAR;
     }
 
+    public int getPerimeterSize() {
+        return perimeterSize;
+    }
+
+    /** Convert a distance along the perimeter into the corresponding canvas distance. */
+    public double toCanvasDistance(double perimeterDistance) {
+        if (perimeterSize == 0) {
+            return 0;
+        }
+        double canvasPerimeter = isCircular()
+                ? 2 * Math.PI * radius
+                : canvasMaxX - canvasMinX;
+        return perimeterDistance * canvasPerimeter / perimeterSize;
+    }
+
     /** Map a perimeter position to a canvas point on the configured perimeter shape. */
     public Point2D toCanvasPoint(double perimeterPosition, double linearY) {
         return toCanvasPoint(perimeterPosition, linearY, 0);
@@ -96,8 +111,11 @@ public class ScaleMapper {
         if (perimeterSize == 0) {
             return -90;
         }
-        double ratio = perimeterPosition / perimeterSize;
-        ratio = MathUtils.clamp(ratio, 0, 1);
+        double normalizedPosition = perimeterPosition % perimeterSize;
+        if (normalizedPosition < 0) {
+            normalizedPosition += perimeterSize;
+        }
+        double ratio = normalizedPosition / perimeterSize;
         return -90 + ratio * 360;
     }
 

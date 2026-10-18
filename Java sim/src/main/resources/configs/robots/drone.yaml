@@ -1,7 +1,7 @@
 name: Drone
 batteryCapacity: 60.0
-lidarRange: 10.0
-communicationRange: 10
+lidarRange: 30.0
+communicationRange: 15
 maxSpeed: 5
 price: 1000
 failureProbability: 0.1

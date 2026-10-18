@@ -1,6 +1,6 @@
 name: TurtleBot Pi
 batteryCapacity: 100.0
-lidarRange: 5.0
+lidarRange: 7.0
 communicationRange: 10
 maxSpeed: 2.5
 price: 1000

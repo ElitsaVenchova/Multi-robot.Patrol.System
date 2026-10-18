@@ -11,13 +11,14 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
@@ -54,10 +55,12 @@ public class SimulationVisualizer extends Application {
     private final Map<ChargingStation, ChargingStationVisualNode> stationNodes = new HashMap<>(); //Визуалните nodes на станциите
     private final Map<Attack, AttackVisualNode> attackNodes = new HashMap<>(); //Визуалните nodes на атаките
     private final Map<Bot, PatrolSectionVisualNode> patrolSectionNodes = new HashMap<>();//Визуалните nodes на секциите за патрулиране
+    private final Map<Bot, BotRangeVisualNode> botRangeNodes = new HashMap<>();
     private final Group worldLayer = new Group();
     private final Scale worldScale = new Scale(1, 1, 0, 0);
     private final Translate worldTranslation = new Translate();
     private final Group patrolSectionLayer = new Group();
+    private final Group rangeLayer = new Group();
     private final Group attackLayer = new Group();
     private ScaleMapper scaleMapper;
     private Label tickLabel;//Надписа с информация за tick и общия брой
@@ -125,10 +128,11 @@ public class SimulationVisualizer extends Application {
         attackSummaryLabel.setLayoutY(40);
         updateAttackSummaryLabel();
 
-        worldLayer.getChildren().addAll(perimeter, patrolSectionLayer, attackLayer);
+        worldLayer.getChildren().addAll(perimeter, patrolSectionLayer, attackLayer, rangeLayer);
         worldLayer.getChildren().addAll(perimeterLabels);
         root.getChildren().add(worldLayer);
         root.getChildren().addAll(tickLabel, attackSummaryLabel);
+        root.getChildren().add(createRangeControls());
         root.getChildren().add(createPlaybackControls());
         root.getChildren().add(createViewportControls());
 
@@ -141,6 +145,10 @@ public class SimulationVisualizer extends Application {
 
         // Render all robots
         for (Bot bot : world.getBots()) {
+            BotRangeVisualNode rangeNode = new BotRangeVisualNode(bot, scaleMapper, PERIMETER_Y);
+            botRangeNodes.put(bot, rangeNode);
+            rangeLayer.getChildren().add(rangeNode);
+
             BotVisualNode robotNode = new BotVisualNode(bot, scaleMapper, PERIMETER_Y);
             robotNode.updatePosition();
             robotNodes.put(bot, robotNode);
@@ -217,6 +225,51 @@ public class SimulationVisualizer extends Application {
         playbackControls.setLayoutY(15);
         updatePlaybackControls();
         return playbackControls;
+    }
+
+    private VBox createRangeControls() {
+        CheckBox communicationToggle = new CheckBox("Communication range");
+        communicationToggle.setSelected(true);
+        communicationToggle.setOnAction(event -> botRangeNodes.values().forEach(
+                node -> node.setCommunicationVisible(communicationToggle.isSelected())));
+
+        CheckBox lidarToggle = new CheckBox("LiDAR range");
+        lidarToggle.setSelected(true);
+        lidarToggle.setOnAction(event -> botRangeNodes.values().forEach(
+                node -> node.setLidarVisible(lidarToggle.isSelected())));
+
+        HBox communicationRow = new HBox(8, communicationToggle, createCommunicationLegendMark());
+        HBox lidarRow = new HBox(8, lidarToggle, createLidarLegendMark());
+        VBox controls = new VBox(4, communicationRow, lidarRow);
+        controls.setLayoutX(15);
+        controls.setLayoutY(70);
+        controls.setStyle("-fx-background-color: rgba(255,255,255,0.88); -fx-padding: 6; "
+                + "-fx-border-color: lightgray; -fx-border-radius: 3; -fx-background-radius: 3;");
+        return controls;
+    }
+
+    private Group createCommunicationLegendMark() {
+        Group mark = new Group();
+        javafx.scene.shape.Polyline leftBoundary = new javafx.scene.shape.Polyline(
+                9, 3, 6, 5, 4, 8, 3, 11, 4, 14, 6, 17, 9, 19);
+        javafx.scene.shape.Polyline rightBoundary = new javafx.scene.shape.Polyline(
+                15, 3, 18, 5, 20, 8, 21, 11, 20, 14, 18, 17, 15, 19);
+        leftBoundary.setStroke(Color.BLUE);
+        rightBoundary.setStroke(Color.BLUE);
+        leftBoundary.setStrokeWidth(2);
+        rightBoundary.setStrokeWidth(2);
+        leftBoundary.setFill(Color.TRANSPARENT);
+        rightBoundary.setFill(Color.TRANSPARENT);
+        mark.getChildren().addAll(leftBoundary, rightBoundary);
+        return mark;
+    }
+
+    private Circle createLidarLegendMark() {
+        Circle mark = new Circle(12, 10, 8);
+        mark.setFill(Color.ORANGE.deriveColor(0, 1, 1, 0.12));
+        mark.setStroke(Color.ORANGE.deriveColor(0, 1, 0.75, 0.8));
+        mark.setStrokeWidth(2);
+        return mark;
     }
 
     //Добавяне на контролите на zoom и преместване на симулацията
@@ -326,6 +379,11 @@ public class SimulationVisualizer extends Application {
         updateAttackSummaryLabel();
 
         for (Bot bot : world.getBots()) {
+            BotRangeVisualNode rangeNode = botRangeNodes.get(bot);
+            if (rangeNode != null) {
+                rangeNode.updateFrame();
+            }
+
             BotVisualNode robotNode = robotNodes.get(bot);
             if (robotNode != null) {
                 robotNode.updateFrame();
