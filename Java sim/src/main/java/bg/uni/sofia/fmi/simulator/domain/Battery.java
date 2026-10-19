@@ -3,11 +3,13 @@ package bg.uni.sofia.fmi.simulator.domain;
 // Клас, представляващ батерията на робота
 public class Battery {
     private final double capacity; // максимален капацитет на батерията
+    private final double averageBatteryLife;
 
     private double currentLevel; // текущо ниво на батерията
 
-    public Battery(double capacity) {
+    public Battery(double capacity, double averageBatteryLife) {
         this.capacity = capacity;
+        this.averageBatteryLife = averageBatteryLife;
         this.currentLevel = capacity;
     }
 
@@ -42,6 +44,9 @@ public class Battery {
     }
 
     public double getCapacity() { return capacity; }
+
+    /** Average battery life in hours, as specified by the robot model. */
+    public double getAverageBatteryLife() { return averageBatteryLife; }
 
     @Override
     public String toString() {

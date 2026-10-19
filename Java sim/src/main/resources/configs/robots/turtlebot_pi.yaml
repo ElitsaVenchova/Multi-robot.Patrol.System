@@ -1,10 +1,17 @@
 name: TurtleBot Pi
-batteryCapacity: 100.0
-lidarRange: 7.0
-communicationRange: 10
-maxSpeed: 2.5
-price: 1000
-failureProbability: 0.1
 type: GROUND
+maxSpeed: 2.5
+failureProbability: 0.1
 batteryConsumptionRate: 0.02
-lidarBatteryConsumptionRate: 0.02
+battery:
+  batteryCapacity: 100.0
+  averageBatteryLife: 5000
+lidar:
+  lidarRange: 7.0
+  lidarBatteryConsumptionRate: 0.02
+communicationModule:
+  communicationRange: 10
+  speed: 1000000
+  latency: 10
+  reliability: 0.99
+price: 1000

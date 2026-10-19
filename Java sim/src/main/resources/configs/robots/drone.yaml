@@ -1,10 +1,17 @@
 name: Drone
-batteryCapacity: 60.0
-lidarRange: 30.0
-communicationRange: 15
-maxSpeed: 5
-price: 1000
-failureProbability: 0.1
 type: DRONE
+maxSpeed: 5
+failureProbability: 0.1
 batteryConsumptionRate: 0.05
-lidarBatteryConsumptionRate: 0.05
+battery:
+  batteryCapacity: 60.0
+  averageBatteryLife: 2000
+lidar:
+  lidarRange: 30.0
+  lidarBatteryConsumptionRate: 0.05
+communicationModule:
+  communicationRange: 15
+  speed: 1000000
+  latency: 10
+  reliability: 0.99
+price: 1000

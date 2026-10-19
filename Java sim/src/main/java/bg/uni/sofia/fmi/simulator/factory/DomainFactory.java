@@ -64,11 +64,16 @@ public class DomainFactory {
         // Начална позиция на робота спрямо реда на въвеждане
         Position position = new Position(id);
         // Батерията на бота
-        Battery battery = new Battery(model.getBatteryCapacity());
+        Battery battery = new Battery(model.getBattery().getBatteryCapacity(),
+                model.getBattery().getAverageBatteryLife());
         // Лидарът на бота
-        Lidar lidar = new Lidar(model.getLidarRange(), model.getLidarBatteryConsumptionRate());
+        Lidar lidar = new Lidar(model.getLidar().getLidarRange(),
+                model.getLidar().getLidarBatteryConsumptionRate());
         // Модул за комуникация на бота
-        CommunicationModule communicationModule = new CommunicationModule(model.getCommunicationRange());
+        RobotModelConfig.CommunicationModuleConfig communicationConfig = model.getCommunicationModule();
+        CommunicationModule communicationModule = new CommunicationModule(
+                communicationConfig.getCommunicationRange(), communicationConfig.getSpeed(),
+                communicationConfig.getLatency(), communicationConfig.getReliability());
         RobotType type;
         // Модул за управление на енергията, който ще се използва от поведението на бота
         EnergyManager energyManager = new EnergyManager(energyThreshold);
