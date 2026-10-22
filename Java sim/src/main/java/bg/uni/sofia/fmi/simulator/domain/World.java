@@ -27,7 +27,7 @@ public class World {
     // - обновяване на състоянието на всеки бот (движение, сканиране, зареждане и т.н.)
     public void tick(int currentTime) {
         // Генериране на нови атаки според модела
-        List<Attack> newAttacks = attackModel.generateAttacks(this, currentTime);
+        List<Attack> newAttacks = attackModel.generateAttacks(currentTime);
         for (Attack attack : newAttacks) {
             if(perimeter != null){
                 perimeter.addAttack(attack);

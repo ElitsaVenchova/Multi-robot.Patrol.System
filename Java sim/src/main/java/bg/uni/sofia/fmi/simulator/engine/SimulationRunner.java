@@ -36,7 +36,8 @@ public class SimulationRunner {
 
     // Метод за стартиране на симулацията и връщане на резултатите
     // (за експерименти и анализ)
-    public SimulationMetrics runWithResult() {
+    public SimulationMetrics runWithResult(SimulationConfig config, boolean visualization) {
+        run(config, visualization);
         // Събиране на резултатите
         MetricsCalculator calculator = new MetricsCalculator();
         return calculator.calculate();

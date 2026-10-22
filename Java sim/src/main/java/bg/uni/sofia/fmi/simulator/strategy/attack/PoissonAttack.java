@@ -21,11 +21,11 @@ public class PoissonAttack implements LoadModel {
     }
 
     @Override
-    public List<Attack> generateAttacks(World world, int currentTime) {
+    public List<Attack> generateAttacks(int currentTime) {
         List<Attack> attacks = new ArrayList<>();
 
         if (RandomProvider.nextDouble() < lambda) {
-            double position = RandomProvider.nextDouble() * world.getPerimeter().getSize();
+            double position = RandomProvider.nextDouble() * World.getPerimeter().getSize();
             attacks.add(new Attack(new Position(position), currentTime, duration));
         }
         return attacks;

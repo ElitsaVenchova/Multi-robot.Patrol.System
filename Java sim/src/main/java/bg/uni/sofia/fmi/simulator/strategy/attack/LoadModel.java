@@ -6,5 +6,5 @@ import bg.uni.sofia.fmi.simulator.domain.Attack;
 import bg.uni.sofia.fmi.simulator.domain.World;
 
 public interface LoadModel {
-    List<Attack> generateAttacks(World world, int currentTime);
+    List<Attack> generateAttacks(int currentTime);
 }

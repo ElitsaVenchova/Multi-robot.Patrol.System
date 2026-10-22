@@ -41,7 +41,7 @@ public class ExperimentRunner {
                     config.getPatrolModel().setMaxDeviationDuration(config.getPatrolModel().getMaxDeviationDuration());
                     // Стартиране на симулацията и събиране на резултатите
                     SimulationRunner runner = new SimulationRunner();
-                    SimulationMetrics metrics = runner.runWithResult();
+                    SimulationMetrics metrics = runner.runWithResult(config, false);
                     // Съхраняване на резултатите от текущия експеримент
                     results.add(metrics);
                 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class GroupAttack implements LoadModel {
 
     @Override
-    public List<Attack> generateAttacks(World world, int currentTime) {
+    public List<Attack> generateAttacks(int currentTime) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 }
