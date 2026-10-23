@@ -45,17 +45,20 @@ public class GeometryUtils {
 
     // Нормализиране на позиция в затворен цикличен периметър [0, perimeterLength)
     public static double normalizePosition(double pos) {
-        if (World.getPerimeter().getSize() <= 0) {
-            throw new IllegalArgumentException("perimeterLength must be positive");
-        }
-        double normalized = pos % World.getPerimeter().getSize();
-        if (normalized < 0) {
-            normalized += World.getPerimeter().getSize();
-        }
-        // За избягване на -0.0
-        return normalized == 0.0 ? 0.0 : normalized;
+        return normalizePosition(pos, World.getPerimeter().getSize());
     }
 
+    /** Normalizes a coordinate without depending on the current simulation world. */
+    public static double normalizePosition(double pos, double perimeterLength) {
+        if (!Double.isFinite(perimeterLength) || perimeterLength <= 0) {
+            throw new IllegalArgumentException("perimeterLength must be finite and positive");
+        }
+        double normalized = pos % perimeterLength;
+        if (normalized < 0) {
+            normalized += perimeterLength;
+        }
+        return normalized == 0.0 || normalized == perimeterLength ? 0.0 : normalized;
+    }
     // Най-кратко разстояние по окръжност / затворен контур (ring distance)
     public static double ringDistance(double x1, double x2) {
         if (World.getPerimeter().getSize() <= 0) {

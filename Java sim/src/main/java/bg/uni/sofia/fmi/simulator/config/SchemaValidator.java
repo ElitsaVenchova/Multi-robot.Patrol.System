@@ -28,5 +28,8 @@ public class SchemaValidator {
         if (config.getAttackModel() == null) {
             throw new IllegalArgumentException("Attack model must be specified");
         }
+        if (config.getPatrolModel().getEncounterRearmPolicy() == null) {
+            throw new IllegalArgumentException("Encounter rearm policy cannot be null");
+        }
     }
 }
