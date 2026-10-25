@@ -10,16 +10,16 @@ import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 public class World {
     private LoadModel attackModel; // Модел за генериране на атаки
 
-    private final List<Bot> bots = new ArrayList<>(); // Списък с всички роботи
-    private List<ChargingStation> chargingStations; // Списък с всички зарядни станции
+    private static final List<Bot> bots = new ArrayList<>(); // Списък с всички роботи
+    private static List<ChargingStation> chargingStations; // Списък с всички зарядни станции
     private static Perimeter perimeter = null; // Периметърът, който трябва да се патрулира
 
     public void addBots(List<Bot> bots) {
-        this.bots.addAll(bots);
+        World.bots.addAll(bots);
     }
 
     public void addChargingStations(List<ChargingStation> chargingStations) {
-        this.chargingStations = chargingStations;
+        World.chargingStations = chargingStations;
     }
 
     // Метод, който се извиква при всяка итерация на симулацията, за да се обнови състоянието на света
@@ -35,7 +35,7 @@ public class World {
         }
 
         // Обновяване на състоянието на всеки бот
-        for (Bot bot : this.getBots()) {
+        for (Bot bot : World.getBots()) {
             bot.update(currentTime);
         }
     }
@@ -44,11 +44,11 @@ public class World {
         return perimeter;
     }
 
-    public List<Bot> getBots() {
+    public static List<Bot> getBots() {
         return bots;
     }
 
-    public List<ChargingStation> getChargingStations() {
+    public static List<ChargingStation> getChargingStations() {
         return chargingStations;
     }
 

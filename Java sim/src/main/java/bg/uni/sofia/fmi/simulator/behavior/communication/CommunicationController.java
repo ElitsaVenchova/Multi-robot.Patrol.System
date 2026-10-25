@@ -1,7 +1,7 @@
 
 package bg.uni.sofia.fmi.simulator.behavior.communication;
 
-import bg.uni.sofia.fmi.simulator.behavior.communication.messages.PatrolSectionMessage;
+import bg.uni.sofia.fmi.simulator.behavior.communication.messages.EncounterStateMessage;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.CommunicationModule;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolSection;
@@ -46,12 +46,12 @@ public class CommunicationController {
      * @param patrolSection патрулната секция на изпращащия робот
      * @return съобщението при успешна проверка, иначе Optional.empty()
      */
-    public Optional<PatrolSectionMessage> sendPatrolSection(Bot sender,
+    public Optional<EncounterStateMessage> sendPatrolSection(Bot sender,
             Bot receiver, PatrolSection patrolSection) {
         if (patrolSection == null || !canCommunicate(sender, receiver)) {
             return Optional.empty();
         }
-        return Optional.of(new PatrolSectionMessage(sender.getId(), sender.getMaxSpeed(),
-                new PatrolSection(patrolSection.getStartPosition(), patrolSection.getEndPosition())));
+        return Optional.of(new EncounterStateMessage(sender.getId(), sender.getMaxSpeed(),
+                patrolSection));
     }
 }

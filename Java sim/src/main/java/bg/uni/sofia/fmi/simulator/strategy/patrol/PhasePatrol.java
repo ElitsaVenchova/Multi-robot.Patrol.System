@@ -3,7 +3,6 @@ package bg.uni.sofia.fmi.simulator.strategy.patrol;
 import bg.uni.sofia.fmi.simulator.config.PatrolConfig;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.Position;
-import bg.uni.sofia.fmi.simulator.domain.World;
 
 //Патрулиране по секции като всички роботи се движат едновременно в една или друга посока като
 // така поддържат еднакво разстояние помежду си
@@ -15,18 +14,18 @@ public class PhasePatrol implements PatrolModel {
 
 
     @Override
-    public void initialize(Bot bot, World world) {
+    public void initialize(Bot bot) {
         // assign directions (even/odd)
     }
 
     @Override
-    public Position execute(Bot bot, World world, int currentTime) {
+    public Position execute(Bot bot, int currentTime) {
         //Ако стратегията няма секция за патрулиране, инициализираме патрулирането
         if(patrolSection == null) {
-            initialize(bot, world);
+            initialize(bot);
         }
 
-        PatrolModel.scan(bot, world, currentTime);
+        PatrolModel.scan(bot, currentTime);
 
         return null;
     }

@@ -1,5 +1,7 @@
 package bg.uni.sofia.fmi.simulator.strategy.patrol;
 
+import bg.uni.sofia.fmi.simulator.behavior.communication.messages.EncounterStateMessage;
+import bg.uni.sofia.fmi.simulator.domain.Perimeter;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
@@ -10,135 +12,126 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Pure calculations for informational encounter sections; no world or robot mutation.
- * Circular spans use increasing, unwrapped endpoints: [80, 120] crosses the origin
- * of a ring of length 100, [0, 100] covers it, and [0, 0] is a point.
- */
+/** Pure allocation of informational sections from locally available state snapshots. */
 public final class EncounterSectionAllocator {
     private final double perimeterLength;
     private final PerimeterType perimeterType;
 
-    public EncounterSectionAllocator(double perimeterLength, PerimeterType perimeterType) {
-        if (!Double.isFinite(perimeterLength) || perimeterLength <= 0 || !Double.isFinite(2 * perimeterLength)) {
-            throw new IllegalArgumentException("Perimeter length must be finite and positive");
+    public EncounterSectionAllocator(Perimeter perimeter) {
+        Objects.requireNonNull(perimeter, "Perimeter");
+        if (perimeter.getSize() <= 0) {
+            throw new IllegalArgumentException("Perimeter length must be positive");
         }
-        this.perimeterLength = perimeterLength;
-        this.perimeterType = Objects.requireNonNull(perimeterType, "Perimeter type");
+        perimeterLength = perimeter.getSize();
+        perimeterType = Objects.requireNonNull(perimeter.getType(), "Perimeter type");
     }
 
-    /** Immutable coordinates for messages and proposals, unlike mutable Position. */
-    public record SectionSpan(double start, double end) {
-        public SectionSpan {
-            if (!Double.isFinite(start) || !Double.isFinite(end) || end < start
-                    || !Double.isFinite(end - start)) {
-                throw new IllegalArgumentException("Section must have finite increasing endpoints");
-            }
-        }
-
-        public double length() {
-            return end - start;
-        }
-
-        public PatrolSection toPatrolSection() {
-            return new PatrolSection(new Position(start), new Position(end));
-        }
-    }
-
-    /** The caller's argument order is retained, even when the spatial order differs. */
-    public record Redistribution(SectionSpan firstSection, SectionSpan secondSection) { }
+    /** Explicit IDs retain association even when spatial order or argument order differs. */
+    public record Redistribution(long firstId, PatrolSection firstSection,
+                                 long secondId, PatrolSection secondSection) { }
 
     /** IDs determine ordering only; their numerical values are never coordinates. */
-    public Map<Long, SectionSpan> allocateInitial(Collection<Long> robotIds) {
+    public Map<Long, PatrolSection> allocateInitial(Collection<Long> robotIds) {
         Objects.requireNonNull(robotIds, "Robot IDs");
         List<Long> sorted = robotIds.stream().sorted().toList();
         if (sorted.stream().distinct().count() != sorted.size()) {
             throw new IllegalArgumentException("Robot IDs must be unique");
         }
-        Map<Long, SectionSpan> result = new LinkedHashMap<>();
+        Map<Long, PatrolSection> result = new LinkedHashMap<>();
         for (int index = 0; index < sorted.size(); index++) {
             double start = perimeterLength * ((double) index / sorted.size());
             double end = index + 1 == sorted.size() ? perimeterLength
                     : perimeterLength * ((double) (index + 1) / sorted.size());
-            result.put(sorted.get(index), new SectionSpan(start, end));
+            result.put(sorted.get(index), section(start, end));
         }
         return result;
     }
 
-    /** Copies an existing section, including normalized circular seam crossings. */
-    public SectionSpan snapshot(PatrolSection section) {
-        Objects.requireNonNull(section, "Patrol section");
-        double start = section.getStartPosition().getX();
-        double end = section.getEndPosition().getX();
+    /** Does not inspect live robots, transport state, or the current simulation world. */
+    public Redistribution redistribute(EncounterStateMessage first, EncounterStateMessage second) {
+        Objects.requireNonNull(first, "First robot state");
+        Objects.requireNonNull(second, "Second robot state");
+        if (first.senderId() == second.senderId()) {
+            throw new IllegalArgumentException("Encounter requires different robot IDs");
+        }
+        requireSpeed(first.maxSpeed());
+        requireSpeed(second.maxSpeed());
+        PatrolSection firstSection = canonicalSection(first.patrolSection());
+        PatrolSection secondSection = canonicalSection(second.patrolSection());
+        PatrolSection region = connectedRegion(first.senderId(), firstSection,
+                second.senderId(), secondSection);
+        double start = region.startPosition().getX();
+        double end = region.endPosition().getX();
+        double firstOffset = offset(start, firstSection.startPosition().getX());
+        double secondOffset = offset(start, secondSection.startPosition().getX());
+        boolean firstLeads = firstOffset < secondOffset
+                || (firstOffset == secondOffset && first.senderId() < second.senderId());
+        double scale = Math.max(first.maxSpeed(), second.maxSpeed());
+        double firstWeight = first.maxSpeed() / scale;
+        double secondWeight = second.maxSpeed() / scale;
+        double leadingWeight = firstLeads ? firstWeight : secondWeight;
+        double boundary = start + length(region) * (leadingWeight / (firstWeight + secondWeight));
+        boundary = Math.max(start, Math.min(end, boundary));
+        PatrolSection leading = section(start, boundary);
+        PatrolSection trailing = section(boundary, end);
+        return new Redistribution(first.senderId(), firstLeads ? leading : trailing,
+                second.senderId(), firstLeads ? trailing : leading);
+    }
+
+    /** Normalizes geometry internally without introducing a second section representation. */
+    private PatrolSection canonicalSection(PatrolSection input) {
+        double start = input.startPosition().getX();
+        double end = input.endPosition().getX();
         if (!Double.isFinite(start) || !Double.isFinite(end)) {
             throw new IllegalArgumentException("Section coordinates must be finite");
         }
         if (perimeterType == PerimeterType.LINEAR) {
-            return checked(new SectionSpan(Math.min(start, end), Math.max(start, end)));
+            double min = Math.min(start, end);
+            double max = Math.max(start, end);
+            if (min < 0 || max > perimeterLength) {
+                throw new IllegalArgumentException("Linear section is outside the perimeter");
+            }
+            return section(min, max);
         }
         double difference = end - start;
-        if (!Double.isFinite(difference) || Math.abs(difference) > perimeterLength) {
+        double tolerance = 4 * Math.ulp(Math.max(perimeterLength, Math.max(Math.abs(start), Math.abs(end))));
+        if (!Double.isFinite(difference) || Math.abs(difference) > perimeterLength + tolerance) {
             throw new IllegalArgumentException("Circular section cannot exceed one perimeter");
         }
-        double length = difference == 0 ? 0 : Math.abs(difference) == perimeterLength ? perimeterLength
-                : normalize(difference);
+        double arcLength = Math.abs(difference) >= perimeterLength ? perimeterLength
+                : difference >= 0 ? difference : normalize(difference);
         double normalizedStart = normalize(start);
-        return checked(new SectionSpan(normalizedStart, normalizedStart + length));
+        return section(normalizedStart, normalizedStart + arcLength);
     }
 
-    public Redistribution redistribute(long firstId, SectionSpan first, double firstSpeed,
-            long secondId, SectionSpan second, double secondSpeed) {
-        if (firstId == secondId) {
-            throw new IllegalArgumentException("Encounter requires different robot IDs");
-        }
-        requireSpeed(firstSpeed);
-        requireSpeed(secondSpeed);
-        checked(first);//Проверка на секциите дали не излизат от периметъра
-        checked(second);
-        SectionSpan region = connectedRegion(firstId, first, secondId, second);
-        double firstOffset = offset(region.start(), first.start());
-        double secondOffset = offset(region.start(), second.start());
-        boolean firstLeads = firstOffset < secondOffset || (firstOffset == secondOffset && firstId < secondId);
-        double scale = Math.max(firstSpeed, secondSpeed);
-        double firstWeight = firstSpeed / scale;
-        double secondWeight = secondSpeed / scale;
-        double leadingWeight = firstLeads ? firstWeight : secondWeight;
-        double boundary = region.start() + region.length() * (leadingWeight / (firstWeight + secondWeight));
-        boundary = Math.max(region.start(), Math.min(region.end(), boundary));
-        SectionSpan leading = new SectionSpan(region.start(), boundary);
-        SectionSpan trailing = new SectionSpan(boundary, region.end());
-        return firstLeads ? new Redistribution(leading, trailing) : new Redistribution(trailing, leading);
-    }
-
-    private SectionSpan connectedRegion(long firstId, SectionSpan first,  long secondId, SectionSpan second) {
+    private PatrolSection connectedRegion(long firstId, PatrolSection first,
+                                         long secondId, PatrolSection second) {
         if (perimeterType == PerimeterType.LINEAR) {
-            return new SectionSpan(Math.min(first.start(), second.start()), Math.max(first.end(), second.end()));
+            return section(Math.min(first.startPosition().getX(), second.startPosition().getX()),
+                    Math.max(first.endPosition().getX(), second.endPosition().getX()));
         }
-        double firstStart = normalize(first.start());
-        double secondStart = normalize(second.start());
-        double fromFirst = Math.max(first.length(),  normalize(secondStart - firstStart) + second.length());
-        double fromSecond = Math.max(second.length(), normalize(firstStart - secondStart) + first.length());
+        double firstStart = normalize(first.startPosition().getX());
+        double secondStart = normalize(second.startPosition().getX());
+        double fromFirst = Math.max(length(first), normalize(secondStart - firstStart) + length(second));
+        double fromSecond = Math.max(length(second), normalize(firstStart - secondStart) + length(first));
         if (fromFirst >= perimeterLength && fromSecond >= perimeterLength) {
             double start = firstId < secondId ? firstStart : secondStart;
-            return new SectionSpan(start, start + perimeterLength);
+            return section(start, start + perimeterLength);
         }
         boolean useFirst = fromFirst < fromSecond
                 || (fromFirst == fromSecond && (firstStart < secondStart
                 || (firstStart == secondStart && firstId < secondId)));
         double start = useFirst ? firstStart : secondStart;
-        return new SectionSpan(start, start + (useFirst ? fromFirst : fromSecond));
+        return section(start, start + (useFirst ? fromFirst : fromSecond));
     }
 
-    private SectionSpan checked(SectionSpan span) {
-        Objects.requireNonNull(span, "Section span");
-        if (perimeterType == PerimeterType.LINEAR) {
-            if (span.start() < 0 || span.end() > perimeterLength) {
-                throw new IllegalArgumentException("Linear section is outside the perimeter");
-            }
-        } else if (span.length() > perimeterLength) {
-            throw new IllegalArgumentException("Circular section cannot exceed one perimeter");
-        }
-        return span;
+    /** Called only for canonical increasing sections, with roundoff capped at one ring. */
+    private double length(PatrolSection section) {
+        return Math.min(perimeterLength, section.endPosition().getX() - section.startPosition().getX());
+    }
+
+    private static PatrolSection section(double start, double end) {
+        return new PatrolSection(new Position(start), new Position(end));
     }
 
     private double offset(double start, double position) {

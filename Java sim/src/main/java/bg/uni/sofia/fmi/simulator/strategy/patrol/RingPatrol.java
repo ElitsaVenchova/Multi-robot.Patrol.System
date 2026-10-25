@@ -11,17 +11,14 @@ public class RingPatrol implements PatrolModel {
     public RingPatrol(PatrolConfig config) { }
 
     @Override
-    public void initialize(Bot bot, World world) {
+    public void initialize(Bot bot) {
         // assign directions (even/odd)
     }
 
     @Override
-    public Position execute(Bot bot, World world, int currentTime) {
-        PatrolModel.scan(bot, world, currentTime);
+    public Position execute(Bot bot,int currentTime) {
+        PatrolModel.scan(bot, currentTime);
 
         return null;
     }
-
-    @Override
-    public PatrolSection getPatrolSection() { return null; }
 }

@@ -52,7 +52,20 @@ public class Bot {
 
     // Движение на бота
     public void move(Position target) {
-        double distance = GeometryUtils.perimeterDistance(position, target);
+        move(target, GeometryUtils.perimeterDistance(position, target));
+    }
+
+    /** Executes a navigation step with its actual path length, including circular arcs. */
+    public void move(Position target, double distance) {
+        if (!Double.isFinite(distance) || distance < 0
+                || !Double.isFinite(target.getX())) {
+            throw new IllegalArgumentException("Movement must have finite coordinates and non-negative distance");
+        }
+        double displacement = GeometryUtils.perimeterDistance(position, target);
+        double tolerance = 4 * Math.ulp(Math.max(1.0, Math.max(distance, displacement)));
+        if (distance + tolerance < displacement) {
+            throw new IllegalArgumentException("Path length cannot be shorter than displacement");
+        }
         if(distance > maxSpeed){
             throw new RuntimeException("Разстоянието до следващата стъпка е по-голоямо от възможностите на робота!");
         }
@@ -73,13 +86,18 @@ public class Bot {
             return false;
         }
         if (World.getPerimeter().getType() == PerimeterType.LINEAR) {
-            double minX = Math.min(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
-            double maxX = Math.max(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
+            double minX = Math.min(patrolSection.startPosition().getX(), patrolSection.endPosition().getX());
+            double maxX = Math.max(patrolSection.startPosition().getX(), patrolSection.endPosition().getX());
             return position.getX() >= minX && position.getX() <= maxX;
         } else {
+            double rawStart = patrolSection.startPosition().getX();
+            double span = Math.abs(patrolSection.endPosition().getX() - rawStart);
+            if (span >= World.getPerimeter().getSize()) {
+                return true; // An unwrapped full-ring section contains every position.
+            }
             double x = GeometryUtils.normalizePosition(position.getX());
-            double start = GeometryUtils.normalizePosition(patrolSection.getStartPosition().getX());
-            double rawEnd = patrolSection.getEndPosition().getX();
+            double start = GeometryUtils.normalizePosition(patrolSection.startPosition().getX());
+            double rawEnd = patrolSection.endPosition().getX();
             double end = GeometryUtils.normalizePosition(rawEnd);
             // Секцията завършва точно в края на периметъра,  който е физически същата точка като 0.
             boolean endsAtSeam = rawEnd > 0 && end == 0;
@@ -96,13 +114,13 @@ public class Bot {
     //Връща по-близкия край на секцията за патрулиране
     public Position getTargetToPatrolSection(PatrolSection patrolSection) {
         if (World.getPerimeter().getType() == PerimeterType.CIRCULAR) {
-            Position start = patrolSection.getStartPosition();
-            Position end = patrolSection.getEndPosition();
+            Position start = patrolSection.startPosition();
+            Position end = patrolSection.endPosition();
             return GeometryUtils.perimeterDistance(position, start) <= GeometryUtils.perimeterDistance(position, end)
                     ? start : end;
         }
-        double minX = Math.min(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
-        double maxX = Math.max(patrolSection.getStartPosition().getX(), patrolSection.getEndPosition().getX());
+        double minX = Math.min(patrolSection.startPosition().getX(), patrolSection.endPosition().getX());
+        double maxX = Math.max(patrolSection.startPosition().getX(), patrolSection.endPosition().getX());
 
         // If bot is outside the section, return the closest boundary position
         double targetX = (position.getX() < minX) ? minX : maxX;

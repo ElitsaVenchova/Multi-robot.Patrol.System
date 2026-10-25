@@ -20,6 +20,7 @@ import bg.uni.sofia.fmi.simulator.behavior.collisionAvoidance.ObstacleAvoidance;
 import bg.uni.sofia.fmi.simulator.behavior.planning.SimplePlanningController;
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
+import bg.uni.sofia.fmi.simulator.strategy.patrol.EncounterPatrol;
 import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 
 //Фабрика за създаване на домейн обекти (Bot, ChargingStation, World) от конфигурацията.
@@ -31,8 +32,15 @@ public class DomainFactory {
         World world = new World();
         World.setPerimeter(new Perimeter(perimeterSize, perimeterType));
         // Ботове
-        List<Bot> bots = createBots(config, world, config.getSimulation().getChargeThreshold());
+        List<Bot> bots = createBots(config, config.getSimulation().getChargeThreshold());
         world.addBots(bots);
+        // Initialize encounter sections only after the full participant set exists.
+        bots.stream().sorted(java.util.Comparator.comparingLong(Bot::getId)).forEach(bot -> {
+            PatrolModel patrol = bot.getPlanningModule().getPatrolModel();
+            if (patrol instanceof EncounterPatrol) {
+                patrol.initialize(bot);
+            }
+        });
         // Зарядни станции
         List<ChargingStation> stations = createStations(config.getChargingStations());
         world.addChargingStations(stations);
@@ -42,7 +50,7 @@ public class DomainFactory {
         return world;
     }
     // Създаване на ботове от конфигурацията
-    private static List<Bot> createBots(SimulationConfig config, World world, double energyThreshold) {
+    private static List<Bot> createBots(SimulationConfig config, double energyThreshold) {
         List<Bot> bots = new ArrayList<>();
         RobotModelLoader loader = new RobotModelLoader();
         
@@ -54,13 +62,13 @@ public class DomainFactory {
                 PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
                 // Геометричната начална позиция е локална за този свят;
                 // глобалният ID служи само за идентификация и логване.
-                bots.add(createBot(id, model, world, energyThreshold, patrolModel));
+                bots.add(createBot(id, model, energyThreshold, patrolModel));
             }
         }
         return bots;
     }
     //Създаване на бот от конфигурацията
-    private static Bot createBot(long id, RobotModelConfig model, World world, double energyThreshold, PatrolModel patrolModel) {
+    private static Bot createBot(long id, RobotModelConfig model, double energyThreshold, PatrolModel patrolModel) {
         // Начална позиция на робота спрямо реда на въвеждане
         Position position = new Position(id);
         // Батерията на бота
@@ -85,7 +93,7 @@ public class DomainFactory {
         }
         ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance();
         Navigation navigation = new Navigation(obstacleAvoidance);
-        PlanningModule planningModule = new SimplePlanningController(energyManager, patrolModel, navigation, world);
+        PlanningModule planningModule = new SimplePlanningController(energyManager, patrolModel, navigation);
         return new Bot(id, position, battery, lidar, communicationModule, model.getMaxSpeed(), type, model.getName(),
                 model.getFailureProbability(), model.getPrice(), model.getBatteryConsumptionRate(), planningModule);
     }

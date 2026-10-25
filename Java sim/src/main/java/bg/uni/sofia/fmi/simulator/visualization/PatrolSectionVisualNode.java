@@ -24,8 +24,8 @@ public class PatrolSectionVisualNode extends Group {
         sectionLine.setStrokeLineCap(StrokeLineCap.ROUND);
         sectionLine.setMouseTransparent(true);
 
-        double start = patrolSection.getStartPosition().getX();
-        double end = patrolSection.getEndPosition().getX();
+        double start = patrolSection.startPosition().getX();
+        double end = patrolSection.endPosition().getX();
         int segments = scaleMapper.isCircular() ? CIRCULAR_SEGMENTS : 1;
         Point2D startPoint = null;
         Point2D endPoint = null;

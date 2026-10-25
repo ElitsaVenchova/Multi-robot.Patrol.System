@@ -6,13 +6,22 @@ import bg.uni.sofia.fmi.simulator.domain.World;
 
 public interface PatrolModel {
     //setup (positions, phases)
-    void initialize(Bot bot, World world);
+    void initialize(Bot bot);
+    /** Lifecycle notifications; existing strategies need not react. */
+    default void onPatrolSuspended(Bot bot) { }
+
+    default void onPatrolResumed(Bot bot) { }
+
+    /** Null retains shortest-route navigation, including initial deployment. */
+    default Direction getMovementDirection() {
+        return null;
+    }
     //called every tick
-    Position execute(Bot bot, World world, int currentTime);
+    Position execute(Bot bot,int currentTime);
     //Сканиране за нарушители с лидара
-    static void scan(Bot bot, World world, int currentTime) {
+    static void scan(Bot bot, int currentTime) {
         // Сканиране с лидара за нарушители
-        bot.getLidar().detect(bot.getPosition(), world.getPerimeter(), currentTime);
+        bot.getLidar().detect(bot.getPosition(), World.getPerimeter(), currentTime);
         bot.getBattery().consume(bot.getLidar().batteryConsumptionRate());
     }
     // Секцията за патрулиране, ако е приложимо, иначе връща null

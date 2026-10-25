@@ -25,8 +25,8 @@ public class AsyncPatrol implements PatrolModel {
     }
 
     @Override
-    public void initialize(Bot bot, World world) {
-        int numBots = world.getBots().size();
+    public void initialize(Bot bot) {
+        int numBots = World.getBots().size();
         double sectionSize = (double) World.getPerimeter().getSize() / numBots;
 
         double startPos = (bot.getId() - 1) * sectionSize;
@@ -44,10 +44,10 @@ public class AsyncPatrol implements PatrolModel {
     }
 
     @Override
-    public Position execute(Bot bot, World world, int currentTime) {
+    public Position execute(Bot bot, int currentTime) {
         //Ако стратегията няма секция за патрулиране, инициализираме патрулирането
         if(patrolSection == null) {
-            initialize(bot, world);
+            initialize(bot);
         }
         Position goalPosition;//Някой от крайщатата на patrolSection като цел на робота
         //Ако роботът не е в секцията за патрулиране, то трябва да се предвижи до нея.
@@ -56,7 +56,7 @@ public class AsyncPatrol implements PatrolModel {
             goalPosition = bot.getTargetToPatrolSection(patrolSection);
         } else {
             bot.setState(BotState.PATROLLING);
-            PatrolModel.scan(bot, world, currentTime);
+            PatrolModel.scan(bot, currentTime);
 
             goalPosition = getPatrolTarget(bot);
         }
@@ -68,8 +68,8 @@ public class AsyncPatrol implements PatrolModel {
     //Има добавена малко случайност, за да може движението да е напълно предвидимо.
     public Position getPatrolTarget(Bot bot) {
         double currentX = bot.getPosition().getX();
-        double sectionStart = patrolSection.getStartPosition().getX();
-        double sectionEnd = patrolSection.getEndPosition().getX();
+        double sectionStart = patrolSection.startPosition().getX();
+        double sectionEnd = patrolSection.endPosition().getX();
         //Промяна на посоката на движение, когато е достигнат края на секцията
         if (patrolDirection == Direction.RIGHT && atBoundary(currentX, sectionEnd)) {
             patrolDirection = Direction.LEFT;
