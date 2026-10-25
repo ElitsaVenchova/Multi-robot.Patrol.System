@@ -27,17 +27,18 @@ public class AsyncPatrolTest {
         World.setPerimeter(new Perimeter(1000, PerimeterType.CIRCULAR));
         List<Bot> bots = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            bots.add(new Bot(100 + i, new Position(i), new Battery(1000), new Lidar(0, 0),
-                    new CommunicationModule(10),10, RobotType.GROUND, "bot-" + i, 0, 0, 0, null));
+            bots.add(new Bot(100 + i, new Position(i), new Battery(1000, 1), new Lidar(0, 0),
+                    new CommunicationModule(10, 1, 0, 1), 10, RobotType.GROUND, "bot-" + i,
+                    0, 0, 0, null));
         }
         world.addBots(bots);
 
         Bot lastBot = bots.get(4);
         lastBot.getPosition().setX(999);
-        patrol.initialize(lastBot, world);
+        patrol.initialize(lastBot);
 
-        assertEquals(800, patrol.getPatrolSection().getStartPosition().getX(), 0);
-        assertEquals(1000, patrol.getPatrolSection().getEndPosition().getX(), 0);
+        assertEquals(800, patrol.getPatrolSection().startPosition().getX(), 0);
+        assertEquals(1000, patrol.getPatrolSection().endPosition().getX(), 0);
         assertTrue(lastBot.isInPatrolSection(patrol.getPatrolSection()));
 
         Position target = patrol.getPatrolTarget(lastBot);
