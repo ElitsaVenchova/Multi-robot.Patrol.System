@@ -2,6 +2,7 @@ package bg.uni.sofia.fmi.simulator.domain.enums;
 
 // Състояния на бота
 public enum BotState {
+    WAITING_FOR_CHARGE, // чака зареждане
     PATROLLING, // патрулиране
     GOING_TO_PATROL, // отиване за зареждане
     GOING_TO_CHARGE, // отиване за зареждане

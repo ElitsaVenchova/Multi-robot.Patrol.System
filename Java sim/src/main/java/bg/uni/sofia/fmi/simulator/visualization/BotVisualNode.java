@@ -21,6 +21,7 @@ import javafx.util.Duration;
  *   - Green (PATROLLING)
  *   - Blue (GOING_TO_PATROL)
  *   - Yellow (GOING_TO_CHARGE)
+ *   - Purple (WAITING_FOR_CHARGE)
  *   - Orange (CHARGING)
  *   - Red (ERROR)
  * - Robot ID is displayed as a label
@@ -224,6 +225,7 @@ public class BotVisualNode extends Group {
             case PATROLLING -> Color.GREEN;
             case GOING_TO_PATROL -> Color.DODGERBLUE;
             case GOING_TO_CHARGE -> Color.YELLOW;
+            case WAITING_FOR_CHARGE -> Color.MEDIUMPURPLE;
             case CHARGING -> Color.ORANGE;
             case ERROR -> Color.RED;
         };

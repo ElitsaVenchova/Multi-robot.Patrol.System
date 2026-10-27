@@ -1,17 +1,17 @@
 name: Drone
 type: DRONE
-maxSpeed: 5
+maxSpeed: 5 # m/min
 failureProbability: 0.1
-batteryConsumptionRate: 0.05
+batteryConsumptionRate: 0.05 # Wh/m
 battery:
-  batteryCapacity: 60.0
-  averageBatteryLife: 2000
+  batteryCapacity: 60.0 # Wh
+  averageBatteryLife: 2000 # hours
 lidar:
-  lidarRange: 30.0
-  lidarBatteryConsumptionRate: 0.05
+  lidarRange: 30.0 # m
+  lidarBatteryConsumptionRate: 0.05 # Wh на сканиране (Wh/scan)
 communicationModule:
-  communicationRange: 15
-  speed: 1000000
-  latency: 10
+  communicationRange: 15 # m
+  speed: 1000000 # m/s
+  latency: 10 # ms
   reliability: 0.99
-price: 1000
+price: 1000 # EUR

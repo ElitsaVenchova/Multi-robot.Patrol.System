@@ -1,5 +1,5 @@
 name: Fast Charger
-price: 10000
+price: 10000 # EUR
 slots: 4
-power: 5.0
+power: 300.0 # W на зает слот; добавя до 5 Wh на слот за минута
 failureProbability: 0.01

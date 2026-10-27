@@ -2,6 +2,7 @@ package bg.uni.sofia.fmi.simulator.strategy.patrol;
 
 import bg.uni.sofia.fmi.simulator.config.PatrolConfig;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
+import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
@@ -9,8 +10,11 @@ import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 import bg.uni.sofia.fmi.simulator.util.RandomProvider;
 
+import java.util.logging.Logger;
+
 //Патрулиране по секции като всеко робот се вдижи независимо в своята секция
 public class AsyncPatrol implements PatrolModel {
+    Logger log = Logger.getLogger(ChargingStation.class.getName());
     private final double deviationProbability; // опционално, определя колко силно стратегията ще използва случайността на движениеацията
     private final int maxDeviationDuration; // колко най-много ticks да продължи движението в другата посока
 
@@ -60,7 +64,7 @@ public class AsyncPatrol implements PatrolModel {
 
             goalPosition = getPatrolTarget(bot);
         }
-        if (currentTime < 2500) { System.out.print(patrolSection + " to " + patrolDirection + "/" +  movementDirection);  }
+        if (currentTime < 2500) { log.fine(patrolSection + " to " + patrolDirection + "/" +  movementDirection);  }
         return goalPosition;
     }
 

@@ -5,7 +5,7 @@ import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 
 // Клас, представляващ атака в симулацията
 public class Attack {
-    private final Integer duration; // null = infinite
+    private final Integer duration; // null = няма краен срок; пропуснатото при край остават нехванати
     
     private final long id; // за да може да се идентифицира бота при нужда, напр. за логване
     private final Position position; // позиция на атаката
@@ -28,6 +28,11 @@ public class Attack {
             return false;
 
         return (currentTime - creationTime) >= duration;
+    }
+
+    /** Актуализира статусите при край на симулациоята, защото са ACTIVE, но с изтекъл срок */
+    public void resolveAtBoundary(int boundaryTime) {
+        if (isActive() && (duration == null || isExpired(boundaryTime))) miss();
     }
 
     public void intercept(int time) {

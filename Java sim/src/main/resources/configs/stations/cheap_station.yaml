@@ -1,5 +1,5 @@
 name: Single Charger
-price: 1000
+price: 1000 # EUR
 slots: 1
-power: 1.0
+power: 60.0 # W на зает слот; добавя до 1 Wh на слот за минута
 failureProbability: 0.1

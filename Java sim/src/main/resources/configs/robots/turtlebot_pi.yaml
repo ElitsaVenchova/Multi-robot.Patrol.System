@@ -1,17 +1,17 @@
 name: TurtleBot Pi
 type: GROUND
-maxSpeed: 2.5
+maxSpeed: 2.5 # m/min
 failureProbability: 0.1
-batteryConsumptionRate: 0.02
+batteryConsumptionRate: 0.02 # Wh/m
 battery:
-  batteryCapacity: 100.0
-  averageBatteryLife: 5000
+  batteryCapacity: 100.0 # Wh
+  averageBatteryLife: 5000 # hours
 lidar:
-  lidarRange: 7.0
-  lidarBatteryConsumptionRate: 0.02
+  lidarRange: 7.0 # m
+  lidarBatteryConsumptionRate: 0.02 # Wh/scan
 communicationModule:
-  communicationRange: 10
-  speed: 1000000
-  latency: 10
+  communicationRange: 10 # m
+  speed: 1000000 # m/s
+  latency: 10 # ms
   reliability: 0.99
-price: 1000
+price: 1000 # EUR

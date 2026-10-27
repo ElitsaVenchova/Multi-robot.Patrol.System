@@ -2,12 +2,14 @@ package bg.uni.sofia.fmi.simulator.domain;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 import bg.uni.sofia.fmi.simulator.domain.enums.ChargingStationStatus;
 import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 
 // Зарядна станция, където ботът може да зарежда батерията си
 public class ChargingStation {
+    Logger log = Logger.getLogger(ChargingStation.class.getName());
     private final String name; // име на модела на станцията
     private final double price; // цена за зареждане, която се използва за оптимизация на разходите
     private final int totalSlots; // общ брой слотове за зареждане
@@ -39,7 +41,7 @@ public class ChargingStation {
 
     // Зареждане на бота
     public void chargeBot(Bot bot) {
-        bot.getBattery().charge(power);
+        bot.getBattery().charge(power / 60.0); // W на слот * (1 minute / 60) = Wh
     }
 
     // Опит за заемане на слот за зареждане. Връща true, ако ботът може
@@ -88,7 +90,7 @@ public class ChargingStation {
     public synchronized int getEstimatedWaitTime() {
         int time = 0;
         for (Bot b : queue) {
-            time += b.getBattery().estimateTimeToFull(power);
+            time += b.getBattery().estimateTimeToFull(power / 60.0); // W на слот * (1 minute / 60) = Wh
         }
         return time;
     }
@@ -104,7 +106,7 @@ public class ChargingStation {
         } else {
             status = ChargingStationStatus.AVAILABLE;
         }
-        System.out.println(" ChargingStation " + id + " status: " + status + " queue size: " + queue.size());
+        log.fine(" ChargingStation " + id + " status: " + status + " queue size: " + queue.size());
     }
 
     // Проверка дали станцията е налична за зареждане (т.е. не е в грешка и има свободни слотове)

@@ -6,7 +6,7 @@ import java.util.List;
  * LiDAR сензор на робота, който може да открива атаки
  * в определен радиус и консумира батерия при използване
  * @param range                  в метри, обхват на LiDAR сензора
- * @param batteryConsumptionRate когато LiDAR е активен, например mAh/s
+ * @param batteryConsumptionRate консумирана енергия на сканиране, в Wh
  */
 public record Lidar(double range, double batteryConsumptionRate) {
     //Открива атаки в радиус от позицията на робота и ги прекъсва, ако са активни
