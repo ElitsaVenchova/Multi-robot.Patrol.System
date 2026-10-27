@@ -3,6 +3,7 @@ package bg.uni.sofia.fmi.simulator.cli;
 // Парсва аргументите от командната линия.
 public class CommandLineParser {
     private static final String DEFAULT_CONFIG_PATH = "configs/scenarios/example.yaml";
+    private static final String DEFAULT_EXPERIMENT_CONFIG_PATH = "configs/experiments/illustrative.yaml";
 
     private CommandLineParser() {
     }
@@ -54,11 +55,12 @@ public class CommandLineParser {
 
         // Визуализацията е позволена само при стартиране на единична симулация.
         if (executionMode == ExecutionMode.EXPERIMENT && visualization) {
-            throw new IllegalArgumentException(
-                    "Visualization is not supported in experiment mode."
-            );
+            throw new IllegalArgumentException("Visualization is not supported in experiment mode.");
         }
 
+        //Ако е експериментален режим, а конфигурационния път не е указан, задаваме стандартен
+        if (executionMode == ExecutionMode.EXPERIMENT && !configPathSpecified)
+            configPath = DEFAULT_EXPERIMENT_CONFIG_PATH;
         return new CommandLineOptions(executionMode,visualization,configPath);
     }
 
@@ -77,7 +79,7 @@ public class CommandLineParser {
               -h, --help          Show this help message
             
             Defaults:
-              Execution mode:     experiment
+              Execution mode:     run
               Visualization:      disabled
               Configuration:      configs/scenarios/example.yaml
             
@@ -85,7 +87,7 @@ public class CommandLineParser {
               -r
               -r -v
               -r configs/scenarios/example.yaml
-              -e configs/scenarios/base.yaml
+              -e configs/experiments/illustrative.yaml
             
             Notes:
               Only one execution mode (-r or -e) can be specified.

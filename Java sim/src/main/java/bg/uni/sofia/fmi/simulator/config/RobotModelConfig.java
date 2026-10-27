@@ -1,6 +1,7 @@
 package bg.uni.sofia.fmi.simulator.config;
 
 // Конфигурация за моделите на роботите и неговите компоненти
+// Distances m, speed m/min, capacity Wh, movement Wh/m, LiDAR Wh/scan, prices EUR.
 public class RobotModelConfig {
     private String name;
     private String type;
@@ -11,6 +12,7 @@ public class RobotModelConfig {
     private BatteryConfig battery;
     private LidarConfig lidar;
     private CommunicationModuleConfig communicationModule;
+    private double baselineConsumptionWhPerMinute = 0.01;
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -30,8 +32,16 @@ public class RobotModelConfig {
     public void setLidar(LidarConfig lidar) { this.lidar = lidar; }
     public CommunicationModuleConfig getCommunicationModule() { return communicationModule; }
     public void setCommunicationModule(CommunicationModuleConfig communicationModule) { this.communicationModule = communicationModule; }
+    public double getBaselineConsumptionWhPerMinute() { return baselineConsumptionWhPerMinute; }
+    public void setBaselineConsumptionWhPerMinute(double v) { baselineConsumptionWhPerMinute = v; }
 
     public static class BatteryConfig {
+        private Double cycleLife;
+        private Double replacementCostEur;
+        public Double getCycleLife() { return cycleLife; }
+        public void setCycleLife(Double v) { cycleLife = v; }
+        public Double getReplacementCostEur() { return replacementCostEur; }
+        public void setReplacementCostEur(Double v) { replacementCostEur = v; }
         private double batteryCapacity;
         private double averageBatteryLife;
         public double getBatteryCapacity() { return batteryCapacity; }

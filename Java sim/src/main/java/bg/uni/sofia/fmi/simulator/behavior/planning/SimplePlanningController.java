@@ -10,7 +10,10 @@ import bg.uni.sofia.fmi.simulator.behavior.navigation.Navigation;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.Direction;
 
+import java.util.logging.Logger;
+
 public class SimplePlanningController implements PlanningModule {
+    Logger logger = Logger.getLogger(getClass().getName());
     private final EnergyManager energyManager;
     private final PatrolModel patrolModel;
     private final Navigation navigation;
@@ -25,7 +28,7 @@ public class SimplePlanningController implements PlanningModule {
 
     @Override
     public void update(Bot bot, int currentTime) {
-        if(currentTime < 2500) { System.out.print(" Bot " + bot.getId() + " at " + bot.getPosition() +
+        if(currentTime < 2500) { logger.fine(" Bot " + bot.getId() + " at " + bot.getPosition() +
                 " state: " + bot.getState() + bot.getBattery()); }
         Position goalPosition = null;
         Direction movementDirection = null;
@@ -44,13 +47,14 @@ public class SimplePlanningController implements PlanningModule {
         } else {
             // Ако батерията е достатъчна, продължаваме с патрулирането
             patrolModel.onPatrolResumed(bot);
+            bot.setState(BotState.PATROLLING);
             goalPosition = patrolModel.execute(bot, currentTime);
             movementDirection = patrolModel.getMovementDirection();
         }
         if(goalPosition != null){
             navigation.moveTowards(bot, goalPosition, movementDirection);
         }
-        if(currentTime < 2500) { System.out.println(goalPosition != null ? " " + goalPosition : ""); }
+        if(currentTime < 2500) { logger.fine(goalPosition != null ? " " + goalPosition : ""); }
     }
 
     private void change(Bot bot){
@@ -71,6 +75,7 @@ public class SimplePlanningController implements PlanningModule {
         ChargingStation best = selector.selectBestStation(bot);
         // Ако няма налична станция
         if (best == null) {
+            bot.setState(BotState.WAITING_FOR_CHARGE);
             // Ще потърси отново на следващия ход
             return null;
         }
@@ -85,7 +90,7 @@ public class SimplePlanningController implements PlanningModule {
                 bot.setState(BotState.CHARGING);
             } else {
                 // чака, [TODO] но ако е заето повече от 5 цикъла, търси друга станция
-                bot.setState(BotState.GOING_TO_CHARGE);
+                bot.setState(BotState.WAITING_FOR_CHARGE);
             }
             return null;
         } else {
