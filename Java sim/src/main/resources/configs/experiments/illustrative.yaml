@@ -1,0 +1,345 @@
+# САМО ЗА ДЕМОНСТРАЦИЯ: мрежите, повторенията, тарифите, батериите и разходите са илюстративни.
+# Конкретни параметри задават примерни варианти, без да се въвеждат произволни „стандартни“ стойности.
+experimentId: illustrative_reproducible
+baseConfig: configs/scenarios/experiment_demo.yaml
+repetitions: 3
+energyPriceEurPerKwh: 0.25
+designs:
+  - id: patrol_density_turtlebot
+    type: PATROL_DENSITY
+    system: TURTLEBOT
+    points:
+      - id: p0
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 2
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p1
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 4
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p2
+        resourceScenario: larger_batteries_two_fast_stations
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo_large
+            count: 2
+        chargingStations:
+          - model: fast_station
+            x: 50
+          - model: fast_station
+            x: 150
+      - id: p3
+        resourceScenario: larger_batteries_two_fast_stations
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo_large
+            count: 4
+        chargingStations:
+          - model: fast_station
+            x: 50
+          - model: fast_station
+            x: 150
+  - id: patrol_density_drone
+    type: PATROL_DENSITY
+    system: DRONE
+    points:
+      - id: p0
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: drone_demo
+            count: 2
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p1
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: drone_demo
+            count: 4
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p2
+        resourceScenario: larger_batteries_two_fast_stations
+        attackProbability: 0.3
+        robots:
+          - model: drone_demo_large
+            count: 2
+        chargingStations:
+          - model: fast_station
+            x: 50
+          - model: fast_station
+            x: 150
+      - id: p3
+        resourceScenario: larger_batteries_two_fast_stations
+        attackProbability: 0.3
+        robots:
+          - model: drone_demo_large
+            count: 4
+        chargingStations:
+          - model: fast_station
+            x: 50
+          - model: fast_station
+            x: 150
+  - id: patrol_density_hybrid
+    type: PATROL_DENSITY
+    system: HYBRID
+    points:
+      - id: p0
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 1
+          - model: drone_demo
+            count: 1
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p1
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 2
+          - model: drone_demo
+            count: 2
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p2
+        resourceScenario: larger_batteries_two_fast_stations
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo_large
+            count: 1
+          - model: drone_demo_large
+            count: 1
+        chargingStations:
+          - model: fast_station
+            x: 50
+          - model: fast_station
+            x: 150
+      - id: p3
+        resourceScenario: larger_batteries_two_fast_stations
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo_large
+            count: 2
+          - model: drone_demo_large
+            count: 2
+        chargingStations:
+          - model: fast_station
+            x: 50
+          - model: fast_station
+            x: 150
+  - id: attack_density_turtlebot
+    type: ATTACK_DENSITY
+    system: TURTLEBOT
+    points:
+      - id: p0
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.1
+        robots:
+          - model: turtlebot_demo
+            count: 4
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p1
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 4
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p2
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.6
+        robots:
+          - model: turtlebot_demo
+            count: 4
+        chargingStations:
+          - model: cheap_station
+            x: 100
+  - id: attack_density_drone
+    type: ATTACK_DENSITY
+    system: DRONE
+    points:
+      - id: p0
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.1
+        robots:
+          - model: drone_demo
+            count: 4
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p1
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: drone_demo
+            count: 4
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p2
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.6
+        robots:
+          - model: drone_demo
+            count: 4
+        chargingStations:
+          - model: cheap_station
+            x: 100
+  - id: attack_density_hybrid
+    type: ATTACK_DENSITY
+    system: HYBRID
+    points:
+      - id: p0
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.1
+        robots:
+          - model: turtlebot_demo
+            count: 2
+          - model: drone_demo
+            count: 2
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p1
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 2
+          - model: drone_demo
+            count: 2
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p2
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.6
+        robots:
+          - model: turtlebot_demo
+            count: 2
+          - model: drone_demo
+            count: 2
+        chargingStations:
+          - model: cheap_station
+            x: 100
+  - id: tco_turtlebot
+    type: TCO
+    system: TURTLEBOT
+    points:
+      - id: p0
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 2
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p1
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 4
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p2
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 6
+        chargingStations:
+          - model: cheap_station
+            x: 100
+  - id: tco_drone
+    type: TCO
+    system: DRONE
+    points:
+      - id: p0
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: drone_demo
+            count: 2
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p1
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: drone_demo
+            count: 4
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p2
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: drone_demo
+            count: 6
+        chargingStations:
+          - model: cheap_station
+            x: 100
+  - id: tco_hybrid
+    type: TCO
+    system: HYBRID
+    points:
+      - id: p0
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 1
+          - model: drone_demo
+            count: 1
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p1
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 2
+          - model: drone_demo
+            count: 2
+        chargingStations:
+          - model: cheap_station
+            x: 100
+      - id: p2
+        resourceScenario: smaller_batteries_one_slow_station
+        attackProbability: 0.3
+        robots:
+          - model: turtlebot_demo
+            count: 3
+          - model: drone_demo
+            count: 3
+        chargingStations:
+          - model: cheap_station
+            x: 100
