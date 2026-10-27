@@ -70,8 +70,8 @@ public class BotRangeVisualNodeTest {
     }
 
     private BotRangeVisualNode createNode() {
-        Bot bot = new Bot(1, new Position(50), new Battery(100, 1), new Lidar(5, 0.1),
-                new CommunicationModule(10, 1, 0, 1), 1, RobotType.GROUND, "test", 0, 0, 0, null);
+        Bot bot = new Bot(1, new Position(50), new Battery(100, 5000), new Lidar(5, 0.1),
+                new CommunicationModule(10, 1000000, 0, 1), 1, RobotType.GROUND, "test", 0, 0, 0, null);
         ScaleMapper mapper = new ScaleMapper(100, 0, 1000);
         return new BotRangeVisualNode(bot, mapper, 300);
     }
