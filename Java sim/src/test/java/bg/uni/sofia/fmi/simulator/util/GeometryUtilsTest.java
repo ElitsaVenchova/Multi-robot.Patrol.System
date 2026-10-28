@@ -7,6 +7,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class GeometryUtilsTest {
+    @org.junit.Before public void initializePerimeter() {
+        bg.uni.sofia.fmi.simulator.domain.World.reset();
+        bg.uni.sofia.fmi.simulator.domain.World.setPerimeter(new bg.uni.sofia.fmi.simulator.domain.Perimeter(
+                100, bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType.CIRCULAR));
+    }
 
     private static final double EPSILON = 1e-6;
 
