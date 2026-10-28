@@ -19,6 +19,7 @@ import bg.uni.sofia.fmi.simulator.visualization.SimulationVisualizer;
  * - събира и отпечатва резултатите
  */
 public class SimulationRunner {
+    private SimulationConfig currentConfig;
     // Метод за стартиране на симулацията с даден конфигурационен файл
     // (за бързо стартиране от main метода)
     public void run(String configPath, boolean visualization) {// Зареждане на конфигурацията
@@ -40,11 +41,12 @@ public class SimulationRunner {
         run(config, visualization);
         // Събиране на резултатите
         MetricsCalculator calculator = new MetricsCalculator();
-        return calculator.calculate();
+        return calculator.calculate(config);
     }
 
     // Метод за стартиране на симулацията и връщане на света (за по-нататъшен анализ)
     private void run(SimulationConfig config, boolean visualization) {
+        currentConfig = config;
         RandomProvider.setSeed(config.getSimulation().getSeed());
         IdGenerator.reset();
         // Създаване на света от конфигурацията
@@ -59,13 +61,15 @@ public class SimulationRunner {
             for (int t = 0; t < duration; t++) {
                 world.tick(t);
             }
+            World.finish();
         }
     }
 
     // Метод за събиране и отпечатване на резултатите от симулацията
+    @SuppressWarnings("JavaPrintToLogpoint")
     private void printResults() {
         MetricsCalculator calculator = new MetricsCalculator();
-        SimulationMetrics metrics = calculator.calculate();
+        SimulationMetrics metrics = calculator.calculate(currentConfig);
 
         // Print (optional)
         System.out.println("===== Simulation Results =====");
@@ -73,6 +77,7 @@ public class SimulationRunner {
         System.out.println("Intercepted: " + metrics.getInterceptedAttacks());
         System.out.println("Missed: " + metrics.getMissedAttacks());
         System.out.println("Success rate: " + metrics.getSuccessRate());
+        System.out.println("Capture coefficient (resolved attacks): " + metrics.getCaptureCoefficient());
 
         // Export
         ResultExporter exporter = new ResultExporter();
