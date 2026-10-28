@@ -1,20 +1,20 @@
-# DEMONSTRATION ONLY: uncalibrated costs and resource settings.
+# Calibrated to TurtleBot3 Waffle Pi class hardware (ROBOTIS datasheet, approximate).
 name: TurtleBot Pi
 type: GROUND
-maxSpeed: 2.5
-failureProbability: 0.1
-batteryConsumptionRate: 0.02
+maxSpeed: 12 # m/min (~0.2 m/s patrol speed)
+failureProbability: 0.001 # per tick
+batteryConsumptionRate: 0.0167 # Wh/m (~12 W drive power at 0.2 m/s)
 battery:
-  batteryCapacity: 40 # Wh; illustrative resource variant
-  cycleLife: 500 # equivalent full discharge cycles; illustrative
-  replacementCostEur: 50 # EUR; illustrative, not calibrated
+  batteryCapacity: 20 # Wh; 11.1 V x 1.8 Ah LiPo
+  cycleLife: 500 # equivalent full discharge cycles
+  replacementCostEur: 35 # EUR; replacement LiPo pack
   averageBatteryLife: 5000
 lidar:
-  lidarRange: 7.0
-  lidarBatteryConsumptionRate: 0.02
+  lidarRange: 3.5 # m; LDS-01
+  lidarBatteryConsumptionRate: 0.025 # Wh per one-minute scan (~1.5 W)
 communicationModule:
-  communicationRange: 10
+  communicationRange: 30 # m; Wi-Fi in open space, conservative
   speed: 1000000
   latency: 10
   reliability: 0.99
-price: 1000
+price: 1500 # EUR

@@ -1,20 +1,20 @@
-# DEMONSTRATION ONLY: uncalibrated costs and resource settings.
+# Calibrated to a small commercial quadcopter with an extended battery.
 name: Drone
 type: DRONE
-maxSpeed: 5
-failureProbability: 0.1
-batteryConsumptionRate: 0.05
+maxSpeed: 300 # m/min (5 m/s cruise)
+failureProbability: 0.001 # per tick
+batteryConsumptionRate: 0.0045 # Wh/m (slightly higher due to battery mass)
 battery:
-  batteryCapacity: 60 # Wh; illustrative resource variant
-  cycleLife: 500 # equivalent full discharge cycles; illustrative
-  replacementCostEur: 80 # EUR; illustrative, not calibrated
+  batteryCapacity: 80 # Wh; extended-range pack
+  cycleLife: 300 # equivalent full discharge cycles; typical flight LiPo
+  replacementCostEur: 220 # EUR; extended flight battery
   averageBatteryLife: 2000
 lidar:
-  lidarRange: 30.0
-  lidarBatteryConsumptionRate: 0.05
+  lidarRange: 30.0 # m
+  lidarBatteryConsumptionRate: 0.05 # Wh per one-minute scan (~3 W)
 communicationModule:
-  communicationRange: 15
+  communicationRange: 100 # m; Wi-Fi / radio link
   speed: 1000000
   latency: 10
   reliability: 0.99
-price: 1000
+price: 1100 # EUR; base drone plus extended battery

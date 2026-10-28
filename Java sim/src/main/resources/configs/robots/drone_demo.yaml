@@ -1,20 +1,20 @@
-# DEMONSTRATION ONLY: uncalibrated costs and resource settings.
+# Calibrated to a small commercial quadcopter (DJI Mavic Air class, approximate).
 name: Drone
 type: DRONE
-maxSpeed: 5
-failureProbability: 0.1
-batteryConsumptionRate: 0.05
+maxSpeed: 300 # m/min (5 m/s cruise)
+failureProbability: 0.001 # per tick
+batteryConsumptionRate: 0.004 # Wh/m (~72 W flight power at 5 m/s)
 battery:
-  batteryCapacity: 30 # Wh; illustrative resource variant
-  cycleLife: 500 # equivalent full discharge cycles; illustrative
-  replacementCostEur: 40 # EUR; illustrative, not calibrated
+  batteryCapacity: 40 # Wh; ~35 min nominal flight
+  cycleLife: 300 # equivalent full discharge cycles; typical flight LiPo
+  replacementCostEur: 120 # EUR; flight battery
   averageBatteryLife: 2000
 lidar:
-  lidarRange: 30.0
-  lidarBatteryConsumptionRate: 0.05
+  lidarRange: 30.0 # m
+  lidarBatteryConsumptionRate: 0.05 # Wh per one-minute scan (~3 W)
 communicationModule:
-  communicationRange: 15
+  communicationRange: 100 # m; Wi-Fi / radio link
   speed: 1000000
   latency: 10
   reliability: 0.99
-price: 1000
+price: 1000 # EUR

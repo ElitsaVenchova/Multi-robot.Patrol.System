@@ -1,7 +1,7 @@
-# DEMONSTRATION ONLY. All ticks and durations are minutes, distances meters.
+# DEMONSTRATION ONLY.
 simulation:
-  duration: 720
-  seed: 42
+  duration: 720 # minutes
+  seed: 42 # random seed
   chargeThreshold: 5.0 # Wh
 perimeter:
   size: 200 # m
