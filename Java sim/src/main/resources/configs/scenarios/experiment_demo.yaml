@@ -1,0 +1,22 @@
+# DEMONSTRATION ONLY. All ticks and durations are minutes, distances meters.
+simulation:
+  duration: 720
+  seed: 42
+  chargeThreshold: 5.0 # Wh
+perimeter:
+  size: 200 # m
+  type: LINEAR
+robots:
+  - model: turtlebot_demo
+    count: 2
+chargingStations:
+  - model: cheap_station
+    x: 100.0
+patrol:
+  model: AsyncPatrol
+  deviationProbability: 0.1
+  maxDeviationDuration: 10 # one-minute ticks
+attackModel:
+  model: PoissonAttack
+  lambda: 0.3 # probability per one-minute tick
+  duration: 10 # minutes; unresolved unexpired attacks are excluded at the boundary

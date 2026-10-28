@@ -1,0 +1,20 @@
+# DEMONSTRATION ONLY: uncalibrated costs and resource settings.
+name: Drone
+type: DRONE
+maxSpeed: 5
+failureProbability: 0.1
+batteryConsumptionRate: 0.05
+battery:
+  batteryCapacity: 60 # Wh; illustrative resource variant
+  cycleLife: 500 # equivalent full discharge cycles; illustrative
+  replacementCostEur: 80 # EUR; illustrative, not calibrated
+  averageBatteryLife: 2000
+lidar:
+  lidarRange: 30.0
+  lidarBatteryConsumptionRate: 0.05
+communicationModule:
+  communicationRange: 15
+  speed: 1000000
+  latency: 10
+  reliability: 0.99
+price: 1000
