@@ -1,0 +1,4 @@
+# Pinned for reproducible plotting on Python 3.12.
+numpy==2.2.6
+pandas==2.2.3
+matplotlib==3.10.3
