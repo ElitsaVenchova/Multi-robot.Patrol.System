@@ -4,3 +4,6 @@ Docs/PhdThesis/~$esis_Elitsa_Venchova.docx
 Java sim/docs/research_notes.txt
 Java sim/sim.iml
 Java sim/docs/CLAUDE.md
+Java sim/outputs/plots/figure_*.png
+Java sim/outputs/results/*/
+Java sim/scripts/__pycache__/
