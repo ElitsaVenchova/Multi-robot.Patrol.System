@@ -9,6 +9,10 @@ import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 
 // Клас, представляващ бот в симулацията
 public class Bot {
+    private final java.util.EnumMap<BotState, Long> stateTicks = new java.util.EnumMap<>(BotState.class);
+    private double baselineConsumptionWh = 0.01;
+    public java.util.Map<BotState, Long> getStateTicks() { return java.util.Collections.unmodifiableMap(stateTicks); }
+    public void setBaselineConsumptionWh(double value) { baselineConsumptionWh = value; }
     private final String name; // име на бота, за по-лесно логване и идентификация
     private final Battery battery; // батерията на бота
     private final Lidar lidar; // сензор за засичане на атаки
@@ -44,10 +48,14 @@ public class Bot {
 
     // Основен метод за обновяване на състоянието на бота при всяка итерация на симулацията
     public void update(int currentTime) {
+        BotState startingState = state;
         // Взима се решение за действие и се определя състоянието
         planningModule.update(this, currentTime);
+        // A charging completion tick belongs to charging, even when the next state is patrol.
+        BotState accounted = startingState == BotState.CHARGING && state != BotState.ERROR ? BotState.CHARGING : state;
+        stateTicks.merge(accounted, 1L, Long::sum);
         // консумация по подразбиране, за да може да се изтощава с времето дори да не прави нищо
-        battery.consume(0.01);
+        battery.consume(baselineConsumptionWh);
     }
 
     // Движение на бота
@@ -62,11 +70,12 @@ public class Bot {
             throw new IllegalArgumentException("Movement must have finite coordinates and non-negative distance");
         }
         double displacement = GeometryUtils.perimeterDistance(position, target);
-        double tolerance = 4 * Math.ulp(Math.max(1.0, Math.max(distance, displacement)));
+        double scale = Math.max(Math.max(Math.abs(position.getX()), Math.abs(target.getX())), Math.max(distance, displacement));
+        double tolerance = 4 * Math.ulp(Math.max(1.0, scale));
         if (distance + tolerance < displacement) {
             throw new IllegalArgumentException("Path length cannot be shorter than displacement");
         }
-        if(distance > maxSpeed){
+        if(distance > maxSpeed + tolerance){
             throw new RuntimeException("Разстоянието до следващата стъпка е по-голоямо от възможностите на робота!");
         }
         position.setX(target.getX());
