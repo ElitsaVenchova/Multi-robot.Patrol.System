@@ -435,6 +435,8 @@ public class SimulationVisualizer extends Application {
                     sectionNode = new PatrolSectionVisualNode(patrolSection, scaleMapper, PERIMETER_Y, getPatrolSectionColor(bot));
                     patrolSectionNodes.put(bot, sectionNode);
                     patrolSectionLayer.getChildren().add(sectionNode);
+                } else {
+                    sectionNode.updateSection(patrolSection);
                 }
                 sectionNode.setVisible(true);
             } else if (sectionNode != null) {

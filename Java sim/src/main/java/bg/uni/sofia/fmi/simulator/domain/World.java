@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
+import bg.uni.sofia.fmi.simulator.behavior.communication.CommunicationController;
 
 // Клас, представляващ света на симулацията, 
 // който съдържа всички роботи, атаки, зарядни станции и периметър
 public class World {
+    private final CommunicationController communication = new CommunicationController();
     private LoadModel attackModel; // Модел за генериране на атаки
 
     private static final List<Bot> bots = new ArrayList<>(); // Списък с всички роботи
@@ -36,7 +38,20 @@ public class World {
         }
 
         // Обновяване на състоянието на всеки бот
-        for (Bot bot : World.getBots()) {
+        // Fixed transport rounds precede movement; each strategy makes its own decisions.
+        List<Bot> tickBots = List.copyOf(World.getBots());
+        communication.beginTick(tickBots, currentTime);
+        try {
+            for (CommunicationController.Round round : CommunicationController.Round.values()) {
+                communication.beginRound(round);
+                for (Bot bot : tickBots) {
+                    bot.processCommunicationRound(currentTime, round, communication);
+                }
+            }
+        } finally {
+            communication.endTick();
+        }
+        for (Bot bot : tickBots) {
             bot.update(currentTime);
         }
         elapsedTicks++;

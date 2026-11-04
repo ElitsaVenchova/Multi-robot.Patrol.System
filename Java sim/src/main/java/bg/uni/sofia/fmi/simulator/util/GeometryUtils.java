@@ -43,6 +43,28 @@ public class GeometryUtils {
         return Math.abs(a.getX() - b.getX());
     }
 
+    /**
+     * Signed local separation along the shortest perimeter arc. Its magnitude is
+     * the existing perimeter distance. At antipodes, normalized coordinate order
+     * fixes the sign, keeping the two observers' measurements antisymmetric.
+     */
+    public static double signedPerimeterOffset(Position from, Position to) {
+        if (from == null || to == null
+                || !Double.isFinite(from.getX()) || !Double.isFinite(to.getX())) {
+            throw new IllegalArgumentException("Positions must have finite perimeter coordinates");
+        }
+        if (World.getPerimeter().getType() == PerimeterType.LINEAR) {
+            return to.getX() - from.getX();
+        }
+        double length = World.getPerimeter().getSize();
+        double offset = normalizePosition(to.getX()) - normalizePosition(from.getX());
+        if (offset > length / 2) {
+            offset -= length;
+        } else if (offset < -length / 2) {
+            offset += length;
+        }
+        return offset == 0 ? 0 : offset;
+    }
     // Нормализиране на позиция в затворен цикличен периметър [0, perimeterLength)
     public static double normalizePosition(double pos) {
         return normalizePosition(pos, World.getPerimeter().getSize());

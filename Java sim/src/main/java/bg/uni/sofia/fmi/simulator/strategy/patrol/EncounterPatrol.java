@@ -1,6 +1,10 @@
 package bg.uni.sofia.fmi.simulator.strategy.patrol;
 
 import bg.uni.sofia.fmi.simulator.config.PatrolConfig;
+import bg.uni.sofia.fmi.simulator.behavior.communication.CommunicationController;
+import bg.uni.sofia.fmi.simulator.behavior.communication.CommunicationParticipant;
+import bg.uni.sofia.fmi.simulator.behavior.communication.messages.EncounterStateMessage;
+import bg.uni.sofia.fmi.simulator.behavior.communication.messages.EncounterMotionMessage;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
@@ -9,25 +13,35 @@ import bg.uni.sofia.fmi.simulator.domain.enums.EncounterRearmPolicy;
 import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalLong;
 
 /**
- * Independent patrol with informational sections. Encounter negotiation is added
- * separately; section endpoints only constrain initial deployment.
+ * Independent patrol with informational sections and robot-local encounter handling. Initial
+ * deployment alone is constrained by section endpoints; later movement is independent.
  */
-public class EncounterPatrol implements PatrolModel {
+public class EncounterPatrol implements PatrolModel, CommunicationParticipant {
     private final EncounterRearmPolicy encounterRearmPolicy;
     private PatrolSection patrolSection;
     private Direction patrolDirection = Direction.RIGHT;
     private boolean initialized;
     private boolean deployed;
     private boolean suspended;
+    private final Map<Long, EncounterStateMessage> receivedStates = new LinkedHashMap<>();
+    private Map<Long, Double> lidarObservations = Map.of();
+    private final EncounterNegotiator negotiator;
+    private EncounterStateMessage localEncounterState;
+    private EncounterSectionAllocator.Redistribution proposedRedistribution;
 
     public EncounterPatrol(PatrolConfig config) {
         encounterRearmPolicy = Objects.requireNonNull(
                 Objects.requireNonNull(config, "Patrol config").getEncounterRearmPolicy(),
                 "Encounter rearm policy");
+        negotiator = new EncounterNegotiator(encounterRearmPolicy);
     }
 
     @Override
@@ -79,23 +93,12 @@ public class EncounterPatrol implements PatrolModel {
         if (bot.getLidar() != null) {
             PatrolModel.scan(bot, currentTime);
         }
-        double currentX = bot.getPosition().getX();
-        if (World.getPerimeter().getType() == PerimeterType.LINEAR) {
-            if (currentX <= 0 && patrolDirection == Direction.LEFT
-                    || currentX >= World.getPerimeter().getSize() && patrolDirection == Direction.RIGHT) {
-                patrolDirection = patrolDirection.reverse();
-            }
-            return new Position(patrolDirection == Direction.RIGHT
-                    ? Math.min(World.getPerimeter().getSize(), currentX + bot.getMaxSpeed())
-                    : Math.max(0, currentX - bot.getMaxSpeed()));
-        }
-        // Keep the target unwrapped so a complete lap is distinguishable from no movement.
-        return new Position(GeometryUtils.normalizePosition(currentX)
-                + (patrolDirection == Direction.RIGHT ? 1 : -1) * bot.getMaxSpeed());
+        return planPatrolTarget(bot);
     }
 
     @Override
     public void onPatrolSuspended(Bot bot) {
+        clearEncounterState();
         suspended = true;
         patrolSection = null;
     }
@@ -121,6 +124,139 @@ public class EncounterPatrol implements PatrolModel {
     @Override
     public PatrolSection getPatrolSection() {
         return patrolSection;
+    }
+
+    @Override
+    public void onCommunicationRound(Bot bot, int currentTime,
+            CommunicationController.Round round, CommunicationController communication) {
+        List<CommunicationController.Envelope> incoming = communication.receive(bot.getId());
+        // Current state alone determines eligibility; no pre-tick planning or battery prediction.
+        if (bot.getState() != BotState.PATROLLING) {
+            clearEncounterState();
+            return;
+        }
+        initialize(bot);
+        onPatrolResumed(bot);
+        switch (round) {
+            case DISCOVER -> {
+                receivedStates.clear();
+                proposedRedistribution = null;
+                lidarObservations = communication.observeRobots(bot.getId());
+                // Preserve deployment movement while still publishing the current robot's intent.
+                Position target;
+                if (!deployed && !bot.isInPatrolSection(patrolSection)) {
+                    target = bot.getTargetToPatrolSection(patrolSection);
+                } else {
+                    deployed = true;
+                    target = planPatrolTarget(bot);
+                }
+                double displacement = intendedPatrolDisplacement(bot, target);
+                if (!deployed && World.getPerimeter().getType() == PerimeterType.CIRCULAR) {
+                    displacement = GeometryUtils.signedPerimeterOffset(bot.getPosition(), target);
+                }
+                displacement = Math.copySign(Math.min(bot.getMaxSpeed(), Math.abs(displacement)), displacement);
+                if (Math.abs(displacement) < 0.001) {
+                    displacement = 0;
+                }
+                localEncounterState = new EncounterStateMessage(bot.getId(), bot.getMaxSpeed(), patrolSection);
+                negotiator.beginTick(currentTime, localEncounterState, displacement, lidarObservations,
+                        peerId -> communication.isWithinCommunicationRange(bot.getId(), peerId));
+                // Directed discovery: never send section data to every robot in radio range.
+                for (long detectedId : lidarObservations.keySet()) {
+                    EncounterMotionMessage motion = new EncounterMotionMessage(displacement,
+                            negotiator.getCompletedEncounterCount(), negotiator.hasObservedRangeExit(detectedId));
+                    communication.send(bot.getId(), detectedId, motion);
+                }
+            }
+            case SELECT -> {
+                OptionalLong chosen = negotiator.selectPartner(incoming);
+                if (chosen.isPresent()) {
+                    negotiator.recordStateSend(communication.send(bot.getId(), chosen.getAsLong(),
+                            localEncounterState));
+                }
+            }
+            case APPLY -> negotiator.finish(incoming).ifPresent(pairing -> {
+                EncounterSectionAllocator.Redistribution result =
+                        new EncounterSectionAllocator(World.getPerimeter())
+                                .redistribute(pairing.localState(), pairing.peerState());
+                if (negotiator.markCommitted(pairing)) {
+                    // Both use frozen input messages; no robot reads or changes its peer's state.
+                    patrolSection = result.firstSection();
+                    patrolDirection = pairing.reverseLocal()
+                            ? pairing.localDirection().reverse() : pairing.localDirection();
+                    deployed = true;
+                    proposedRedistribution = result;
+                    receivedStates.put(pairing.peerState().senderId(), pairing.peerState());
+                }
+            });
+        }
+    }
+
+    private void clearEncounterState() {
+        receivedStates.clear();
+        lidarObservations = Map.of();
+        negotiator.clear();
+        localEncounterState = null;
+        proposedRedistribution = null;
+    }
+
+    public OptionalLong getSelectedPartnerId() {
+        return negotiator.getSelectedPartnerId();
+    }
+
+    public Optional<EncounterNegotiator.Pairing> getPairing() {
+        return negotiator.getPairing();
+    }
+
+    public Optional<EncounterSectionAllocator.Redistribution> getProposedRedistribution() {
+        return Optional.ofNullable(proposedRedistribution);
+    }
+
+    /** One source for advertised intent and the movement target; no remote robot access. */
+    private Position planPatrolTarget(Bot bot) {
+        preparePhysicalDirection(bot);
+        double x = bot.getPosition().getX();
+        if (World.getPerimeter().getType() == PerimeterType.LINEAR) {
+            return new Position(patrolDirection == Direction.RIGHT
+                    ? Math.min(World.getPerimeter().getSize(), x + bot.getMaxSpeed())
+                    : Math.max(0, x - bot.getMaxSpeed()));
+        }
+        // Unwrapped target preserves direction and full laps.
+        return new Position(GeometryUtils.normalizePosition(x)
+                + (patrolDirection == Direction.RIGHT ? 1 : -1) * bot.getMaxSpeed());
+    }
+
+    /** Signed intended displacement, not maximum speed or a previous observed velocity. */
+    private double intendedPatrolDisplacement(Bot bot, Position target) {
+        double x = bot.getPosition().getX();
+        if (World.getPerimeter().getType() == PerimeterType.CIRCULAR) {
+            x = GeometryUtils.normalizePosition(x);
+        }
+        double displacement = target.getX() - x;
+        return Math.abs(displacement) < 0.001 ? 0 : displacement;
+    }
+
+    private void preparePhysicalDirection(Bot bot) {
+        if (World.getPerimeter().getType() == PerimeterType.LINEAR) {
+            double x = bot.getPosition().getX();
+            if (x <= 0 && patrolDirection == Direction.LEFT
+                    || x >= World.getPerimeter().getSize() && patrolDirection == Direction.RIGHT) {
+                patrolDirection = patrolDirection.reverse();
+            }
+        }
+    }
+
+    public Map<Long, EncounterStateMessage> getReceivedStates() {
+        return Map.copyOf(receivedStates);
+    }
+
+    /** Signed local offsets; absolute values are LiDAR distances. */
+    public Map<Long, Double> getLidarObservations() {
+        return lidarObservations;
+    }
+
+    public long getCompletedEncounterCount() {
+        return negotiator.getCompletedEncounterCount();
     }
 
     public EncounterRearmPolicy getEncounterRearmPolicy() {

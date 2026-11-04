@@ -1,6 +1,8 @@
 package bg.uni.sofia.fmi.simulator.domain;
 
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
+import bg.uni.sofia.fmi.simulator.behavior.communication.CommunicationController;
+import bg.uni.sofia.fmi.simulator.behavior.communication.CommunicationParticipant;
 import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import bg.uni.sofia.fmi.simulator.behavior.planning.PlanningModule;
@@ -26,11 +28,12 @@ public class Bot {
     private final long id; // за да може да се идентифицира бота при нужда, напр. за логване
     private final Position position; // позицията на бота
     private final PlanningModule planningModule; // модул за вземане на решения и планиране на действията
+    private CommunicationParticipant communicationParticipant;
     private BotState state; // текущо състояние на бота (патрулиране, зареждане, грешка и т.н.)
 
     public Bot(long id, Position position, Battery battery, Lidar lidar, CommunicationModule communicationModule,
-               double speed, RobotType type, String name, double failureProbability, double price, double batteryConsumptionRate,
-               PlanningModule planningModule) {
+               double speed, RobotType type, String name, double failureProbability,
+               double price, double batteryConsumptionRate, PlanningModule planningModule) {
         this.id = id;
         this.position = position;
         this.battery = battery;
@@ -44,6 +47,18 @@ public class Bot {
         this.communicationModule = communicationModule;
         this.planningModule = planningModule;
         this.state = BotState.PATROLLING;
+    }
+
+    /** Composition wiring; communication delivery does not depend on the patrol interface. */
+    public void setCommunicationParticipant(CommunicationParticipant participant) {
+        communicationParticipant = participant;
+    }
+
+    public void processCommunicationRound(int currentTime, CommunicationController.Round round,
+                                          CommunicationController communication) {
+        if (communicationParticipant != null) {
+            communicationParticipant.onCommunicationRound(this, currentTime, round, communication);
+        }
     }
 
     // Основен метод за обновяване на състоянието на бота при всяка итерация на симулацията
