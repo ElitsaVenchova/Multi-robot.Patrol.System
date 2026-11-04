@@ -28,35 +28,36 @@ public class SimplePlanningController implements PlanningModule {
 
     @Override
     public void update(Bot bot, int currentTime) {
-        if(currentTime < 2500) { logger.fine(" Bot " + bot.getId() + " at " + bot.getPosition() +
-                " state: " + bot.getState() + bot.getBattery()); }
+        if (currentTime < 2500) {
+            logger.fine(" Bot " + bot.getId() + " at " + bot.getPosition()
+                    + " state: " + bot.getState() + bot.getBattery());
+        }
+
         Position goalPosition = null;
         Direction movementDirection = null;
-        // Ако батерията е празна, ботът влиза в грешка и не може да прави нищо друго
-        if (bot.getBattery().isEmpty()) {
+        if (bot.getBattery().isEmpty() || bot.getState() == BotState.ERROR) {
             bot.setState(BotState.ERROR);
             patrolModel.onPatrolSuspended(bot);
         } else if (bot.getState() == BotState.CHARGING) {
-            // Ако ботът е в процес на зареждане
             patrolModel.onPatrolSuspended(bot);
             change(bot);
         } else if (energyManager.isLow(bot)) {
-            // Ако батерията е ниска
             patrolModel.onPatrolSuspended(bot);
             goalPosition = lowBattery(bot);
         } else {
-            // Ако батерията е достатъчна, продължаваме с патрулирането
             patrolModel.onPatrolResumed(bot);
             bot.setState(BotState.PATROLLING);
             goalPosition = patrolModel.execute(bot, currentTime);
             movementDirection = patrolModel.getMovementDirection();
         }
-        if(goalPosition != null){
+
+        if (goalPosition != null) {
             navigation.moveTowards(bot, goalPosition, movementDirection);
         }
-        if(currentTime < 2500) { logger.fine(goalPosition != null ? " " + goalPosition : ""); }
+        if (currentTime < 2500) {
+            logger.fine(goalPosition != null ? " " + goalPosition : "");
+        }
     }
-
     private void change(Bot bot){
         // Зареждаме бота
         currentStation.chargeBot(bot);

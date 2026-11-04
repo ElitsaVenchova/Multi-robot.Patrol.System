@@ -1,5 +1,8 @@
 package bg.uni.sofia.fmi.simulator.config;
 
+import bg.uni.sofia.fmi.simulator.domain.Battery;
+import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
+
 // Клас за валидация на конфигурацията спрямо очакваната структура и изисквания
 // [TODO] да се обновят накрая
 public class SchemaValidator {
@@ -33,7 +36,7 @@ public class SchemaValidator {
         }
         if (config.getPerimeter() == null || config.getPerimeter().getSize() <= 0)
             throw new IllegalArgumentException("Positive perimeter length in meters is required");
-        bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType.valueOf(config.getPerimeter().getType().toUpperCase(java.util.Locale.ROOT));
+        PerimeterType.valueOf(config.getPerimeter().getType().toUpperCase(java.util.Locale.ROOT));
         if (config.getSimulation().getSeed() == null) throw new IllegalArgumentException("simulation.seed is required");
         nonNegative(config.getSimulation().getChargeThreshold(), "chargeThreshold Wh");
         if (config.getEnergyPriceEurPerKwh() != null) nonNegative(config.getEnergyPriceEurPerKwh(), "energy tariff EUR/kWh");
@@ -41,7 +44,7 @@ public class SchemaValidator {
             if (robot.getModel() == null || robot.getCount() <= 0) throw new IllegalArgumentException("Positive robot counts and model names are required");
         }
         if (config.getChargingStations() == null) config.setChargingStations(new java.util.ArrayList<>());
-        for (var station : config.getChargingStations()) {
+        for (ChargingStationConfig station : config.getChargingStations()) {
             if (station.getModel() == null || !Double.isFinite(station.getX()) || station.getX() < 0
                     || station.getX() > config.getPerimeter().getSize() || !Double.isFinite(station.getY()))
                 throw new IllegalArgumentException("Invalid station model/position");
@@ -68,7 +71,7 @@ public class SchemaValidator {
         positive(model.getBattery().getBatteryCapacity(), "battery capacity Wh");
         nonNegative(model.getLidar().getLidarRange(), "LiDAR range m");
         nonNegative(model.getLidar().getLidarBatteryConsumptionRate(), "LiDAR Wh/scan");
-        new bg.uni.sofia.fmi.simulator.domain.Battery(model.getBattery().getBatteryCapacity(), model.getBattery().getAverageBatteryLife())
+        new Battery(model.getBattery().getBatteryCapacity(), model.getBattery().getAverageBatteryLife())
                 .setWearModel(model.getBattery().getCycleLife(), model.getBattery().getReplacementCostEur());
     }
     public static void validateStationModel(ChargingStationModelConfig model) {

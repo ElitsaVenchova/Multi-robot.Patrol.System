@@ -3,16 +3,17 @@ package bg.uni.sofia.fmi.simulator.config;
 // Конфигурация за моделите на роботите и неговите компоненти
 // Distances m, speed m/min, capacity Wh, movement Wh/m, LiDAR Wh/scan, prices EUR.
 public class RobotModelConfig {
-    private String name;
-    private String type;
-    private double maxSpeed;
-    private double price;
-    private double failureProbability;
-    private double batteryConsumptionRate;
-    private BatteryConfig battery;
-    private LidarConfig lidar;
-    private CommunicationModuleConfig communicationModule;
-    private double baselineConsumptionWhPerMinute = 0.01;
+    private String name;//име на робота
+    private String type; //тип на робота дрон/наземен
+    private double maxSpeed; //максимална скорост на робота
+    private double price; //цена
+    private double failureProbability; //вероятност за отказ
+    private double batteryConsumptionRate; //потребление на енергия при движение
+    private double baselineConsumptionWhPerMinute = 0.01; //базово потребление на енергия на робота
+    //Кофигурации на модулите на робота
+    private BatteryConfig battery; //конфигурация на батерията
+    private LidarConfig lidar; //конфигурация на лазерния модул
+    private CommunicationModuleConfig communicationModule; //конфигурация на модула за комуникация
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -36,14 +37,14 @@ public class RobotModelConfig {
     public void setBaselineConsumptionWhPerMinute(double v) { baselineConsumptionWhPerMinute = v; }
 
     public static class BatteryConfig {
-        private Double cycleLife;
-        private Double replacementCostEur;
+        private Double cycleLife; //жизнен цикъл на батерията
+        private Double replacementCostEur; //цена на замяна на батерията
+        private double batteryCapacity; //капацитет на батерията
+        private double averageBatteryLife; //средна жизнен цикъл на батерията
         public Double getCycleLife() { return cycleLife; }
         public void setCycleLife(Double v) { cycleLife = v; }
         public Double getReplacementCostEur() { return replacementCostEur; }
         public void setReplacementCostEur(Double v) { replacementCostEur = v; }
-        private double batteryCapacity;
-        private double averageBatteryLife;
         public double getBatteryCapacity() { return batteryCapacity; }
         public void setBatteryCapacity(double batteryCapacity) { this.batteryCapacity = batteryCapacity; }
         public double getAverageBatteryLife() { return averageBatteryLife; }
@@ -51,8 +52,8 @@ public class RobotModelConfig {
     }
 
     public static class LidarConfig {
-        private double lidarRange;
-        private double lidarBatteryConsumptionRate;
+        private double lidarRange; //дистанция на измерване на лазерния модул
+        private double lidarBatteryConsumptionRate; //потребление на енергия при измерване
         public double getLidarRange() { return lidarRange; }
         public void setLidarRange(double lidarRange) { this.lidarRange = lidarRange; }
         public double getLidarBatteryConsumptionRate() { return lidarBatteryConsumptionRate; }
@@ -60,10 +61,10 @@ public class RobotModelConfig {
     }
 
     public static class CommunicationModuleConfig {
-        private double communicationRange;
-        private double speed;
-        private double latency;
-        private double reliability;
+        private double communicationRange; //обхват на модула за комуникация
+        private double speed; //скорост на обмена на данни
+        private double latency; //време за изпращане на данни
+        private double reliability; //надеждност на модула за комуникация
         public double getCommunicationRange() { return communicationRange; }
         public void setCommunicationRange(double communicationRange) { this.communicationRange = communicationRange; }
         public double getSpeed() { return speed; }

@@ -7,7 +7,7 @@ public class ChargingStationModelConfig {
     private String name; //името на модела на зарядната станция, което може да се използва за избор на конкретна реализация на зарядна станция в симулацията
     private double price; //цена
     private int slots; //брой слотове за зареждане
-    private double power; // ватове (W) на зареждане за зает слот
+    private double power; // ватове (W) на зареждане за зает слот; добавя до 1 Wh на слот за минута
     private double failureProbability; //вероятност за повреда при всяко зареждане, което може да се използва за симулиране на реалистично поведение на зарядните станции
 
     public String getName() { return name; }

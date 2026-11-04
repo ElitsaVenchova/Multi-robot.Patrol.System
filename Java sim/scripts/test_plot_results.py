@@ -1,4 +1,6 @@
 """Plot contract tests; run with python -m unittest discover -s scripts -p 'test_*.py'."""
+# Този тестов файл проверява договора за входните данни и стабилността на генерираните графики.
+# Наборът от тестове помага да се гарантира, че всички визуализации отговарят на очаквания формат.
 from pathlib import Path
 import sys
 import tempfile
@@ -12,10 +14,12 @@ import pandas as pd
 import numpy as np
 from plot_results import generate, validate, SYSTEMS, TYPES, main
 
+# Контролните променливи трябва да са фиксирани в един експериментален пакет.
 CONTROLS = ("patrol_deviation_probability", "patrol_max_deviation_duration_min",
             "encounter_rearm_policy", "charge_threshold_wh")
 
 
+# Възвръща фиктивен набор от експериментални редове, който покрива всички допустими комбинации.
 def fixture():
     rows = []
     for kind in TYPES:
@@ -39,6 +43,7 @@ def fixture():
 
 
 class PlotTests(unittest.TestCase):
+    # CLI тестовете проверяват, че пакетът е валиден и че статусът е маркиран като COMPLETE.
     def test_cli_requires_an_existing_complete_batch_status(self):
         with tempfile.TemporaryDirectory() as directory:
             summary = Path(directory) / "experiment_summary.csv"

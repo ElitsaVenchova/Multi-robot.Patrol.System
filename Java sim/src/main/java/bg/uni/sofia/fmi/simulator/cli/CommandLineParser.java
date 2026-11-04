@@ -12,7 +12,7 @@ public class CommandLineParser {
     public static CommandLineOptions parse(String[] args) {
         // Стойности по подразбиране
         ExecutionMode executionMode = ExecutionMode.RUN;
-        boolean visualization = false;
+        boolean visualization = true;
         String configPath = DEFAULT_CONFIG_PATH;
 
 

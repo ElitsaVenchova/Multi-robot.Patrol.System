@@ -1,4 +1,6 @@
 """Generate exactly eight figures from a single complete experiment batch."""
+# Генераторът създава стабилни графики за един пълен експериментален пакет.
+# Коментарите са на български, за да е по-ясна логиката на обработката.
 from pathlib import Path
 import argparse
 import sys
@@ -10,16 +12,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-SYSTEMS = ("TURTLEBOT", "DRONE", "HYBRID")
-TYPES = ("PATROL_DENSITY", "ATTACK_DENSITY", "TCO")
+SYSTEMS = ("TURTLEBOT", "DRONE", "HYBRID")  # Поддържаните типове системи
+TYPES = ("PATROL_DENSITY", "ATTACK_DENSITY", "TCO")  # Поддържаните категории графики за анализа на резултатите.
 ROOT = Path(__file__).resolve().parents[1]
-NUMERIC = (
+NUMERIC = ( # Колони, които трябва да бъдат числени, за да се валидират статистиките на експеримента.
     "schema_version", "runs", "valid_capture_coefficient_runs",
     "mean_capture_coefficient", "std_capture_coefficient",
     "patrol_density_robots_per_m", "attack_probability_per_tick",
     "duration_min", "perimeter_length_m",
 )
-REQUIRED = set(NUMERIC) | {
+REQUIRED = set(NUMERIC) | { # Типовете колони, които са задължителни
     "experiment_id", "design_id", "point_id", "experiment_type", "system_type",
     "resource_scenario", "patrol_strategy", "attack_model", "attack_duration_min",
     "perimeter_type", "cost_model", "capture_definition", "mean_activity_coefficient",
@@ -30,36 +32,37 @@ COMPARISON_CONTROLS = (
     "encounter_rearm_policy", "charge_threshold_wh",
 )
 
+# Проверява дали CSV файлът съдържа пълен и съвместим набор от данни.
 def validate(data):
     missing = REQUIRED - set(data.columns)
-    if missing:
+    if missing:# Проверка за липсващи колони
         raise ValueError("Missing required columns: " + ", ".join(sorted(missing)))
     data = data.copy()
-    if data.empty:
+    if data.empty: # Проверка за празна таблица
         raise ValueError("The summary contains no experiment results")
-    for col in NUMERIC:
+    for col in NUMERIC: # Проверка числени колони, за да се валидират статистиките на експеримента.
         data[col] = pd.to_numeric(data[col], errors="raise")
         if not np.isfinite(data[col]).all():
             raise ValueError(f"{col} contains missing/undefined or non-finite values; check resolved attack counts")
     for col in ("runs", "valid_capture_coefficient_runs", "schema_version"):
-        if (data[col] % 1 != 0).any():
+        if (data[col] % 1 != 0).any(): # Проверка за цели числа
             raise ValueError(f"{col} must contain integers")
-    if not (data.schema_version == 1).all():
+    if not (data.schema_version == 1).all(): # Проверка за поддържана версия на CSV схемата
         raise ValueError("Unsupported CSV schema version")
     if data.experiment_id.nunique() != 1 or data.experiment_id.isna().any():
         raise ValueError("Select exactly one experiment batch")
-    if set(data.experiment_type) != set(TYPES) or set(data.system_type) != set(SYSTEMS):
+    if set(data.experiment_type) != set(TYPES) or set(data.system_type) != set(SYSTEMS): # Проверка на зададените експеримент и система
         raise ValueError("All three experiment types and all three system types are required")
-    if ((data.runs < 1) | (data.valid_capture_coefficient_runs < 1)
+    if ((data.runs < 1) | (data.valid_capture_coefficient_runs < 1) # Проверка за валидни бройки на експерименти
             | (data.valid_capture_coefficient_runs > data.runs)).any():
         raise ValueError("Invalid total/defined capture run counts")
     if not data.mean_capture_coefficient.between(0, 1).all() or (data.std_capture_coefficient < 0).any():
-        raise ValueError("Invalid capture coefficient or standard deviation")
+        raise ValueError("Invalid capture coefficient or standard deviation") # Проверка за валидни статистики на експеримента
     if (data.patrol_density_robots_per_m <= 0).any() or not data.attack_probability_per_tick.between(0, 1).all():
-        raise ValueError("Invalid density or attack probability")
+        raise ValueError("Invalid density or attack probability") # Проверка на валидност бр. роботи на метър и вероятност атака
     if (data.duration_min <= 0).any() or (data.perimeter_length_m <= 0).any():
-        raise ValueError("Invalid duration or perimeter length")
-    if data.duplicated(["design_id", "point_id"]).any():
+        raise ValueError("Invalid duration or perimeter length") # Проверка за валидност Продължителност и дължина на периметър
+    if data.duplicated(["design_id", "point_id"]).any(): # Проверка за дублирани конфигурации
         raise ValueError("Duplicate configuration summaries; do not concatenate batches")
     for col in ("resource_scenario", "design_id", "point_id"):
         if data[col].isna().any() or data[col].astype(str).str.strip().eq("").any():
@@ -128,19 +131,21 @@ def validate(data):
         raise ValueError("TCO comparisons require a fixed attack probability")
     return data
 
+# Генерира точно осем графики, съответстващи на фиксирания договор за изходните данни.
 def generate(data, output=ROOT / "outputs" / "plots"):
     data = validate(data)
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     plt.rcParams.update({"font.size": 10, "figure.figsize": (7, 4.5), "savefig.dpi": 200})
     paths = []
-    def save(fig, ax, filename):
-        ax.grid(alpha=0.3)
-        ax.legend()
-        fig.tight_layout()
+    # Записва фигурата в директорията за резултати и я затваря, за да се избегне натрупване в паметта.
+    def save(figS, axS, filename):
+        axS.grid(alpha=0.3)
+        axS.legend()
+        figS.tight_layout()
         path = output / filename
-        fig.savefig(path)
-        plt.close(fig)
+        figS.savefig(path)
+        plt.close(figS)
         paths.append(path)
     for i, system in enumerate(SYSTEMS, 1):
         fig, ax = plt.subplots()
@@ -195,9 +200,9 @@ def main(argv=None):
         if status.read_text().strip() != "COMPLETE":
             raise ValueError("Experiment batch is incomplete or failed")
         paths = generate(pd.read_csv(args.summary_csv), args.output)
+        print(f"Generated {len(paths)} figures in {args.output}")
     except (ValueError, OSError, KeyError) as error:
         parser.exit(1, f"Cannot generate figures: {error}\n")
-    print(f"Generated {len(paths)} figures in {args.output}")
     return 0
 
 if __name__ == "__main__":
