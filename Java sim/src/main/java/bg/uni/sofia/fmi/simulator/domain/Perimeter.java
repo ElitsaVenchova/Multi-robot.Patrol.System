@@ -40,18 +40,18 @@ public class Perimeter {
         int r = (int) Math.ceil(range);
 
         if (type == PerimeterType.CIRCULAR) {
-            if (r < 0) {
-                return result;
-            }
+            if (r < 0) { return result; }
 
             int normalizedCenter = Math.floorMod(center, size);
-            if (r >= size / 2) {
+            if (r >= size / 2) {//Обхвата е по-голям от периметъра, връща всички
                 for (List<Attack> cell : cells) {
                     result.addAll(cell);
                 }
                 return result;
             }
-
+            //Връща всички от normalizedCenter-offset до normalizedCenter+r
+            //Math.floorMod е за отрицателните числа, защото връща остатък от деление, който е в интервала [0, size)
+            //Ако size=100,normalizedCenter=2,range=5, за 2-4=98
             for (int offset = -r; offset <= r; offset++) {
                 result.addAll(cells[Math.floorMod(normalizedCenter + offset, size)]);
             }
@@ -60,7 +60,7 @@ public class Perimeter {
 
         int min = clamp(center - r);
         int max = clamp(center + r);
-        
+        //Връща всички от center-offset до center+r
         for (int i = min; i <= max; i++) {
             result.addAll(cells[i]);
         }
