@@ -71,8 +71,7 @@ public class ExperimentMetricsTest {
             public Navigation getNavigation() { return null; }
             public PatrolModel getPatrolModel() { return null; }
         };
-        Battery battery = new Battery(100, 5000);
-        battery.setWearModel(1000.0, 200.0);
+        Battery battery = new Battery(100, 5000, 1000.0, 200.0);
         Bot bot = new Bot(id, new Position(0), battery, new Lidar(0, 0),
                 new CommunicationModule(1, 1, 0, 1), 1, RobotType.GROUND, "fixture", 0, price, 0, planner);
         bot.setBaselineConsumptionWh(0);

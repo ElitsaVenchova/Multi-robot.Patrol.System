@@ -21,13 +21,8 @@ public class ChargingStation {
     private ChargingStationStatus status; // текущ статус на станцията (напр. свободна, заета, в грешка)
     private final Queue<Bot> queue = new LinkedList<>(); // опашка от ботове, които чакат да се заредят
 
-    public ChargingStation(String name,
-            double price,
-            int totalSlots,
-            double power,
-            double failureProbability,
-            Position location) {
-
+    public ChargingStation(String name, double price, int totalSlots, double power,
+            double failureProbability, Position location) {
         this.name = name;
         this.price = price;
         this.totalSlots = totalSlots;
@@ -50,13 +45,10 @@ public class ChargingStation {
         if (status == ChargingStationStatus.FAIL) {
             return false;
         }
-
         if (!queue.contains(bot)) {
             queue.add(bot);
         }
-
         updateStatus();
-
         // Ако ботът е в първите totalSlots в опашката, може да започне да се зарежда
         return isCharging(bot);
     }
@@ -90,7 +82,7 @@ public class ChargingStation {
     public synchronized int getEstimatedWaitTime() {
         int time = 0;
         for (Bot b : queue) {
-            time += b.getBattery().estimateTimeToFull(power / 60.0); // W на слот * (1 minute / 60) = Wh
+            time += estimateTimeToFull(b);
         }
         return time;
     }
@@ -100,7 +92,6 @@ public class ChargingStation {
         if (status == ChargingStationStatus.FAIL) {
             return;
         }
-
         if (queue.size() >= totalSlots) {
             status = ChargingStationStatus.OCCUPIED;
         } else {
@@ -109,45 +100,26 @@ public class ChargingStation {
         log.fine(" ChargingStation " + id + " status: " + status + " queue size: " + queue.size());
     }
 
-    // Проверка дали станцията е налична за зареждане (т.е. не е в грешка и има свободни слотове)
-    public boolean isAvailable() {
-        return status == ChargingStationStatus.AVAILABLE;
+    //Изчисляване оставащото време за зареждане на робот спрямо нивото на батерия и капацитета
+    private int estimateTimeToFull(Bot bot) {
+        return (int) ((bot.getBattery().getCapacity() - bot.getBattery().getCurrentLevel()) / (power/60)); // W на слот * (1 minute / 60) = Wh
     }
 
-    // Размер на опашката
-    public int getQueueSize() {
-        return queue.size();
-    }
+    public int getQueueSize() { return queue.size(); }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
-    public double getPrice() {
-        return price;
-    }
+    public double getPrice() { return price; }
 
-    public int getTotalSlots() {
-        return totalSlots;
-    }
+    public int getTotalSlots() { return totalSlots; }
 
-    public double getPower() {
-        return power;
-    }
+    public double getPower() { return power; }
 
-    public double getFailureProbability() {
-        return failureProbability;
-    }
+    public double getFailureProbability() { return failureProbability; }
 
-    public ChargingStationStatus getStatus() {
-        return status;
-    }
+    public ChargingStationStatus getStatus() { return status; }
 
-    public Position getLocation() {
-        return location;
-    }
+    public Position getLocation() { return location; }
 
     public long getId() { return id; }
-
-    public Queue<Bot> getQueue() { return queue; }
 }

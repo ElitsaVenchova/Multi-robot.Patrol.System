@@ -128,7 +128,7 @@ public class CommunicationController {
             if (entry.getKey() != observerId) {
                 double offset = GeometryUtils.signedPerimeterOffset(
                         new Position(observer.x()), new Position(entry.getValue().x()));
-                if (Lidar.canDetectRobot(observer.lidarRange(), Math.abs(offset))) {
+                if (Math.abs(offset) <= observer.lidarRange()) {
                     observations.put(entry.getKey(), offset);
                 }
             }

@@ -1,4 +1,4 @@
-package bg.uni.sofia.fmi.simulator.behavior.planning;
+package bg.uni.sofia.fmi.simulator.behavior.energyManagment;
 
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.ChargingStation;

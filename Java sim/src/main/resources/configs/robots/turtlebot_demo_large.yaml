@@ -8,7 +8,7 @@ battery:
   batteryCapacity: 40 # Wh; two 11.1 V x 1.8 Ah packs
   cycleLife: 500 # equivalent full discharge cycles
   replacementCostEur: 70 # EUR; two replacement LiPo packs
-  averageBatteryLife: 5000
+  averageBatteryLife: 5000 # hours
 lidar:
   lidarRange: 3.5 # m; LDS-01
   lidarBatteryConsumptionRate: 0.025 # Wh per one-minute scan (~1.5 W)

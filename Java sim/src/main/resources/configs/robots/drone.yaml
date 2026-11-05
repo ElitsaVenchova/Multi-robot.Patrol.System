@@ -4,7 +4,9 @@ maxSpeed: 5 # m/min
 failureProbability: 0.1
 batteryConsumptionRate: 0.05 # Wh/m
 battery:
-  batteryCapacity: 60.0 # Wh
+  batteryCapacity: 60.0 # Whflight
+  cycleLife: 300 # equivalent full discharge cycles; typical flight LiPo
+  replacementCostEur: 120 # EUR; flight battery
   averageBatteryLife: 2000 # hours
 lidar:
   lidarRange: 30.0 # m

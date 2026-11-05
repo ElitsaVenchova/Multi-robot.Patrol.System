@@ -71,8 +71,8 @@ public class SchemaValidator {
         positive(model.getBattery().getBatteryCapacity(), "battery capacity Wh");
         nonNegative(model.getLidar().getLidarRange(), "LiDAR range m");
         nonNegative(model.getLidar().getLidarBatteryConsumptionRate(), "LiDAR Wh/scan");
-        new Battery(model.getBattery().getBatteryCapacity(), model.getBattery().getAverageBatteryLife())
-                .setWearModel(model.getBattery().getCycleLife(), model.getBattery().getReplacementCostEur());
+        new Battery(model.getBattery().getBatteryCapacity(), model.getBattery().getAverageBatteryLife(),
+                model.getBattery().getCycleLife(), model.getBattery().getReplacementCostEur());
     }
     public static void validateStationModel(ChargingStationModelConfig model) {
         if (model.getSlots() <= 0) throw new IllegalArgumentException("Station slots must be positive");

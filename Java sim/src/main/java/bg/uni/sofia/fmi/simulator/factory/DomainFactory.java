@@ -73,7 +73,8 @@ public class DomainFactory {
         Position position = new Position(id);
         // Батерията на бота
         Battery battery = new Battery(model.getBattery().getBatteryCapacity(),
-                model.getBattery().getAverageBatteryLife());
+                model.getBattery().getAverageBatteryLife(), model.getBattery().getCycleLife(),
+                model.getBattery().getReplacementCostEur());
         // Лидарът на бота
         Lidar lidar = new Lidar(model.getLidar().getLidarRange(),
                 model.getLidar().getLidarBatteryConsumptionRate());

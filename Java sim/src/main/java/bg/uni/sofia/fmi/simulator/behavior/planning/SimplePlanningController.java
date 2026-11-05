@@ -1,5 +1,6 @@
 package bg.uni.sofia.fmi.simulator.behavior.planning;
 
+import bg.uni.sofia.fmi.simulator.behavior.energyManagment.StationSelector;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
 import bg.uni.sofia.fmi.simulator.domain.Position;
@@ -18,8 +19,6 @@ public class SimplePlanningController implements PlanningModule {
     private final PatrolModel patrolModel;
     private final Navigation navigation;
 
-    private ChargingStation currentStation; // за да знаем на коя станция се зареждаме
-
     public SimplePlanningController(EnergyManager energyManager, PatrolModel patrolModel, Navigation navigation) {
         this.energyManager = energyManager;
         this.patrolModel = patrolModel;
@@ -29,8 +28,7 @@ public class SimplePlanningController implements PlanningModule {
     @Override
     public void update(Bot bot, int currentTime) {
         if (currentTime < 2500) {
-            logger.fine(" Bot " + bot.getId() + " at " + bot.getPosition()
-                    + " state: " + bot.getState() + bot.getBattery());
+            logger.fine(" Bot " + bot.getId() + " at " + bot.getPosition() + " state: " + bot.getState() + bot.getBattery());
         }
 
         Position goalPosition = null;
@@ -40,10 +38,10 @@ public class SimplePlanningController implements PlanningModule {
             patrolModel.onPatrolSuspended(bot);
         } else if (bot.getState() == BotState.CHARGING) {
             patrolModel.onPatrolSuspended(bot);
-            change(bot);
+            energyManager.change(bot);
         } else if (energyManager.isLow(bot)) {
             patrolModel.onPatrolSuspended(bot);
-            goalPosition = lowBattery(bot);
+            goalPosition = energyManager.selectStation(bot);
         } else {
             patrolModel.onPatrolResumed(bot);
             bot.setState(BotState.PATROLLING);
@@ -56,47 +54,6 @@ public class SimplePlanningController implements PlanningModule {
         }
         if (currentTime < 2500) {
             logger.fine(goalPosition != null ? " " + goalPosition : "");
-        }
-    }
-    private void change(Bot bot){
-        // Зареждаме бота
-        currentStation.chargeBot(bot);
-        // Ако батерията е пълна, освобождаваме слота и се връщаме към патрулиране
-        if (bot.getBattery().isFull()) {
-            currentStation.releaseSlot(bot);
-            currentStation = null;
-            bot.setState(BotState.PATROLLING);
-            patrolModel.onPatrolResumed(bot);
-        }
-    }
-
-    private Position lowBattery(Bot bot) {
-        // Избираме най-добрата станция за зареждане
-        StationSelector selector = new StationSelector();
-        ChargingStation best = selector.selectBestStation(bot);
-        // Ако няма налична станция
-        if (best == null) {
-            bot.setState(BotState.WAITING_FOR_CHARGE);
-            // Ще потърси отново на следващия ход
-            return null;
-        }
-        bot.setState(BotState.GOING_TO_CHARGE);
-        Position goalPosition = best.getLocation();
-
-        double distX = GeometryUtils.perimeterDistance(bot.getPosition(), goalPosition);
-        if (distX < 1.0) {
-            boolean canCharge = best.tryOccupySlot(bot);
-            if (canCharge) {
-                currentStation = best;
-                bot.setState(BotState.CHARGING);
-            } else {
-                // чака, [TODO] но ако е заето повече от 5 цикъла, търси друга станция
-                bot.setState(BotState.WAITING_FOR_CHARGE);
-            }
-            return null;
-        } else {
-            // Насочваме се към станцията
-            return goalPosition;
         }
     }
 

@@ -9,11 +9,15 @@ import bg.uni.sofia.fmi.simulator.behavior.planning.PlanningModule;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolSection;
 import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
+
 // Клас, представляващ бот в симулацията
 public class Bot {
-    private final java.util.EnumMap<BotState, Long> stateTicks = new java.util.EnumMap<>(BotState.class);
+    private final EnumMap<BotState, Long> stateTicks = new EnumMap<>(BotState.class);
     private double baselineConsumptionWh = 0.01;
-    public java.util.Map<BotState, Long> getStateTicks() { return java.util.Collections.unmodifiableMap(stateTicks); }
+    public Map<BotState, Long> getStateTicks() { return Collections.unmodifiableMap(stateTicks); }
     public void setBaselineConsumptionWh(double value) { baselineConsumptionWh = value; }
     private final String name; // име на бота, за по-лесно логване и идентификация
     private final Battery battery; // батерията на бота

@@ -8,7 +8,7 @@ battery:
   batteryCapacity: 80 # Wh; extended-range pack
   cycleLife: 300 # equivalent full discharge cycles; typical flight LiPo
   replacementCostEur: 220 # EUR; extended flight battery
-  averageBatteryLife: 2000
+  averageBatteryLife: 2000 # hours
 lidar:
   lidarRange: 30.0 # m
   lidarBatteryConsumptionRate: 0.05 # Wh per one-minute scan (~3 W)

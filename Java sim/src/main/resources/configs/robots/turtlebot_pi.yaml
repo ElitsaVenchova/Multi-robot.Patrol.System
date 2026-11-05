@@ -5,6 +5,8 @@ failureProbability: 0.1
 batteryConsumptionRate: 0.02 # Wh/m
 battery:
   batteryCapacity: 100.0 # Wh
+  cycleLife: 500 # equivalent full discharge cycles
+  replacementCostEur: 70 # EUR; two replacement LiPo packs
   averageBatteryLife: 5000 # hours
 lidar:
   lidarRange: 7.0 # m
