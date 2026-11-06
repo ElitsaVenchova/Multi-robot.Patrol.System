@@ -28,8 +28,12 @@ public class AsyncPatrolTest {
         World.setPerimeter(new Perimeter(1000, PerimeterType.CIRCULAR));
         List<Bot> bots = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            bots.add(new Bot(1 + i, new Position(i), new Battery(1000, 5000), new Lidar(0, 0),
-                    new CommunicationModule(10, 1000000, 0, 1),10, RobotType.GROUND, "bot-" + i, 0, 0, 0, null));
+            bots.add(new Bot(1 + i, new Position(i),
+                    new Battery(1000, 5000, null, null),
+                    new Lidar(0, 0),
+                    new CommunicationModule(10, 1000000, 0, 1),
+                    10, RobotType.GROUND, "bot-" + i, 0, 0,
+                    0, null));
         }
         world.addBots(bots);
 
