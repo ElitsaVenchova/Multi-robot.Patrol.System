@@ -17,7 +17,9 @@ public class BatteryCostTest {
     @Test public void chargingPowerConvertsWattsToWhPerMinuteAndClipsAtCapacity() {
         Battery battery = new Battery(100, 5000, null, null); battery.consume(2);
         Bot robot = new Bot(1, new Position(0), battery, new Lidar(1, 0),
-                new CommunicationModule(1, 1, 0, 1), 1, RobotType.GROUND, "test", 0, 1, 0, null);
+                new CommunicationModule(1, 1, 0, 1),
+                1, RobotType.GROUND, "test", 0, 1, 0,
+                null, 0.1);
         ChargingStation station = new ChargingStation("charger", 1, 1, 300, 0, new Position(0));
         station.chargeBot(robot);
         assertEquals(100, battery.getCurrentLevel(), 0); assertEquals(2, battery.getChargedWh(), 0);

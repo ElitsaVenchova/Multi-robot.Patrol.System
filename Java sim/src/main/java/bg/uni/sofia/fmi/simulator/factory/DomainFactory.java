@@ -97,7 +97,8 @@ public class DomainFactory {
         Navigation navigation = new Navigation(obstacleAvoidance);
         PlanningModule planningModule = new SimplePlanningController(energyManager, patrolModel, navigation);
         Bot bot = new Bot(id, position, battery, lidar, communicationModule, model.getMaxSpeed(), type, model.getName(),
-                model.getFailureProbability(), model.getPrice(), model.getBatteryConsumptionRate(), planningModule);
+                model.getFailureProbability(), model.getPrice(), model.getBatteryConsumptionRate(), planningModule,
+                model.getBaselineConsumptionWhPerMinute());
         if (patrolModel instanceof CommunicationParticipant participant) {
             bot.setCommunicationParticipant(participant);
         }

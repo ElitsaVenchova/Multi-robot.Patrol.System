@@ -15,8 +15,12 @@ public class StationSelectorTest {
     public void selectsNearestStationAcrossCircularSeam() {
         World.reset();
         World.setPerimeter(new Perimeter(1000, bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType.CIRCULAR));
-        Bot bot = new Bot(1, new Position(990),  new Battery(100, 5000, null, null), new Lidar(0, 0),
-                new CommunicationModule(10, 1000000, 0, 1),1, RobotType.GROUND, "bot", 0, 0, 0, null);
+        Bot bot = new Bot(1, new Position(990),
+                new Battery(100, 5000, null, null),
+                new Lidar(0, 0),
+                new CommunicationModule(10, 1000000, 0, 1),1,
+                RobotType.GROUND, "bot", 0, 0, 0,
+                null, 0.1);
         ChargingStation acrossSeam = stationAt(10);
         ChargingStation onDirectPath = stationAt(500);
 

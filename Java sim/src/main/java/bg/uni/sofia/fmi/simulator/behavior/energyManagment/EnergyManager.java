@@ -22,44 +22,34 @@ public class EnergyManager {
         return bot.getBattery().getCurrentLevel() < threshold;
     }
 
-    public Position selectStation(Bot bot) {
+    public ChargingStation selectStation(Bot bot) {
         // Избираме най-добрата станция за зареждане
         StationSelector selector = new StationSelector();
         ChargingStation best = selector.selectBestStation(bot);
         // Ако няма налична станция
-        if (best == null) {
-            bot.setState(BotState.WAITING_FOR_CHARGE);
-            // Ще потърси отново на следващия ход
+        if (best == null) { // Ще потърси отново на следващия ход
             return null;
         }
-        bot.setState(BotState.GOING_TO_CHARGE);
-        Position goalPosition = best.getLocation();
-
-        double distX = GeometryUtils.perimeterDistance(bot.getPosition(), goalPosition);
-        if (distX < 1.0) {
-            boolean canCharge = best.tryOccupySlot(bot);
-            if (canCharge) {
-                currentStation = best;
-                bot.setState(BotState.CHARGING);
-            } else {
-                // чака, [TODO] но ако е заето повече от 5 цикъла, търси друга станция
-                bot.setState(BotState.WAITING_FOR_CHARGE);
-            }
-            return null;
-        } else {
-            // Насочваме се към станцията
-            return goalPosition;
-        }
+        return best;
     }
 
-    public void change(Bot bot){
+    public boolean tryToCharge(ChargingStation best, Bot bot){
+        boolean canCharge = best.tryOccupySlot(bot);
+        if (canCharge) {
+            currentStation = best;
+        }
+        return canCharge;
+    }
+
+    //Зарежда робота и връща дали батерията е пълна
+    public boolean change(Bot bot){
         // Зареждаме бота
         currentStation.chargeBot(bot);
         // Ако батерията е пълна, освобождаваме слота и се връщаме към патрулиране
         if (bot.getBattery().isFull()) {
             currentStation.releaseSlot(bot);
             currentStation = null;
-            bot.setState(BotState.PATROLLING);
         }
+        return bot.getBattery().isFull();
     }
 }

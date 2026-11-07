@@ -5,6 +5,7 @@ import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.domain.World;
 import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.behavior.collisionAvoidance.ObstacleAvoidance;
+import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolSection;
 import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 import bg.uni.sofia.fmi.simulator.util.MathUtils;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.Direction;
@@ -58,5 +59,21 @@ public class Navigation {
         } else {
             bot.move(new Position(newX));
         }
+    }
+
+    //Връща по-близкия край на секцията за патрулиране
+    public Position getTargetToPatrolSection(Bot bot, PatrolSection patrolSection) {
+        if (World.getPerimeter().getType() == PerimeterType.CIRCULAR) {
+            Position start = patrolSection.startPosition();
+            Position end = patrolSection.endPosition();
+            return GeometryUtils.perimeterDistance(bot.getPosition(), start) <= GeometryUtils.perimeterDistance(bot.getPosition(), end)
+                    ? start : end;
+        }
+        double minX = Math.min(patrolSection.startPosition().getX(), patrolSection.endPosition().getX());
+        double maxX = Math.max(patrolSection.startPosition().getX(), patrolSection.endPosition().getX());
+
+        // If bot is outside the section, return the closest boundary position
+        double targetX = (bot.getPosition().getX() < minX) ? minX : maxX;
+        return new Position(targetX);
     }
 }

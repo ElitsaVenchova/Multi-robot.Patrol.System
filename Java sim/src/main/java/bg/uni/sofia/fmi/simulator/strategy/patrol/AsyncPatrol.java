@@ -57,7 +57,7 @@ public class AsyncPatrol implements PatrolModel {
         //Ако роботът не е в секцията за патрулиране, то трябва да се предвижи до нея.
         if(!bot.isInPatrolSection(patrolSection)) {
             bot.setState(BotState.GOING_TO_PATROL);
-            goalPosition = bot.getTargetToPatrolSection(patrolSection);
+            goalPosition = bot.getPlanningModule().getNavigation().getTargetToPatrolSection(bot, patrolSection);
         } else {
             bot.setState(BotState.PATROLLING);
             PatrolModel.scan(bot, currentTime);

@@ -14,7 +14,7 @@ public class NavigationRoundoffTest {
                 new Lidar(1, 0),
                 new CommunicationModule(1, 1, 0, 1),
                 2.5, RobotType.GROUND, "test", 0, 1,
-                0, null);
+                0, null, 0.1);
     }
     @Test public void acceptsRoundedCoordinateDifferenceAtSpeedLimit() {
         Bot bot = robot(); new Navigation(new ObstacleAvoidance()).moveTowards(bot, new Position(100));

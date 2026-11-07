@@ -9,7 +9,7 @@ public class RobotModelConfig {
     private double price; //цена
     private double failureProbability; //вероятност за отказ
     private double batteryConsumptionRate; //потребление на енергия при движение
-    private double baselineConsumptionWhPerMinute = 0.01; //базово потребление на енергия на робота
+    private double baselineConsumptionWhPerMinute; //базово потребление на енергия на робота
     //Кофигурации на модулите на робота
     private BatteryConfig battery; //конфигурация на батерията
     private LidarConfig lidar; //конфигурация на лазерния модул

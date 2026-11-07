@@ -192,6 +192,9 @@ World
 	17. validateRobotModel и validateStationModel се използват само за експеримент. Да се добавят и за единична симулация.
 	18. Каква е разликата м/у BatteryConfig.cycleLife и BatteryConfig.averageBatteryLife
 	19. Защо batteryConsumptionRate и baselineConsumptionWhPerMinute извън BatteryConfig? Да им се добави по точно описание в RobotModelConfig.
+	20. Всички в пакет behavior да имат поле bot, което да се задава при инициализация, за да не трябва на всички методи да се подава bot.
+	21. Bot.stateTicks, Battery.(chargedWh, dischargedWh) да се изнесат в отделен клас за статистика за изхода.
+	22. Секциите не се показват пак хубаво
 
 Приоритет 2 - това са задачи, които са задължителни за реализацията на симулатора и трябва да бъдат разработени:
 	1. Паралелно изпълнение на симулацията.

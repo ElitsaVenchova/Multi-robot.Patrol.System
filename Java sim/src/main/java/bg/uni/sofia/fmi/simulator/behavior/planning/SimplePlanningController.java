@@ -33,15 +33,33 @@ public class SimplePlanningController implements PlanningModule {
 
         Position goalPosition = null;
         Direction movementDirection = null;
-        if (bot.getBattery().isEmpty() || bot.getState() == BotState.ERROR) {
+        if (bot.getBattery().isEmpty() || bot.getState() == BotState.ERROR) {//ERROR
             bot.setState(BotState.ERROR);
             patrolModel.onPatrolSuspended(bot);
         } else if (bot.getState() == BotState.CHARGING) {
             patrolModel.onPatrolSuspended(bot);
-            energyManager.change(bot);
+            if(energyManager.change(bot)){ //зарежда бота и връща дали батерията е пълна
+                bot.setState(BotState.PATROLLING);
+            }
         } else if (energyManager.isLow(bot)) {
             patrolModel.onPatrolSuspended(bot);
-            goalPosition = energyManager.selectStation(bot);
+            ChargingStation best = energyManager.selectStation(bot);
+            if (best == null) {
+                bot.setState(BotState.WAITING_FOR_CHARGE);
+            } else {
+                bot.setState(BotState.GOING_TO_CHARGE);
+                double distX = GeometryUtils.perimeterDistance(bot.getPosition(), best.getLocation());
+                if (distX < 1.0) {
+                    if (energyManager.tryToCharge(best, bot)) {
+                        bot.setState(BotState.CHARGING);
+                    } else { // чака
+                        bot.setState(BotState.WAITING_FOR_CHARGE);
+                    }
+                } else {
+                    // Насочваме се към станцията
+                    goalPosition = best.getLocation();
+                }
+            }
         } else {
             patrolModel.onPatrolResumed(bot);
             bot.setState(BotState.PATROLLING);
@@ -52,15 +70,11 @@ public class SimplePlanningController implements PlanningModule {
         if (goalPosition != null) {
             navigation.moveTowards(bot, goalPosition, movementDirection);
         }
-        if (currentTime < 2500) {
-            logger.fine(goalPosition != null ? " " + goalPosition : "");
-        }
+        if (currentTime < 2500) { logger.fine(goalPosition != null ? " " + goalPosition : ""); }
     }
 
     @Override
-    public Navigation getNavigation() {
-        return navigation;
-    }
+    public Navigation getNavigation() { return navigation; }
 
     @Override
     public PatrolModel getPatrolModel() { return patrolModel; }

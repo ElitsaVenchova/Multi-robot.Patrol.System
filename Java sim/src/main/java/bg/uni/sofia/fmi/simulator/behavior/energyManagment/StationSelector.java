@@ -14,8 +14,9 @@ public class StationSelector {
         double bestScore = Double.MAX_VALUE;
 
         for (ChargingStation s : World.getChargingStations()) {
-            // Ако станцията е в грешка, я пропускаме
-            if (s.getStatus() == ChargingStationStatus.FAIL) {
+            // Ако станцията е в грешка или ще отнеме повече от 5мин чакане, я пропускаме
+            //@TODO: Да се направи приоритизиране спрямо разстояния и време за чакане
+            if (s.getStatus() == ChargingStationStatus.FAIL || s.getEstimatedWaitTime() > 5) {
                 continue;
             }
 

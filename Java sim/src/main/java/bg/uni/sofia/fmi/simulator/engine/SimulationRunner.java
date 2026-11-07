@@ -22,9 +22,9 @@ public class SimulationRunner {
     private SimulationConfig currentConfig;
     // Метод за стартиране на симулацията с даден конфигурационен файл
     // (за бързо стартиране от main метода)
-    public void run(String configPath, boolean visualization) {// Зареждане на конфигурацията
+    public void run(String configPath, boolean visualization) {
         ConfigLoader loader = new ConfigLoader();
-        SimulationConfig config = loader.load(configPath);
+        SimulationConfig config = loader.load(configPath);// Зареждане на конфигурацията
         run(config, visualization);
 
         // След края на симулацията, събиране и отпечатване на резултатите

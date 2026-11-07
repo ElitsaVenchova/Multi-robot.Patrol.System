@@ -85,7 +85,7 @@ public class EncounterPatrol implements PatrolModel, CommunicationParticipant {
         if (!deployed) {
             if (!bot.isInPatrolSection(patrolSection)) {
                 bot.setState(BotState.GOING_TO_PATROL);
-                return bot.getTargetToPatrolSection(patrolSection);
+                return bot.getPlanningModule().getNavigation().getTargetToPatrolSection(bot, patrolSection);
             }
             deployed = true;
         }
@@ -145,7 +145,7 @@ public class EncounterPatrol implements PatrolModel, CommunicationParticipant {
                 // Preserve deployment movement while still publishing the current robot's intent.
                 Position target;
                 if (!deployed && !bot.isInPatrolSection(patrolSection)) {
-                    target = bot.getTargetToPatrolSection(patrolSection);
+                    target = bot.getPlanningModule().getNavigation().getTargetToPatrolSection(bot, patrolSection);
                 } else {
                     deployed = true;
                     target = planPatrolTarget(bot);

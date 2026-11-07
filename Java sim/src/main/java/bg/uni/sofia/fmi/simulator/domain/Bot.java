@@ -15,10 +15,6 @@ import java.util.Map;
 
 // Клас, представляващ бот в симулацията
 public class Bot {
-    private final EnumMap<BotState, Long> stateTicks = new EnumMap<>(BotState.class);
-    private double baselineConsumptionWh = 0.01;
-    public Map<BotState, Long> getStateTicks() { return Collections.unmodifiableMap(stateTicks); }
-    public void setBaselineConsumptionWh(double value) { baselineConsumptionWh = value; }
     private final String name; // име на бота, за по-лесно логване и идентификация
     private final Battery battery; // батерията на бота
     private final Lidar lidar; // сензор за засичане на атаки
@@ -28,6 +24,7 @@ public class Bot {
     private final double failureProbability; // вероятност за повреда при всяко действие
     private final double price; // цена на бота, за оптимизация на разходите
     private final double batteryConsumptionRate; // колко батерия консумира на единица движение
+    private final double baselineConsumptionWh; // константна консумация на батерията при всеки tick
 
     private final long id; // за да може да се идентифицира бота при нужда, напр. за логване
     private final Position position; // позицията на бота
@@ -35,9 +32,11 @@ public class Bot {
     private CommunicationParticipant communicationParticipant;
     private BotState state; // текущо състояние на бота (патрулиране, зареждане, грешка и т.н.)
 
+    private final EnumMap<BotState, Long> stateTicks = new EnumMap<>(BotState.class); // Статистика съхранява броя ticks за всяко състояние на бота
+
     public Bot(long id, Position position, Battery battery, Lidar lidar, CommunicationModule communicationModule,
                double speed, RobotType type, String name, double failureProbability,
-               double price, double batteryConsumptionRate, PlanningModule planningModule) {
+               double price, double batteryConsumptionRate, PlanningModule planningModule, double baselineConsumptionWh) {
         this.id = id;
         this.position = position;
         this.battery = battery;
@@ -51,18 +50,7 @@ public class Bot {
         this.communicationModule = communicationModule;
         this.planningModule = planningModule;
         this.state = BotState.PATROLLING;
-    }
-
-    /** Composition wiring; communication delivery does not depend on the patrol interface. */
-    public void setCommunicationParticipant(CommunicationParticipant participant) {
-        communicationParticipant = participant;
-    }
-
-    public void processCommunicationRound(int currentTime, CommunicationController.Round round,
-                                          CommunicationController communication) {
-        if (communicationParticipant != null) {
-            communicationParticipant.onCommunicationRound(this, currentTime, round, communication);
-        }
+        this.baselineConsumptionWh = baselineConsumptionWh;
     }
 
     // Основен метод за обновяване на състоянието на бота при всяка итерация на симулацията
@@ -70,11 +58,12 @@ public class Bot {
         BotState startingState = state;
         // Взима се решение за действие и се определя състоянието
         planningModule.update(this, currentTime);
+        // консумация по подразбиране, за да може да се изтощава с времето дори да не прави нищо
+        battery.consume(baselineConsumptionWh);
+
         // A charging completion tick belongs to charging, even when the next state is patrol.
         BotState accounted = startingState == BotState.CHARGING && state != BotState.ERROR ? BotState.CHARGING : state;
         stateTicks.merge(accounted, 1L, Long::sum);
-        // консумация по подразбиране, за да може да се изтощава с времето дори да не прави нищо
-        battery.consume(baselineConsumptionWh);
     }
 
     // Движение на бота
@@ -139,69 +128,30 @@ public class Bot {
         }
     }
 
-    //Връща по-близкия край на секцията за патрулиране
-    public Position getTargetToPatrolSection(PatrolSection patrolSection) {
-        if (World.getPerimeter().getType() == PerimeterType.CIRCULAR) {
-            Position start = patrolSection.startPosition();
-            Position end = patrolSection.endPosition();
-            return GeometryUtils.perimeterDistance(position, start) <= GeometryUtils.perimeterDistance(position, end)
-                    ? start : end;
+    /** Composition wiring; communication delivery does not depend on the patrol interface. */
+    public void setCommunicationParticipant(CommunicationParticipant participant) {
+        communicationParticipant = participant;
+    }
+
+    public void processCommunicationRound(int currentTime, CommunicationController.Round round,
+                                          CommunicationController communication) {
+        if (communicationParticipant != null) {
+            communicationParticipant.onCommunicationRound(this, currentTime, round, communication);
         }
-        double minX = Math.min(patrolSection.startPosition().getX(), patrolSection.endPosition().getX());
-        double maxX = Math.max(patrolSection.startPosition().getX(), patrolSection.endPosition().getX());
-
-        // If bot is outside the section, return the closest boundary position
-        double targetX = (position.getX() < minX) ? minX : maxX;
-        return new Position(targetX);
     }
 
-    public Position getPosition() {
-        return position;
-    }
-
-    public Battery getBattery() {
-        return battery;
-    }
-
-    public Lidar getLidar() {
-        return lidar;
-    }
-
-    public CommunicationModule getCommunicationModule() {
-        return communicationModule;
-    }
-
-    public RobotType getType() {
-        return type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
+    public Position getPosition() { return position; }
+    public Battery getBattery() { return battery; }
+    public Lidar getLidar() { return lidar; }
+    public CommunicationModule getCommunicationModule() { return communicationModule; }
+    public RobotType getType() { return type; }
+    public String getName() { return name; }
     public double getFailureProbability() { return failureProbability;}
-
-    public double getPrice() {
-        return price;
-    }
-
-    public double getMaxSpeed() {
-        return maxSpeed;
-    }
-
-    public BotState getState() {
-        return state;
-    }
-
-    public void setState(BotState state) {
-        this.state = state;
-    }
-
-    public PlanningModule getPlanningModule() {
-        return planningModule;
-    }
-
-    public long getId() {
-        return id;
-    }
+    public double getPrice() { return price; }
+    public double getMaxSpeed() { return maxSpeed; }
+    public BotState getState() { return state; }
+    public void setState(BotState state) { this.state = state; }
+    public PlanningModule getPlanningModule() { return planningModule; }
+    public long getId() { return id; }
+    public Map<BotState, Long> getStateTicks() { return Collections.unmodifiableMap(stateTicks); }
 }

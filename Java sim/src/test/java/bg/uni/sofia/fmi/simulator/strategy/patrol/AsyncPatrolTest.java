@@ -33,7 +33,7 @@ public class AsyncPatrolTest {
                     new Lidar(0, 0),
                     new CommunicationModule(10, 1000000, 0, 1),
                     10, RobotType.GROUND, "bot-" + i, 0, 0,
-                    0, null));
+                    0, null, 0.1));
         }
         world.addBots(bots);
 

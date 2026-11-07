@@ -75,7 +75,7 @@ public class BotRangeVisualNodeTest {
                 new Lidar(5, 0.1),
                 new CommunicationModule(10, 1000000, 0, 1),
                 1, RobotType.GROUND, "test", 0, 0,
-                0, null);
+                0, null, 0.1);
         ScaleMapper mapper = new ScaleMapper(100, 0, 1000);
         return new BotRangeVisualNode(bot, mapper, 300);
     }

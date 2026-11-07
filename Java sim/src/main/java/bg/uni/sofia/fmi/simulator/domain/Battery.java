@@ -5,7 +5,8 @@ public class Battery {
     private final double capacity; //капацитет на батерията
     private final double averageBatteryLife; // Среден живот на батерията в часове.
     private double currentLevel;//текущо ниво на батерията
-    private Double cycleLife, replacementCostEur;
+    private final Double cycleLife;
+    private final Double replacementCostEur;
 
     private double chargedWh, dischargedWh;//Статистика заредена/консумирана енергия
 
