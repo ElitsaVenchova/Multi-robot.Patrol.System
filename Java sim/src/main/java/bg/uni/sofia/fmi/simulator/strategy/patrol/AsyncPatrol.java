@@ -69,7 +69,7 @@ public class AsyncPatrol implements PatrolModel {
     }
 
     //Посока, към която да се движи робота докато патрулира.
-    //Има добавена малко случайност, за да може движението да е напълно предвидимо.
+    //Има добавена малка случайност, за да може движението да е напълно предвидимо.
     public Position getPatrolTarget(Bot bot) {
         double currentX = bot.getPosition().getX();
         double sectionStart = patrolSection.startPosition().getX();

@@ -70,8 +70,6 @@ public class DomainFactory {
     }
     //Създаване на бот от конфигурацията
     private static Bot createBot(long id, RobotModelConfig model, double energyThreshold, PatrolModel patrolModel) {
-        // Начална позиция на робота спрямо реда на въвеждане
-        Position position = new Position(id);
         // Батерията на бота
         Battery battery = new Battery(model.getBattery().getBatteryCapacity(),
                 model.getBattery().getAverageBatteryLife(), model.getBattery().getCycleLife(),
@@ -93,6 +91,9 @@ public class DomainFactory {
         } catch (Exception e) {
             throw new RuntimeException("Invalid robot type: " + model.getType());
         }
+        // Начална позиция на робота спрямо реда на въвеждане
+        Position position = type == RobotType.GROUND ? new Position(id, 0.0, 0.0) :
+                type == RobotType.DRONE ? new Position(id, 100.0, 0.0) : null;
         ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance();
         Navigation navigation = new Navigation(obstacleAvoidance);
         PlanningModule planningModule = new SimplePlanningController(energyManager, patrolModel, navigation);

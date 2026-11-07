@@ -39,7 +39,7 @@ public class SimplePlanningController implements PlanningModule {
         } else if (bot.getState() == BotState.CHARGING) {
             patrolModel.onPatrolSuspended(bot);
             if(energyManager.change(bot)){ //зарежда бота и връща дали батерията е пълна
-                bot.setState(BotState.PATROLLING);
+                bot.setState(BotState.GOING_TO_PATROL);
             }
         } else if (energyManager.isLow(bot)) {
             patrolModel.onPatrolSuspended(bot);

@@ -49,21 +49,19 @@ public class Bot {
         this.batteryConsumptionRate = batteryConsumptionRate;
         this.communicationModule = communicationModule;
         this.planningModule = planningModule;
-        this.state = BotState.PATROLLING;
+        this.state = BotState.GOING_TO_PATROL;
         this.baselineConsumptionWh = baselineConsumptionWh;
     }
 
     // Основен метод за обновяване на състоянието на бота при всяка итерация на симулацията
     public void update(int currentTime) {
-        BotState startingState = state;
         // Взима се решение за действие и се определя състоянието
         planningModule.update(this, currentTime);
         // консумация по подразбиране, за да може да се изтощава с времето дори да не прави нищо
         battery.consume(baselineConsumptionWh);
 
-        // A charging completion tick belongs to charging, even when the next state is patrol.
-        BotState accounted = startingState == BotState.CHARGING && state != BotState.ERROR ? BotState.CHARGING : state;
-        stateTicks.merge(accounted, 1L, Long::sum);
+        // Отчитане на времето прекарано във всеки статус.
+        stateTicks.merge(state, 1L, Long::sum);
     }
 
     // Движение на бота
@@ -73,8 +71,7 @@ public class Bot {
 
     /** Executes a navigation step with its actual path length, including circular arcs. */
     public void move(Position target, double distance) {
-        if (!Double.isFinite(distance) || distance < 0
-                || !Double.isFinite(target.getX())) {
+        if (!Double.isFinite(distance) || distance < 0 || !Double.isFinite(target.getX())) {
             throw new IllegalArgumentException("Movement must have finite coordinates and non-negative distance");
         }
         double displacement = GeometryUtils.perimeterDistance(position, target);
@@ -84,16 +81,9 @@ public class Bot {
             throw new IllegalArgumentException("Path length cannot be shorter than displacement");
         }
         if(distance > maxSpeed + tolerance){
-            throw new RuntimeException("Разстоянието до следващата стъпка е по-голоямо от възможностите на робота!");
+            throw new RuntimeException("Разстоянието до следващата стъпка е по-голямо от възможностите на робота!");
         }
         position.setX(target.getX());
-        // Засега 1D движение
-        if (type == RobotType.GROUND) {
-            position.setZ(0.0);
-        } else if (type == RobotType.DRONE) {
-            position.setY(100);
-            position.setZ(0.0);
-        }
         battery.consume(distance * batteryConsumptionRate);
     }
 
