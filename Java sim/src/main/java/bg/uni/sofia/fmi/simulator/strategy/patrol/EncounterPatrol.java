@@ -83,7 +83,7 @@ public class EncounterPatrol implements PatrolModel, CommunicationParticipant {
         }
         onPatrolResumed(bot);
         if (!deployed) {
-            if (!bot.isInPatrolSection(patrolSection)) {
+            if (!isInPatrolSection(bot, patrolSection)) {
                 bot.setState(BotState.GOING_TO_PATROL);
                 return bot.getPlanningModule().getNavigation().getTargetToPatrolSection(bot, patrolSection);
             }
@@ -144,7 +144,7 @@ public class EncounterPatrol implements PatrolModel, CommunicationParticipant {
                 lidarObservations = communication.observeRobots(bot.getId());
                 // Preserve deployment movement while still publishing the current robot's intent.
                 Position target;
-                if (!deployed && !bot.isInPatrolSection(patrolSection)) {
+                if (!deployed && !isInPatrolSection(bot, patrolSection)) {
                     target = bot.getPlanningModule().getNavigation().getTargetToPatrolSection(bot, patrolSection);
                 } else {
                     deployed = true;

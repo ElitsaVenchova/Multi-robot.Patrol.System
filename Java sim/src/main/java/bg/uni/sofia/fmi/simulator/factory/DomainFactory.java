@@ -1,6 +1,7 @@
 package bg.uni.sofia.fmi.simulator.factory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import bg.uni.sofia.fmi.simulator.config.ChargingStationConfig;
@@ -21,7 +22,6 @@ import bg.uni.sofia.fmi.simulator.behavior.collisionAvoidance.ObstacleAvoidance;
 import bg.uni.sofia.fmi.simulator.behavior.planning.SimplePlanningController;
 import bg.uni.sofia.fmi.simulator.strategy.attack.LoadModel;
 import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolModel;
-import bg.uni.sofia.fmi.simulator.strategy.patrol.EncounterPatrol;
 import bg.uni.sofia.fmi.simulator.util.IdGenerator;
 
 //Фабрика за създаване на домейн обекти (Bot, ChargingStation, World) от конфигурацията.
@@ -33,15 +33,10 @@ public class DomainFactory {
         World world = new World();
         World.setPerimeter(new Perimeter(perimeterSize, perimeterType));
         // Ботове
-        List<Bot> bots = createBots(config, config.getSimulation().getChargeThreshold());
+        List<Bot> bots = createBots(config);
         world.addBots(bots);
         // Initialize encounter sections only after the full participant set exists.
-        bots.stream().sorted(java.util.Comparator.comparingLong(Bot::getId)).forEach(bot -> {
-            PatrolModel patrol = bot.getPlanningModule().getPatrolModel();
-            if (patrol instanceof EncounterPatrol) {
-                patrol.initialize(bot);
-            }
-        });
+        bots.stream().sorted(Comparator.comparingLong(Bot::getId)).forEach(bot -> bot.getPlanningModule().getPatrolModel().initialize(bot));
         // Зарядни станции
         List<ChargingStation> stations = createStations(config.getChargingStations());
         world.addChargingStations(stations);
@@ -51,7 +46,7 @@ public class DomainFactory {
         return world;
     }
     // Създаване на ботове от конфигурацията
-    private static List<Bot> createBots(SimulationConfig config, double energyThreshold) {
+    private static List<Bot> createBots(SimulationConfig config) {
         List<Bot> bots = new ArrayList<>();
         RobotModelLoader loader = new RobotModelLoader();
         
@@ -63,7 +58,7 @@ public class DomainFactory {
                 PatrolModel patrolModel = StrategyFactory.createPatrol(config.getPatrolModel());
                 // Геометричната начална позиция е локална за този свят;
                 // глобалният ID служи само за идентификация и логване.
-                bots.add(createBot(id, model, energyThreshold, patrolModel));
+                bots.add(createBot(id, model, config.getSimulation().getChargeThreshold(), patrolModel));
             }
         }
         return bots;
@@ -75,17 +70,15 @@ public class DomainFactory {
                 model.getBattery().getAverageBatteryLife(), model.getBattery().getCycleLife(),
                 model.getBattery().getReplacementCostEur());
         // Лидарът на бота
-        Lidar lidar = new Lidar(model.getLidar().getLidarRange(),
-                model.getLidar().getLidarBatteryConsumptionRate());
+        Lidar lidar = new Lidar(model.getLidar().getLidarRange(), model.getLidar().getLidarBatteryConsumptionRate());
         // Модул за комуникация на бота
-        RobotModelConfig.CommunicationModuleConfig communicationConfig = model.getCommunicationModule();
         CommunicationModule communicationModule = new CommunicationModule(
-                communicationConfig.getCommunicationRange(), communicationConfig.getSpeed(),
-                communicationConfig.getLatency(), communicationConfig.getReliability());
-        RobotType type;
+                model.getCommunicationModule().getCommunicationRange(), model.getCommunicationModule().getSpeed(),
+                model.getCommunicationModule().getLatency(), model.getCommunicationModule().getReliability());
         // Модул за управление на енергията, който ще се използва от поведението на бота
         EnergyManager energyManager = new EnergyManager(energyThreshold);
-        // Опит за конвертиране на типа на бота от конфигурацията към enum. Ако е невалиден, хвърляме грешка.
+        // Опит за конвертиране на типа на бота от конфигурацията към enum, иначе хвърляме грешка.
+        RobotType type;
         try {
             type = RobotType.valueOf(model.getType().toUpperCase());
         } catch (Exception e) {
@@ -93,13 +86,18 @@ public class DomainFactory {
         }
         // Начална позиция на робота спрямо реда на въвеждане
         Position position = type == RobotType.GROUND ? new Position(id, 0.0, 0.0) :
-                type == RobotType.DRONE ? new Position(id, 100.0, 0.0) : null;
+                            type == RobotType.DRONE ? new Position(id, 100.0, 0.0) : null;
+        // Модул за избегване на препятствия
         ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance();
+        // Модул за навигация
         Navigation navigation = new Navigation(obstacleAvoidance);
+        // Модул за планиране
         PlanningModule planningModule = new SimplePlanningController(energyManager, patrolModel, navigation);
+        // Създаване на бота
         Bot bot = new Bot(id, position, battery, lidar, communicationModule, model.getMaxSpeed(), type, model.getName(),
                 model.getFailureProbability(), model.getPrice(), model.getBatteryConsumptionRate(), planningModule,
                 model.getBaselineConsumptionWhPerMinute());
+        //
         if (patrolModel instanceof CommunicationParticipant participant) {
             bot.setCommunicationParticipant(participant);
         }
@@ -117,7 +115,6 @@ public class DomainFactory {
             }
             // Създаване на позиция за станцията
             Position position = new Position(config.getX(), config.getY(), 0.0); // stations are on ground
-
             stations.add(new ChargingStation(model.getName(), model.getPrice(), model.getSlots(),
                     model.getPower(), model.getFailureProbability(), position));
         }

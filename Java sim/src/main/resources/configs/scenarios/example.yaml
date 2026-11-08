@@ -5,7 +5,7 @@ simulation:
 
 perimeter:
   size: 1000
-  type: CIRCULAR
+  type: LINEAR
 
 robots:
   - model: turtlebot_pi
@@ -22,7 +22,7 @@ chargingStations:
     x: 666.0
 
 patrol:
-  model: AsyncPatrol
+  model: EncounterPatrol
   deviationProbability: 0.07
   maxDeviationDuration: 20
 

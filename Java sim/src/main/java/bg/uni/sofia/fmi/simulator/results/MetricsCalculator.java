@@ -12,7 +12,7 @@ public class MetricsCalculator {
     /** Добавя експериментални метрики, като същевременно запазва досегашния
      * показател successRate = intercepted/generated. */
     public SimulationMetrics calculate(SimulationConfig config) {
-        World.finish();
+        World.finish(config.getSimulation().getDuration());
         SimulationMetrics metrics = calculate();
         long resolved = (long) metrics.getInterceptedAttacks() + metrics.getMissedAttacks();
         metrics.setCaptureCoefficient(resolved == 0 ? Double.NaN :

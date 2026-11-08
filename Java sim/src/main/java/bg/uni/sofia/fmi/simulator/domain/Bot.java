@@ -3,10 +3,8 @@ package bg.uni.sofia.fmi.simulator.domain;
 import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
 import bg.uni.sofia.fmi.simulator.behavior.communication.CommunicationController;
 import bg.uni.sofia.fmi.simulator.behavior.communication.CommunicationParticipant;
-import bg.uni.sofia.fmi.simulator.domain.enums.PerimeterType;
 import bg.uni.sofia.fmi.simulator.domain.enums.RobotType;
 import bg.uni.sofia.fmi.simulator.behavior.planning.PlanningModule;
-import bg.uni.sofia.fmi.simulator.strategy.patrol.PatrolSection;
 import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 
 import java.util.Collections;
@@ -77,45 +75,16 @@ public class Bot {
         double displacement = GeometryUtils.perimeterDistance(position, target);
         double scale = Math.max(Math.max(Math.abs(position.getX()), Math.abs(target.getX())), Math.max(distance, displacement));
         double tolerance = 4 * Math.ulp(Math.max(1.0, scale));
+        // Изминатият път не може да е по-кратък от минималното разстояние между позициите.
         if (distance + tolerance < displacement) {
             throw new IllegalArgumentException("Path length cannot be shorter than displacement");
         }
+        // Изминатият път не може да надвишава максимално допустимия за една стъпка.
         if(distance > maxSpeed + tolerance){
             throw new RuntimeException("Разстоянието до следващата стъпка е по-голямо от възможностите на робота!");
         }
         position.setX(target.getX());
         battery.consume(distance * batteryConsumptionRate);
-    }
-
-    //Проверява дали робота е в секцията за патрулиране
-    public boolean isInPatrolSection(PatrolSection patrolSection) {
-        if (patrolSection == null) {
-            return false;
-        }
-        if (World.getPerimeter().getType() == PerimeterType.LINEAR) {
-            double minX = Math.min(patrolSection.startPosition().getX(), patrolSection.endPosition().getX());
-            double maxX = Math.max(patrolSection.startPosition().getX(), patrolSection.endPosition().getX());
-            return position.getX() >= minX && position.getX() <= maxX;
-        } else {
-            double rawStart = patrolSection.startPosition().getX();
-            double span = Math.abs(patrolSection.endPosition().getX() - rawStart);
-            if (span >= World.getPerimeter().getSize()) {
-                return true; // An unwrapped full-ring section contains every position.
-            }
-            double x = GeometryUtils.normalizePosition(position.getX());
-            double start = GeometryUtils.normalizePosition(patrolSection.startPosition().getX());
-            double rawEnd = patrolSection.endPosition().getX();
-            double end = GeometryUtils.normalizePosition(rawEnd);
-            // Секцията завършва точно в края на периметъра,  който е физически същата точка като 0.
-            boolean endsAtSeam = rawEnd > 0 && end == 0;
-            if (endsAtSeam) {
-                return x >= start || x < 0.001;
-            }
-            if (start <= end) { // Обикновена секция: например 20 → 60
-                return x >= start && x <= end;
-            }
-            return x >= start || x <= end; // Секция, която преминава през 0: например 80 → 20
-        }
     }
 
     /** Composition wiring; communication delivery does not depend on the patrol interface. */

@@ -43,14 +43,14 @@ public class AsyncPatrolTest {
 
         assertEquals(800, patrol.getPatrolSection().startPosition().getX(), 0);
         assertEquals(1000, patrol.getPatrolSection().endPosition().getX(), 0);
-        assertTrue(lastBot.isInPatrolSection(patrol.getPatrolSection()));
+        assertTrue(patrol.isInPatrolSection(lastBot, patrol.getPatrolSection()));
 
         Position target = patrol.getPatrolTarget(lastBot);
         assertEquals(1000, target.getX(), 0);
 
         new Navigation(new ObstacleAvoidance()).moveTowards(lastBot, target);
         assertEquals(0, lastBot.getPosition().getX(), 0);
-        assertTrue(lastBot.isInPatrolSection(patrol.getPatrolSection()));
+        assertTrue(patrol.isInPatrolSection(lastBot, patrol.getPatrolSection()));
         assertEquals(800, patrol.getPatrolTarget(lastBot).getX(), 0);
     }
 }

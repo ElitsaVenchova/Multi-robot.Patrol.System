@@ -61,7 +61,7 @@ public class SimulationRunner {
             for (int t = 0; t < duration; t++) {
                 world.tick(t);
             }
-            World.finish();
+            World.finish(duration);
         }
     }
 

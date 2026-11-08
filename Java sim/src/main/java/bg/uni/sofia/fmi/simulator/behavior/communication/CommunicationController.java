@@ -3,7 +3,6 @@ package bg.uni.sofia.fmi.simulator.behavior.communication;
 import bg.uni.sofia.fmi.simulator.behavior.communication.messages.CommunicationMessage;
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.CommunicationModule;
-import bg.uni.sofia.fmi.simulator.domain.Lidar;
 import bg.uni.sofia.fmi.simulator.domain.Position;
 import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 
@@ -19,7 +18,7 @@ import java.util.TreeMap;
 /**
  * Simulation transport only: frozen range observations and next-round delivery.
  * No partner selection, availability decisions, reservations, or allocation.
- * Delivery is idealized; configured latency, bandwidth and loss are not simulated.
+ * Delivery is idealized; configured latency, bandwidth, and loss are not simulated.
  */
 public class CommunicationController {
     // TODO Security: authentication, authorization, integrity, encryption and replay protection.

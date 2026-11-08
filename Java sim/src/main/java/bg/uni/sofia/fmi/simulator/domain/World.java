@@ -15,7 +15,6 @@ public class World {
     private static final List<Bot> bots = new ArrayList<>(); // Списък с всички роботи
     private static List<ChargingStation> chargingStations; // Списък с всички зарядни станции
     private static Perimeter perimeter = null; // Периметърът, който трябва да се патрулира
-    private static int elapsedTicks;
 
     public void addBots(List<Bot> bots) {
         World.bots.addAll(bots);
@@ -54,7 +53,6 @@ public class World {
         for (Bot bot : tickBots) {
             bot.update(currentTime);
         }
-        elapsedTicks++;
     }
 
     /** При последователно изпълнение се зачиства. Достъпът до статичния домейн се запазва. */
@@ -62,34 +60,24 @@ public class World {
         bots.clear();
         chargingStations = new ArrayList<>();
         perimeter = null;
-        elapsedTicks = 0;
     }
 
-    public static void finish() {
-        perimeter.streamAttacks().forEach(a -> a.resolveAtBoundary(elapsedTicks));
+    // След края на симулацията, се определят статуса на атаките и се проверяват броя итерации отговаря на броя изпълнени от роботите
+    public static void finish(int duration) {
+        perimeter.streamAttacks().forEach(a -> a.resolveAtBoundary(duration));
         for (Bot bot : bots) {
             long accounted = bot.getStateTicks().values().stream().mapToLong(Long::longValue).sum();
-            if (accounted != elapsedTicks) throw new IllegalStateException("State time mismatch for robot " + bot.getId());
+            if (accounted != duration) throw new IllegalStateException("State time mismatch for robot " + bot.getId());
         }
     }
 
-    public static Perimeter getPerimeter() {
-        return perimeter;
-    }
+    public static Perimeter getPerimeter() { return perimeter; }
 
-    public static List<Bot> getBots() {
-        return bots;
-    }
+    public static List<Bot> getBots() { return bots; }
 
-    public static List<ChargingStation> getChargingStations() {
-        return chargingStations;
-    }
+    public static List<ChargingStation> getChargingStations() { return chargingStations; }
 
-    public void setAttackModel(LoadModel attackModel) {
-        this.attackModel = attackModel;
-    }
+    public void setAttackModel(LoadModel attackModel) { this.attackModel = attackModel; }
 
-    public static void setPerimeter(Perimeter perimeter) { World.perimeter = perimeter;}
-
-    public int getElapsedTicks() { return elapsedTicks; }
+    public static void setPerimeter(Perimeter perimeter) { World.perimeter = perimeter; }
 }
