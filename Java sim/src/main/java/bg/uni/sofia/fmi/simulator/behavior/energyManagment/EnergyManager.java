@@ -2,9 +2,6 @@ package bg.uni.sofia.fmi.simulator.behavior.energyManagment;
 
 import bg.uni.sofia.fmi.simulator.domain.Bot;
 import bg.uni.sofia.fmi.simulator.domain.ChargingStation;
-import bg.uni.sofia.fmi.simulator.domain.Position;
-import bg.uni.sofia.fmi.simulator.domain.enums.BotState;
-import bg.uni.sofia.fmi.simulator.util.GeometryUtils;
 
 // Клас за управление на енергията на бота, който може да се използва от поведенческия модул
 // [TODO] Може да се разшири с функции за планиране на зареждане, оптимизация на енергията и др.
@@ -25,12 +22,8 @@ public class EnergyManager {
     public ChargingStation selectStation(Bot bot) {
         // Избираме най-добрата станция за зареждане
         StationSelector selector = new StationSelector();
-        ChargingStation best = selector.selectBestStation(bot);
-        // Ако няма налична станция
-        if (best == null) { // Ще потърси отново на следващия ход
-            return null;
-        }
-        return best;
+        // Ако няма налична станция, ще потърси отново на следващия ход
+        return selector.selectBestStation(bot);
     }
 
     public boolean tryToCharge(ChargingStation best, Bot bot){

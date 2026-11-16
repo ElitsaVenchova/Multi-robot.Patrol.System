@@ -10,10 +10,6 @@ public class RandomProvider {
         random = new Random(seed);
     }
 
-    public static Random getRandom() {
-        return random;
-    }
-
     // Метод за генериране на произволно число от 0.0 до 1.0
     public static double nextDouble() {
         return random.nextDouble();

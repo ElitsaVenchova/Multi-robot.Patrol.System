@@ -63,7 +63,7 @@ public class GeometryUtils {
         } else if (offset < -length / 2) {
             offset += length;
         }
-        return offset == 0 ? 0 : offset;
+        return offset;
     }
     // Нормализиране на позиция в затворен цикличен периметър [0, perimeterLength)
     public static double normalizePosition(double pos) {
@@ -93,7 +93,8 @@ public class GeometryUtils {
         return Math.min(direct, World.getPerimeter().getSize() - direct);
     }
 
-    // Определяне на най-кратката посока на движение по окръжност (+1 за посока на нарастване / по часовниковата стрелка, -1 за обратна, 0 ако са на еднаква позиция)
+    // Определяне на най-кратката посока на движение по окръжност
+    // (+1 за посока на нарастване / по часовниковата стрелка, -1 за обратна, 0 ако са на еднаква позиция)
     public static int shortestRingDirection(double from, double to) {
         if (World.getPerimeter().getSize() <= 0) {
             throw new IllegalArgumentException("perimeterLength must be positive");
