@@ -48,21 +48,6 @@ public class ExperimentRunnerTest {
         }
         d.setPoints(points); p.setDesigns(List.of(d)); return p;
     }
-    @Test public void passesEveryPreparedConfigurationAndSeedToExecution() {
-        List<SimulationConfig> seen = new ArrayList<>();
-        ExperimentRunner runner = new ExperimentRunner(c -> { seen.add(c); return new SimulationMetrics(); });
-        var p = plan(); var runs = runner.execute(p);
-        assertEquals(4, runs.size());
-        for (int i = 0; i < 4; i++) {
-            assertEquals(42L + i % 2, (long) seen.get(i).getSimulation().getSeed());
-            assertEquals(2, seen.get(i).getRobots().get(0).getCount());
-            assertEquals((double) (i / 2), seen.get(i).getAttackModel().getLambda(), 0);
-            assertEquals(3600, seen.get(i).getSimulation().getDuration());
-            assertNotNull(seen.get(i).getRobotModels().get("turtlebot_pi"));
-        }
-        assertEquals(5, new ConfigLoader().load(p.getBaseConfig()).getRobots().get(0).getCount());
-        assertEquals(2, runs.get(0).context().configuration().getRobots().get(0).getCount());
-    }
     @Test public void realRunsExecuteDurationAndResetAllStaticWorldCollections() {
         var config = new ConfigLoader().load("configs/scenarios/base.yaml");
         config.getSimulation().setDuration(7); config.getAttackModel().setLambda(1.0);

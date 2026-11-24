@@ -155,11 +155,10 @@ public class ResultExporter {
         }
 
         private void archiveImplementation() throws IOException {
-            Path archive = null;
-            if (!Files.isDirectory(Path.of("src/main/java"))){
-                archive = directory.resolve("implementation.zip");
+            if (!Files.isDirectory(Path.of("src/main/java"))) {
+                return;
             }
-            assert archive != null;
+            Path archive = directory.resolve("implementation.zip");
             try (ZipOutputStream zip = new ZipOutputStream(Files.newOutputStream(archive))) {
                 List<Path> paths = new ArrayList<>();
                 for (String root : List.of("src", "scripts", "docs")) {

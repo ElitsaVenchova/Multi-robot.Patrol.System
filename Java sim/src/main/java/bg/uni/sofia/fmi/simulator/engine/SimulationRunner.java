@@ -49,6 +49,7 @@ public class SimulationRunner {
         currentConfig = config;
         RandomProvider.setSeed(config.getSimulation().getSeed());
         IdGenerator.reset();
+        World.reset();
         // Създаване на света от конфигурацията
         World world = DomainFactory.createWorld(config);
         int duration = config.getSimulation().getDuration();

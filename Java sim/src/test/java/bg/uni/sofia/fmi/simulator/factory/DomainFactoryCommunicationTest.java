@@ -70,6 +70,6 @@ public class DomainFactoryCommunicationTest {
         assertEquals(1, fastPatrol.getCompletedEncounterCount());
         assertEquals(boundary + 2 * slow.getMaxSpeed(), slow.getPosition().getX(), 1e-9);
         assertEquals(boundary - 2 * fast.getMaxSpeed(), fast.getPosition().getX(), 1e-9);
-        World.finish();
+        World.finish(2);
     }
 }

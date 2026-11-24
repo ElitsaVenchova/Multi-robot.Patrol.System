@@ -19,7 +19,7 @@ public class OperationalStateTest {
     @Test public void queuedRobotIsWaitingAndTravelingRobotIsTraveling() {
         World world = setup(20, 2);
         World.getBots().forEach(b -> b.getBattery().consume(90));
-        world.tick(0); world.tick(1); world.tick(2); world.finish();
+        world.tick(0); world.tick(1); world.tick(2); world.finish(3);
         Bot waiting = World.getBots().get(1);
         assertEquals(1L, (long) waiting.getStateTicks().get(BotState.GOING_TO_CHARGE));
         assertEquals(2L, (long) waiting.getStateTicks().get(BotState.WAITING_FOR_CHARGE));
@@ -28,7 +28,7 @@ public class OperationalStateTest {
     @Test public void tickThatCompletesChargingStillCountsAsCharging() {
         World world = setup(100, 1);
         World.getBots().get(0).getBattery().consume(0.5);
-        world.tick(0); world.tick(1); world.finish();
+        world.tick(0); world.tick(1); world.finish(2);
         Bot bot = World.getBots().get(0);
         assertEquals(BotState.PATROLLING, bot.getState());
         assertEquals(2L, (long) bot.getStateTicks().get(BotState.CHARGING));
