@@ -22,7 +22,7 @@ public class ExperimentRunnerTest {
             var path = folder.newFile(patrol + ".yaml").toPath();
             Files.writeString(path, ConfigLoader.toYaml(base)); p.setBaseConfig(path.toString());
             List<SimulationConfig> simulated = new ArrayList<>();
-            var runner = new ExperimentRunner(config -> { simulated.add(config); return new SimulationMetrics(); });
+            var runner = new ExperimentRunner();
             try {
                 runner.runBatch(p, folder.getRoot().toPath());
                 fail("Must reject unsupported experiment patrol " + patrol);

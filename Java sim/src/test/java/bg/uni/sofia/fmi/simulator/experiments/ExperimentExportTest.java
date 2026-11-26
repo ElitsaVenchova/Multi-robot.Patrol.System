@@ -34,11 +34,7 @@ public class ExperimentExportTest {
         Files.writeString(Path.of(plan.getBaseConfig()), ConfigLoader.toYaml(base));
         plan.getDesigns().get(0).getPoints().get(0).setAttackProbability(0.4);
         List<SimulationMetrics> originals = new ArrayList<>();
-        var runner = new ExperimentRunner(config -> {
-            var metrics = new SimulationRunner().runWithResult(config, false);
-            originals.add(metrics);
-            return metrics;
-        });
+        var runner = new ExperimentRunner();
         Path batch = runner.runBatch(plan, folder.getRoot().toPath());
         var rows = readCsv(batch.resolve("experiment_runs.csv"));
         var robotRows = readCsv(batch.resolve("experiment_robot_states.csv"));

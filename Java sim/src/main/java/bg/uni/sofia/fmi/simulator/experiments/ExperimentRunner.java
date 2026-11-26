@@ -11,22 +11,34 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Function;
 import java.util.logging.Logger;
 
 /** Sequential execution is required by static world and random-provider access. */
 public class ExperimentRunner {
     Logger logger = Logger.getLogger(getClass().getName());
 
-    private final Function<SimulationConfig, SimulationMetrics> simulate;
-
-    public ExperimentRunner() {
-        this(config -> new SimulationRunner().runWithResult(config, false));
+    //Това се вика от main за изпълнение
+    public void runExperiments(String path) {
+        runBatch(ConfigLoader.read(path, ExperimentConfig.class), Path.of("outputs/results"));
     }
-    public ExperimentRunner(Function<SimulationConfig, SimulationMetrics> simulate) {
-        this.simulate = simulate;
+    //Изпълнява експериментите в пакет
+    public Path runBatch(ExperimentConfig plan, Path root) {
+        List<ExperimentRunner.PreparedRun> prepared = prepare(plan); // Генерира различните конфигурации за експеримента
+        Path directory = root.resolve(plan.getExperimentId());
+        try (ResultExporter.ExperimentOutput output = new ResultExporter.ExperimentOutput(directory, plan)) {
+            List<CompletedRun> completed = new ArrayList<>();
+            for (ExperimentRunner.PreparedRun run : prepared) {
+                //Изпълняване на симулацията с подготвеното изпълнение
+                ExperimentRunner.CompletedRun result = new CompletedRun(run, new SimulationRunner().runWithResult(run.configuration(), false));
+                output.write(result);
+                completed.add(result);
+            }
+            output.finish(new MetricsAggregator().aggregateExperiments(completed));
+        } catch (IOException e) { throw new IllegalArgumentException("Cannot write experiment batch " + directory, e); }
+        logger.fine("Completed experiment batch: " + directory);
+        return directory;
     }
-
+    //Генерира различните конфигурации за експеримента
     public List<PreparedRun> prepare(ExperimentConfig plan) {
         SimulationConfig base = new ConfigLoader().load(plan.getBaseConfig());
         List<PreparedRun> result = new ArrayList<>();
@@ -39,7 +51,20 @@ public class ExperimentRunner {
                 if (point.getChargingStations() != null) config.setChargingStations(point.getChargingStations());
                 if (point.getAttackProbability() != null) config.getAttackModel().setLambda(point.getAttackProbability());
                 Double p = config.getAttackModel().getLambda();
-                resolveModels(config);
+                //Зарежда конфигурациите на роботите
+                for (RobotConfig robot : config.getRobots()) {
+                    RobotModelConfig model = config.getRobotModels().get(robot.getModel());
+                    if (model == null) model = new RobotModelLoader().load(robot.getModel());
+                    SchemaValidator.validateRobotModel(model);
+                    config.getRobotModels().put(robot.getModel(), model);
+                }
+                //Зарежда конфигурациите на станциите
+                if (config.getChargingStations() == null) config.setChargingStations(new ArrayList<>());
+                for (ChargingStationConfig station : config.getChargingStations()) {
+                    if (!config.getStationModels().containsKey(station.getModel()))
+                        config.getStationModels().put(station.getModel(), new ChargingStationModelLoader().load(station.getModel()));
+                    SchemaValidator.validateStationModel(config.getStationModels().get(station.getModel()));
+                }
                 SchemaValidator.validate(config);
                 if (design.getType() != ExperimentConfig.Type.ATTACK_DENSITY) {
                     if (fixedProbability == null) fixedProbability = p;
@@ -62,38 +87,6 @@ public class ExperimentRunner {
             }
         }
         return List.copyOf(result);
-    }
-    private static void resolveModels(SimulationConfig config) {
-        for (RobotConfig robot : config.getRobots()) {
-            RobotModelConfig model = config.getRobotModels().get(robot.getModel());
-            if (model == null) model = new RobotModelLoader().load(robot.getModel());
-            SchemaValidator.validateRobotModel(model);
-            config.getRobotModels().put(robot.getModel(), model);
-        }
-        if (config.getChargingStations() == null) config.setChargingStations(new ArrayList<>());
-        for (ChargingStationConfig station : config.getChargingStations()) {
-            if (!config.getStationModels().containsKey(station.getModel()))
-                config.getStationModels().put(station.getModel(), new ChargingStationModelLoader().load(station.getModel()));
-            SchemaValidator.validateStationModel(config.getStationModels().get(station.getModel()));
-        }
-    }
-    //Това се вика от main за изпълнение
-    public void runExperiments(String path) {
-        runBatch(ConfigLoader.read(path, ExperimentConfig.class), Path.of("outputs/results"));
-    }
-    public Path runBatch(ExperimentConfig plan, Path root) {
-        List<ExperimentRunner.PreparedRun> prepared = prepare(plan); // Validate all points before creating output or running simulations.
-        Path directory = root.resolve(plan.getExperimentId());
-        try (ResultExporter.ExperimentOutput output = new ResultExporter.ExperimentOutput(directory, plan)) {
-            List<CompletedRun> completed = new ArrayList<>();
-            for (ExperimentRunner.PreparedRun run : prepared) {
-                ExperimentRunner.CompletedRun result = new CompletedRun(run, simulate.apply(run.configuration()));
-                output.write(result); completed.add(result);
-            }
-            output.finish(new MetricsAggregator().aggregateExperiments(completed));
-        } catch (IOException e) { throw new IllegalArgumentException("Cannot write experiment batch " + directory, e); }
-        logger.fine("Completed experiment batch: " + directory);
-        return directory;
     }
 
     public record PreparedRun(String experimentId, String designId, ExperimentConfig.Type type,

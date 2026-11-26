@@ -10,15 +10,8 @@ public class RobotModelLoader {
 
         String path = "configs/robots/" + modelName + ".yaml";
 
-        InputStream inputStream = getClass()
-                .getClassLoader()
-                .getResourceAsStream(path);
-
-        if (inputStream == null) {
-            throw new RuntimeException("Robot model not found: " + modelName);
-        }
-
-        Yaml yaml = new Yaml();
-        return yaml.loadAs(inputStream, RobotModelConfig.class);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
+        if (inputStream == null) throw new RuntimeException("Robot model not found: " + modelName);
+        return new Yaml().loadAs(inputStream, RobotModelConfig.class);
     }
 }

@@ -12,15 +12,8 @@ public class ChargingStationModelLoader {
 
         String path = "configs/stations/" + modelName + ".yaml";
 
-        InputStream inputStream = getClass()
-                .getClassLoader()
-                .getResourceAsStream(path);
-
-        if (inputStream == null) {
-            throw new RuntimeException("Station model not found: " + modelName);
-        }
-
-        Yaml yaml = new Yaml();
-        return yaml.loadAs(inputStream, ChargingStationModelConfig.class);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
+        if (inputStream == null) throw new RuntimeException("Station model not found: " + modelName);
+        return new Yaml().loadAs(inputStream, ChargingStationModelConfig.class);
     }
 }

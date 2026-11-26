@@ -112,7 +112,7 @@ public class ExperimentOutputLifecycleTest {
 
     @Test public void runBatchRetainsSimulationFailureAndRecordsFailedStatus() throws Exception {
         IllegalStateException simulationFailure = new IllegalStateException("fixture simulation failed");
-        var runner = new ExperimentRunner(config -> { throw simulationFailure; });
+        var runner = new ExperimentRunner();
         var plan = plan();
         try { runner.runBatch(plan, folder.getRoot().toPath()); fail("Simulation must fail"); }
         catch (IllegalStateException actual) { assertSame(simulationFailure, actual); }
